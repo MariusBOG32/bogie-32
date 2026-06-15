@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bogie Y32 — v2</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1117;--bg2:#181c25;--bg3:#1e2330;--card:#242938;--border:#2e3547;
+  --text:#e8eaf0;--muted:#7b849a;--accent:#4f8ef7;--accent2:#2dd4bf;
+  --warn:#f59e0b;--danger:#ef4444;--success:#22c55e;--urgent:#f97316;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;--r:10px;--r2:16px;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh}
+#app{display:flex;min-height:100vh}
+.sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 0;flex-shrink:0;transition:.3s}
+@media(max-width:768px){
+  .sidebar{position:fixed;left:-220px;top:0;height:100vh;z-index:200;transition:.25s}
+  .sidebar.open{left:0;box-shadow:4px 0 20px rgba(0,0,0,.5)}
+  .main{padding:16px 12px 80px}
+  .grid2{grid-template-columns:1fr}
+  .grid3{grid-template-columns:1fr}
+  .grid4{grid-template-columns:1fr 1fr}
+  .stats-grid{grid-template-columns:1fr 1fr!important}
+  .modal{padding:16px;max-height:95vh}
+  .modal-overlay{padding:8px;align-items:flex-end}
+  .modal{border-radius:var(--r2) var(--r2) 0 0;max-width:100%!important}
+  #bogies-grid{grid-template-columns:1fr!important}
+  .bottom-nav{display:flex!important}
+  #app{flex-direction:column}
+  .atelier-btn{bottom:70px}
+  .search-bar{flex-direction:column;align-items:stretch}
+  .search-bar input{max-width:100%}
+  .flex-between{flex-wrap:wrap;gap:8px}
+  h2{font-size:17px;margin-bottom:12px}
+  .stat-num{font-size:22px}
+  table{font-size:12px}
+  th,td{padding:7px 8px}
+  .filter-bar{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .filter-bar::-webkit-scrollbar{display:none}
+  .chip{white-space:nowrap;flex-shrink:0}
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199}
+  .overlay.show{display:block}
+}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.sidebar-logo h1{font-size:15px;font-weight:600}
+.sidebar-logo span{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;color:var(--muted);transition:.15s;border-left:2px solid transparent;font-size:13px}
+.nav-item:hover{color:var(--text);background:var(--bg3)}
+.nav-item.active{color:var(--accent);background:var(--bg3);border-left-color:var(--accent)}
+.nav-item svg{width:16px;height:16px;flex-shrink:0}
+.main{flex:1;overflow:auto;padding:28px}
+.page{display:none}.page.active{display:block}
+h2{font-size:20px;font-weight:600;margin-bottom:20px}
+h3{font-size:15px;font-weight:500;margin-bottom:12px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--r);border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:500;transition:.15s}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#3a7ae8}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}.btn-ghost:hover{color:var(--text);border-color:var(--accent)}
+.btn-success{background:var(--success);color:#fff}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-urgent{background:var(--urgent);color:#fff}
+.btn-sm{padding:5px 10px;font-size:12px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+input,select,textarea{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:var(--font);font-size:13px;padding:8px 12px;width:100%;transition:.15s;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px}
+.form-group{margin-bottom:14px}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-blue{background:#1e3a5f;color:#60a5fa}
+.badge-green{background:#14532d;color:#4ade80}
+.badge-amber{background:#451a03;color:#fcd34d}
+.badge-red{background:#450a0a;color:#f87171}
+.badge-teal{background:#042f2e;color:#2dd4bf}
+.badge-gray{background:#1e2330;color:#7b849a}
+.badge-orange{background:#431407;color:#fb923c}
+.progress-bar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin:8px 0}
+.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:.3s}
+.bogie-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:16px;transition:.15s;position:relative}
+.bogie-card:hover{border-color:var(--accent)}
+.bogie-card.urgent-card{border-color:var(--urgent)!important;box-shadow:0 0 0 1px var(--urgent)}
+.bogie-card.overdue-card{border-color:var(--danger)!important}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:24px;width:100%;max-width:720px;max-height:92vh;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.close-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1}.close-btn:hover{color:var(--text)}
+.step-list{display:flex;flex-direction:column;gap:6px}
+.step-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r);border:1px solid var(--border);cursor:pointer;transition:.15s}
+.step-item:hover{border-color:var(--accent)}
+.step-item.current{border-color:var(--accent);background:#1a2540}
+.step-item.done{border-color:var(--success);background:#0a1f14}
+.step-dot{width:9px;height:9px;border-radius:50%;background:var(--border);flex-shrink:0}
+.step-item.done .step-dot{background:var(--success)}
+.step-item.current .step-dot{background:var(--accent)}
+.step-name{flex:1;font-size:12px}
+.step-time{font-size:10px;color:var(--muted);font-family:var(--mono)}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:16px;text-align:center}
+.stat-num{font-size:28px;font-weight:600;margin-bottom:4px}
+.stat-label{font-size:12px;color:var(--muted)}
+.divider{border:none;border-top:1px solid var(--border);margin:16px 0}
+.flex{display:flex;align-items:center}
+.flex-between{display:flex;justify-content:space-between;align-items:center}
+.gap8{gap:8px}.gap12{gap:12px}
+.mt8{margin-top:8px}.mt16{margin-top:16px}.mb8{margin-bottom:8px}.mb16{margin-bottom:16px}
+.text-muted{color:var(--muted)}.text-sm{font-size:12px}.text-accent{color:var(--accent)}
+.tag-blocked{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#3b0c0c;color:#f87171;border-radius:20px;font-size:11px}
+.tag-urgent{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#431407;color:#fb923c;border-radius:20px;font-size:11px}
+.tag-overdue{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#450a0a;color:#f87171;border-radius:20px;font-size:11px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border)}
+th{font-size:12px;color:var(--muted);font-weight:500}
+td{font-size:13px}
+tr:last-child td{border-bottom:none}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+.login-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:36px;width:360px}
+.login-logo{text-align:center;margin-bottom:28px}
+.login-logo h1{font-size:18px;font-weight:600;margin-bottom:4px}
+.login-logo p{font-size:12px;color:var(--muted);font-family:var(--mono)}
+.alert{padding:10px 14px;border-radius:var(--r);font-size:13px;margin-bottom:14px}
+.alert-danger{background:#3b0c0c;color:#f87171;border:1px solid #7f1d1d}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;background:var(--bg3);color:var(--muted);border:1px solid var(--border);cursor:pointer}
+.chip.active{background:#1e3a5f;color:#60a5fa;border-color:#1e40af}
+.sidebar-user{margin-top:auto;padding:16px 20px;border-top:1px solid var(--border)}
+.sidebar-user .name{font-size:13px;font-weight:500}
+.sidebar-user .role{font-size:11px;color:var(--muted)}
+.logout-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;margin-top:6px;font-family:var(--font)}.logout-btn:hover{color:var(--danger)}
+.voiture-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:16px}
+.bogie-slot{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg3);border-radius:var(--r);margin-bottom:8px}
+.bogie-slot.done-slot{border:1px solid var(--success)}
+.bogie-slot.pending-slot{border:1px solid var(--border)}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+#loading-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:12px}
+#loading-screen p{color:var(--muted);font-size:13px}
+.spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--r);padding:12px 18px;font-size:13px;z-index:9999;animation:slideUp .2s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.search-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.search-bar input{max-width:280px}
+.location-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#1e2330;color:#7b849a;border:1px solid var(--border);border-radius:20px;font-size:11px}
+.alert-task{display:flex;align-items:flex-start;gap:8px;padding:8px 12px;background:#1c1a0a;border:1px solid #78350f;border-radius:var(--r);margin-bottom:6px;font-size:12px}
+.alert-task.resolved{background:#0a1f14;border-color:#14532d;opacity:.7}
+.alert-task-text{flex:1;color:var(--text)}
+.comment-item{padding:10px 12px;background:var(--bg3);border-radius:var(--r);margin-bottom:8px;font-size:12px}
+.comment-meta{color:var(--muted);font-size:11px;margin-bottom:4px}
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-top:8px}
+.photo-thumb{width:80px;height:80px;object-fit:cover;border-radius:var(--r);border:1px solid var(--border);cursor:pointer}
+.journal-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px}
+.journal-item:last-child{border-bottom:none}
+.journal-time{color:var(--muted);font-family:var(--mono);white-space:nowrap;font-size:11px}
+.journal-text{color:var(--text);flex:1}
+.next-step-btn{width:100%;margin-top:10px;padding:8px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-family:var(--font);font-size:12px;font-weight:500;transition:.15s}
+.next-step-btn:hover{background:#3a7ae8}
+.next-step-btn:disabled{background:var(--bg3);color:var(--muted);cursor:not-allowed}
+.archived-toggle{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:16px}
+/* VUE ATELIER */
+body.atelier-mode .sidebar{display:none}
+body.atelier-mode .main{padding:16px}
+body.atelier-mode .bogie-card{padding:20px}
+body.atelier-mode .bogie-card .bogie-num{font-size:22px}
+body.atelier-mode .step-label{font-size:16px}
+body.atelier-mode .next-step-btn{font-size:16px;padding:14px}
+.atelier-btn{position:fixed;bottom:20px;left:20px;z-index:50;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:8px 14px;cursor:pointer;font-size:12px;color:var(--muted);font-family:var(--font)}
+.atelier-btn:hover{color:var(--text)}
+select option{background:var(--bg3)}
+.overdue-warn{color:var(--danger);font-size:11px;margin-top:4px}
+.deadline-ok{color:var(--success);font-size:11px;margin-top:4px}
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);z-index:150;height:60px;align-items:stretch}
+.bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--muted);font-size:10px;border:none;background:none;font-family:var(--font);padding:4px;transition:.15s}
+.bottom-nav-item.active{color:var(--accent)}
+.bottom-nav-item svg{width:20px;height:20px}
+.hamburger{display:none;position:fixed;top:12px;left:12px;z-index:201;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:8px;cursor:pointer}
+.mobile-logout{display:none;position:fixed;top:12px;right:12px;z-index:201;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:8px;cursor:pointer;color:var(--muted)}
+.mobile-logout:hover{color:var(--danger)}
+@media(max-width:768px){.hamburger{display:flex;align-items:center;justify-content:center}.mobile-logout{display:flex;align-items:center;justify-content:center}}
+@media print{.sidebar,.btn,.filter-bar,.atelier-btn{display:none!important}.main{padding:0}body{background:#fff;color:#000}.card,.stat-card,.bogie-card{background:#fff;border:1px solid #ccc}}
+</style>
+</head>
+<body>
+
+<div id="loading-screen"><div class="spinner"></div><p>Connexion à Firebase…</p></div>
+
+<div id="login-view" style="display:none">
+  <div class="login-wrap">
+    <div class="login-box">
+      <div class="login-logo"><h1>⚙ Bogie Y32</h1><p>Suivi de production · v2.5</p></div>
+      <div id="login-error" class="alert alert-danger" style="display:none"></div>
+      <div class="form-group"><label>E-mail</label><input type="email" id="login-email" placeholder="prenom@entreprise.fr"></div>
+      <div class="form-group"><label>Mot de passe</label><input type="password" id="login-pass" placeholder="••••••••"></div>
+      <button class="btn btn-primary" style="width:100%" onclick="doLogin()">Se connecter</button>
+    </div>
+  </div>
+</div>
+
+<div id="main-view" style="display:none">
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+<button class="hamburger" onclick="toggleSidebar()">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+<button class="mobile-logout" onclick="doLogout()" title="Se déconnecter">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+</button>
+  <div id="app">
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-logo"><h1>⚙ Bogie Y32</h1><span>Suivi de production · v2.5</span></div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Tableau de bord
+      </div>
+      <div class="nav-item" onclick="showPage('bogies',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="18" r="3"/><circle cx="19" cy="18" r="3"/><path d="M5 15V5l6-2 4 5 4 1v6"/><line x1="5" y1="18" x2="19" y2="18"/></svg>Bogies
+      </div>
+      <div class="nav-item" onclick="showPage('voitures',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M6 7V5a2 2 0 012-2h8a2 2 0 012 2v2"/><circle cx="8" cy="17" r="2"/><circle cx="16" cy="17" r="2"/></svg>Voitures
+      </div>
+      <div class="nav-item" id="nav-journal" onclick="showPage('journal',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Journal
+      </div>
+      <div class="nav-item" id="nav-bilan" onclick="showPage('bilan',this)" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 4-6"/></svg>Bilans
+      </div>
+      <div class="nav-item" id="nav-graphs" onclick="showPage('graphs',this)" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="7"/><rect x="12" y="6" width="3" height="11"/><rect x="17" y="13" width="3" height="4"/></svg>Graphiques
+      </div>
+      <div class="nav-item" id="nav-admin" onclick="showPage('admin',this)" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Utilisateurs
+      </div>
+      <div class="sidebar-user">
+        <div class="name" id="sidebar-name">—</div>
+        <div class="role" id="sidebar-role">—</div>
+        <button class="logout-btn" onclick="doLogout()">Se déconnecter</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <!-- DASHBOARD -->
+      <div id="page-dashboard" class="page active">
+        <div class="flex-between mb8">
+          <h2>Tableau de bord</h2>
+          <div class="flex gap8">
+            <input type="text" id="search-input" placeholder="🔍 Rechercher un bogie…" style="width:200px;font-size:13px" oninput="renderDashboard()">
+            <button class="btn btn-primary btn-sm" onclick="openNewBogie()">+ Nouveau bogie</button>
+          </div>
+        </div>
+        <div id="stats-row" style="margin-bottom:20px;display:grid;grid-template-columns:repeat(5,1fr);gap:12px" class="stats-grid"></div>
+        <div class="filter-bar" id="filter-bar"></div>
+        <label class="archived-toggle"><input type="checkbox" id="show-archived" onchange="renderDashboard()"> Afficher les bogies archivés</label>
+        <div id="bogies-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px"></div>
+      </div>
+
+      <!-- BOGIES LIST -->
+      <div id="page-bogies" class="page">
+        <div class="flex-between mb8">
+          <h2>Tous les bogies</h2>
+          <button class="btn btn-primary btn-sm" onclick="openNewBogie()">+ Nouveau bogie</button>
+        </div>
+        <div class="flex gap8 mb16" style="align-items:flex-end;flex-wrap:wrap">
+          <div style="min-width:200px">
+            <label>Trier par</label>
+            <select id="bogies-sort" onchange="renderBogiesTable()">
+              <option value="created-desc">Date de création (récent)</option>
+              <option value="created-asc">Date de création (ancien)</option>
+              <option value="pct-desc">Avancement (élevé)</option>
+              <option value="pct-asc">Avancement (faible)</option>
+              <option value="deadline-asc">Date limite (proche)</option>
+              <option value="deadline-desc">Date limite (lointaine)</option>
+              <option value="num-asc">N° bogie (croissant)</option>
+              <option value="num-desc">N° bogie (décroissant)</option>
+              <option value="priority">Priorité (urgent d'abord)</option>
+            </select>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table><thead><tr><th>N° Bogie</th><th>Étape</th><th>Localisation</th><th>Voiture sortie</th><th>Date limite</th><th>Avancement</th><th>Statut</th><th></th></tr></thead>
+          <tbody id="bogies-tbody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- VOITURES -->
+      <div id="page-voitures" class="page">
+        <div class="flex-between mb8"><h2>Voitures</h2><button class="btn btn-primary btn-sm" onclick="openNewVoiture()">+ Nouvelle voiture</button></div>
+        <div id="voitures-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px"></div>
+      </div>
+
+      <!-- JOURNAL -->
+      <div id="page-journal" class="page">
+        <h2>Journal d'activité</h2>
+        <div class="card">
+          <div id="journal-list"></div>
+        </div>
+      </div>
+
+      <!-- BILAN -->
+      <div id="page-bilan" class="page">
+        <h2>Bilans</h2>
+        <div class="card" style="margin-bottom:16px">
+          <div class="flex gap12 flex-wrap">
+            <div class="form-group" style="margin:0;min-width:160px"><label>Période</label>
+              <select id="bilan-period" onchange="toggleBilanCustom()">
+                <option value="week">Cette semaine</option>
+                <option value="month">Ce mois</option>
+                <option value="custom">Personnalisée</option>
+              </select>
+            </div>
+            <div id="bilan-custom" style="display:none;flex:1">
+              <div class="flex gap8">
+                <div class="form-group" style="margin:0;flex:1"><label>Du</label><input type="date" id="bilan-from"></div>
+                <div class="form-group" style="margin:0;flex:1"><label>Au</label><input type="date" id="bilan-to"></div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-end;gap:8px">
+              <button class="btn btn-ghost btn-sm" onclick="loadBilan()">Actualiser</button>
+              <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨 Imprimer</button>
+            </div>
+          </div>
+        </div>
+        <div id="bilan-content"></div>
+      </div>
+
+      <!-- GRAPHIQUES -->
+      <div id="page-graphs" class="page">
+        <h2>Graphiques</h2>
+        <div class="grid2" style="gap:16px">
+          <div class="card"><h3 style="margin-bottom:12px">Production (bogies terminés)</h3><canvas id="chart-prod" height="200"></canvas></div>
+          <div class="card"><h3 style="margin-bottom:12px">Bogies par statut</h3><canvas id="chart-statut" height="200"></canvas></div>
+          <div class="card"><h3 style="margin-bottom:12px">Temps moyen par étape (heures)</h3><canvas id="chart-etapes" height="240"></canvas></div>
+          <div class="card"><h3 style="margin-bottom:12px">Charge par zone</h3><canvas id="chart-zones" height="240"></canvas></div>
+        </div>
+      </div>
+
+      <!-- ADMIN -->
+      <div id="page-admin" class="page">
+        <div class="flex-between mb8"><h2>Utilisateurs</h2><button class="btn btn-primary btn-sm" onclick="openNewUser()">+ Nouvel utilisateur</button></div>
+        <div class="card">
+          <table><thead><tr><th>Nom</th><th>E-mail</th><th>Rôle</th><th>Actions</th></tr></thead><tbody id="users-tbody"></tbody></table>
+        </div>
+        <p class="text-sm text-muted mt16">Note : le changement d'e-mail et la suppression complète d'un compte de connexion se font dans la console Firebase.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOUVEAU BOGIE -->
+<div class="modal-overlay" id="modal-bogie" style="display:none">
+  <div class="modal">
+    <div class="modal-header"><h3>Nouveau bogie</h3><button class="close-btn" onclick="closeModal('modal-bogie')">×</button></div>
+    <div class="form-group"><label>N° Bogie *</label><input id="b-num" placeholder="ex: 1234"></div>
+    <div class="grid2">
+      <div class="form-group"><label>Voiture d'arrivée</label><input id="b-voiture-arrivee" placeholder="N° voiture"></div>
+      <div class="form-group"><label>Voiture de sortie</label><input id="b-voiture-sortie" placeholder="N° voiture"></div>
+    </div>
+    <div class="grid2">
+      <div class="form-group"><label>Date limite</label><input type="date" id="b-deadline"></div>
+      <div class="form-group"><label>Localisation</label>
+        <select id="b-location">
+          <option value="">— Choisir —</option>
+          <option>Chantier bogie</option>
+          <option>Stockage</option>
+          <option>Zone départ SDsablage</option>
+          <option>Parc essieux</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>Priorité</label>
+      <select id="b-priority"><option value="normal">Normal</option><option value="urgent">Urgent</option></select>
+    </div>
+    <div class="form-group"><label>Observations initiales</label><textarea id="b-obs" rows="2" placeholder="Remarques à l'arrivée…"></textarea></div>
+    <div style="text-align:right;margin-top:8px">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-bogie')">Annuler</button>
+      <button class="btn btn-primary btn-sm" style="margin-left:8px" onclick="saveNewBogie()">Créer la fiche</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FICHE BOGIE -->
+<div class="modal-overlay" id="modal-fiche" style="display:none">
+  <div class="modal" style="max-width:820px">
+    <div class="modal-header">
+      <div>
+        <h3 id="fiche-title">Fiche bogie</h3>
+        <div class="text-sm text-muted" id="fiche-sub"></div>
+      </div>
+      <div class="flex gap8 flex-wrap">
+        <span id="fiche-blocked-badge" class="tag-blocked" style="display:none">⚠ Bloqué</span>
+        <span id="fiche-urgent-badge" class="tag-urgent" style="display:none">🔥 Urgent</span>
+        <button class="btn btn-ghost btn-sm" id="fiche-block-btn" onclick="toggleBlocked()">Marquer bloqué</button>
+        <button class="btn btn-ghost btn-sm" id="fiche-urgent-btn" onclick="toggleUrgent()">Marquer urgent</button>
+        <button class="btn btn-ghost btn-sm" id="fiche-archive-btn" onclick="toggleArchive()">Archiver</button>
+        <button class="close-btn" onclick="closeModal('modal-fiche')">×</button>
+      </div>
+    </div>
+
+    <!-- Infos principales -->
+    <div style="margin-bottom:12px">
+      <label>N° Bogie</label><input id="fiche-numero" placeholder="N° bogie" onchange="saveBogieNumero(this.value)">
+    </div>
+    <div class="grid2" style="margin-bottom:12px">
+      <div><label>Voiture arrivée</label><input id="fiche-v-arr" placeholder="N° voiture" onchange="onBogieVoitureChange('voitureArrivee',this.value)"></div>
+      <div><label>Voiture sortie</label><input id="fiche-v-sor" placeholder="N° voiture" onchange="onBogieVoitureChange('voitureSortie',this.value)"></div>
+    </div>
+    <div class="grid2" style="margin-bottom:12px">
+      <div><label>Date limite</label><input type="date" id="fiche-deadline" onchange="saveFicheField('deadline',this.value)"></div>
+      <div><label>Localisation</label>
+        <select id="fiche-location" onchange="saveFicheField('location',this.value)">
+          <option value="">— Choisir —</option>
+          <option>Chantier bogie</option>
+          <option>Stockage</option>
+          <option>Zone départ SDsablage</option>
+          <option>Parc essieux</option>
+        </select>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Alertes/Tâches -->
+    <div class="flex-between mb8">
+      <h3 style="margin:0">Alertes / Tâches</h3>
+      <button class="btn btn-ghost btn-sm" onclick="openAddAlert()">+ Ajouter</button>
+    </div>
+    <div id="fiche-alerts" style="margin-bottom:12px"></div>
+
+    <!-- Commentaires -->
+    <div class="flex-between mb8">
+      <h3 style="margin:0">Commentaires opérateurs</h3>
+    </div>
+    <div id="fiche-comments" style="margin-bottom:8px"></div>
+    <div class="flex gap8 mb16">
+      <input id="comment-input" placeholder="Ajouter un commentaire…" style="flex:1">
+      <button class="btn btn-ghost btn-sm" onclick="addComment()">Envoyer</button>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Avancement -->
+    <h3 style="margin-bottom:8px">Avancement</h3>
+    <div class="progress-bar"><div class="progress-fill" id="fiche-progress"></div></div>
+    <div class="step-list" id="fiche-steps"></div>
+
+    <hr class="divider">
+
+    
+  </div>
+</div>
+
+<!-- MODAL ETAPE -->
+<div class="modal-overlay" id="modal-etape" style="display:none">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header"><h3 id="etape-title">Étape</h3><button class="close-btn" onclick="closeModal('modal-etape')">×</button></div>
+    <div class="form-group"><label>Date de début</label><input type="datetime-local" id="etape-debut"></div>
+    <div class="form-group"><label>Date de fin</label><input type="datetime-local" id="etape-fin"></div>
+    <div class="form-group"><label>Durée effective (minutes)</label><input type="number" id="etape-duree" placeholder="ex: 90" min="0"></div>
+    <div class="form-group"><label>Observations</label><textarea id="etape-obs" rows="3" placeholder="Remarques sur cette étape…"></textarea></div>
+    <div class="flex-between mt16">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-etape')">Annuler</button>
+      <div class="flex gap8">
+        <button class="btn btn-ghost btn-sm" onclick="resetEtape()">Réinitialiser</button>
+        <button class="btn btn-primary btn-sm" onclick="saveEtape()">Valider l'étape</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ALERTE -->
+<div class="modal-overlay" id="modal-alert" style="display:none">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header"><h3>Nouvelle alerte / tâche</h3><button class="close-btn" onclick="closeModal('modal-alert')">×</button></div>
+    <div class="form-group"><label>Description *</label><textarea id="alert-text" rows="3" placeholder="ex: Contrôle dimensionnel à effectuer avant remontage…"></textarea></div>
+    <div style="text-align:right;margin-top:8px">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-alert')">Annuler</button>
+      <button class="btn btn-primary btn-sm" style="margin-left:8px" onclick="saveAlert()">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VOITURE -->
+<div class="modal-overlay" id="modal-voiture" style="display:none">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header"><h3>Nouvelle voiture</h3><button class="close-btn" onclick="closeModal('modal-voiture')">×</button></div>
+    <div class="form-group"><label>N° Voiture *</label><input id="v-num" placeholder="ex: 5127"></div>
+    <div class="grid2">
+      <div class="form-group"><label>Caissonnage</label><select id="v-type"><option value="caissonné">Caissonné</option><option value="non caissonné">Non caissonné</option></select></div>
+      <div class="form-group"><label>Type de maintenance</label><select id="v-maint"><option value="ATTPR6">ATTPR6</option><option value="ATP250">ATP250</option></select></div>
+    </div>
+    <hr class="divider">
+    <h3 style="margin-bottom:12px">🔵 Bogies à l'arrivée</h3>
+    <div class="grid2">
+      <div class="form-group"><label>Bogie n°1 (impair)</label><input id="v-e1-num" placeholder="N° bogie"></div>
+      <div class="form-group"><label>Bogie n°2 (pair)</label><input id="v-e2-num" placeholder="N° bogie"></div>
+    </div>
+    <hr class="divider">
+    <h3 style="margin-bottom:12px">🟢 Bogies de sortie</h3>
+    <div class="grid2">
+      <div class="form-group"><label>Bogie n°1 (impair)</label><input id="v-b1-num" placeholder="N° bogie"></div>
+      <div class="form-group" style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="v-b1-fait" style="width:16px"><label style="margin:0">Traitement terminé</label></div>
+    </div>
+    <div class="grid2">
+      <div class="form-group"><label>Bogie n°2 (pair)</label><input id="v-b2-num" placeholder="N° bogie"></div>
+      <div class="form-group" style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="v-b2-fait" style="width:16px"><label style="margin:0">Traitement terminé</label></div>
+    </div>
+    <div style="text-align:right;margin-top:8px">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-voiture')">Annuler</button>
+      <button class="btn btn-primary btn-sm" style="margin-left:8px" onclick="saveNewVoiture()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL UTILISATEUR -->
+<div class="modal-overlay" id="modal-user" style="display:none">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header"><h3>Nouvel utilisateur</h3><button class="close-btn" onclick="closeModal('modal-user')">×</button></div>
+    <div id="user-error" class="alert alert-danger" style="display:none"></div>
+    <div class="form-group"><label>Nom complet *</label><input id="u-name" placeholder="Prénom Nom"></div>
+    <div class="form-group"><label>E-mail *</label><input id="u-email" type="email" placeholder="prenom@entreprise.fr"></div>
+    <div class="form-group"><label>Mot de passe *</label><input id="u-pass" type="password" placeholder="min. 6 caractères"></div>
+    <div class="form-group"><label>Rôle</label><select id="u-role"><option value="operateur">Opérateur</option><option value="responsable">Responsable</option></select></div>
+    <div style="text-align:right;margin-top:8px">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-user')">Annuler</button>
+      <button class="btn btn-primary btn-sm" style="margin-left:8px" onclick="saveNewUser()">Créer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MODIFIER UTILISATEUR -->
+<div class="modal-overlay" id="modal-edituser" style="display:none">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header"><h3>Modifier l'utilisateur</h3><button class="close-btn" onclick="closeModal('modal-edituser')">×</button></div>
+    <p class="text-sm text-muted mb16">E-mail : <strong id="edit-user-email-display" style="color:var(--text)"></strong></p>
+    <div class="form-group"><label>Nom complet</label><input id="edit-user-name"></div>
+    <div class="form-group"><label>Rôle</label><select id="edit-user-role"><option value="operateur">Opérateur</option><option value="responsable">Responsable</option></select></div>
+    <div style="text-align:right;margin-top:8px">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-edituser')">Annuler</button>
+      <button class="btn btn-primary btn-sm" style="margin-left:8px" onclick="saveEditUser()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VALIDATION RAPIDE -->
+<div class="modal-overlay" id="modal-quickstep" style="display:none">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header"><h3>Valider l'étape</h3><button class="close-btn" onclick="closeModal('modal-quickstep')">×</button></div>
+    <p class="text-sm text-muted mb16">Étape : <strong id="quick-step-title" style="color:var(--text)"></strong></p>
+    <div class="form-group">
+      <label>Temps passé sur cette étape (en heures) *</label>
+      <input type="text" id="quick-step-hours" placeholder="ex: 1,5" inputmode="decimal" onkeydown="if(event.key==='Enter')confirmQuickStep()">
+    </div>
+    <div style="text-align:right;margin-top:8px">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-quickstep')">Annuler</button>
+      <button class="btn btn-primary btn-sm" style="margin-left:8px" onclick="confirmQuickStep()">Valider</button>
+    </div>
+  </div>
+</div>
+
+<button class="atelier-btn" onclick="toggleAtelierMode()" id="atelier-btn">🏭 Vue atelier</button>
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="bottom-nav-item active" onclick="showPageMobile('dashboard',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Tableau
+  </button>
+  <button class="bottom-nav-item" onclick="showPageMobile('bogies',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="18" r="3"/><circle cx="19" cy="18" r="3"/><path d="M5 15V5l6-2 4 5 4 1v6"/><line x1="5" y1="18" x2="19" y2="18"/></svg>Bogies
+  </button>
+  <button class="bottom-nav-item" onclick="showPageMobile('voitures',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M6 7V5a2 2 0 012-2h8a2 2 0 012 2v2"/><circle cx="8" cy="17" r="2"/><circle cx="16" cy="17" r="2"/></svg>Voitures
+  </button>
+  <button class="bottom-nav-item" onclick="showPageMobile('journal',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Journal
+  </button>
+  <button class="bottom-nav-item" id="mobile-more-btn" onclick="toggleSidebar()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>Plus
+  </button>
+</nav>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCCDfoX-eetDi7M7bd9tPqtFyddrW6AsMg",
+  authDomain: "base-bogie-y32.firebaseapp.com",
+  databaseURL: "https://base-bogie-y32-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "base-bogie-y32",
+  storageBucket: "base-bogie-y32.firebasestorage.app",
+  messagingSenderId: "1044648135435",
+  appId: "1:1044648135435:web:e19af5fd6c9b916395300e"
+};
+
+const ETAPES = [
+  "Sous véhicule (désolidariser)",
+  "Disponible pour démontage",
+  "Démontage",
+  "Attente grenaillage",
+  "Retour grenaillage",
+  "Expertise",
+  "Chaudronnerie",
+  "Magnétoscopie",
+  "Attente peinture",
+  "Retour peinture",
+  "Bagage",
+  "Remontage",
+  "Pose sur essieux + traverse",
+  "Dispositif en bout d'essieux",
+  "Check avant sortie",
+  "Disponible pour mise sous véhicule"
+];
+
+const ZONES = ["Chantier bogie","Stockage","Zone départ SDsablage","Parc essieux"];
+
+firebase.initializeApp(FIREBASE_CONFIG);
+const auth = firebase.auth();
+const db = firebase.database();
+
+let currentUser = null, currentUserData = null, currentBogieId = null, currentEtapeIdx = null;
+let bogiesData = {}, voituresData = {}, usersData = {}, journalData = {};
+let atelierMode = false;
+
+auth.onAuthStateChanged(async user => {
+  document.getElementById('loading-screen').style.display = 'none';
+  if (!user) { document.getElementById('login-view').style.display='block'; document.getElementById('main-view').style.display='none'; return; }
+  currentUser = user;
+  const snap = await db.ref('users/'+user.uid).get();
+  currentUserData = snap.val() || {name:user.email, role:'operateur'};
+  document.getElementById('sidebar-name').textContent = currentUserData.name || user.email;
+  document.getElementById('sidebar-role').textContent = currentUserData.role==='responsable'?'Responsable':'Opérateur';
+  if (currentUserData.role==='responsable') {
+    document.getElementById('nav-bilan').style.display='flex';
+    document.getElementById('nav-admin').style.display='flex';
+    document.getElementById('nav-graphs').style.display='flex';
+  }
+  document.getElementById('login-view').style.display='none';
+  document.getElementById('main-view').style.display='block';
+  initRealtime();
+});
+
+function initRealtime() {
+  db.ref('bogies').on('value', snap => { bogiesData=snap.val()||{}; renderDashboard(); renderBogiesTable(); });
+  db.ref('voitures').on('value', snap => { voituresData=snap.val()||{}; renderVoitures(); });
+  db.ref('users').on('value', snap => { usersData=snap.val()||{}; renderUsers(); });
+  db.ref('journal').on('value', snap => { journalData=snap.val()||{}; renderJournal(); });
+}
+
+function doLogin() {
+  const email=document.getElementById('login-email').value.trim(), pass=document.getElementById('login-pass').value;
+  const err=document.getElementById('login-error'); err.style.display='none';
+  auth.signInWithEmailAndPassword(email,pass).catch(()=>{ err.textContent='E-mail ou mot de passe incorrect.'; err.style.display='block'; });
+}
+document.getElementById('login-pass').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+function doLogout(){ auth.signOut(); }
+
+function toggleSidebar(){
+  const s=document.getElementById('sidebar');
+  const o=document.getElementById('overlay');
+  s.classList.toggle('open');
+  o.classList.toggle('show');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+function showPageMobile(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  el.classList.add('active');
+  closeSidebar();
+  if(id==='bilan') loadBilan();
+  if(id==='graphs') loadGraphs();
+}
+
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  el.classList.add('active');
+  closeSidebar();
+  if(id==='bilan') loadBilan();
+  if(id==='graphs') loadGraphs();
+}
+
+function showToast(msg, color){
+  const t=document.createElement('div'); t.className='toast';
+  t.style.borderLeftColor=color||'var(--accent)'; t.textContent=msg;
+  document.body.appendChild(t); setTimeout(()=>t.remove(),2800);
+}
+
+function openModal(id){ document.getElementById(id).style.display='flex'; }
+function closeModal(id){ document.getElementById(id).style.display='none'; }
+
+function toggleAtelierMode(){
+  atelierMode=!atelierMode;
+  document.body.classList.toggle('atelier-mode',atelierMode);
+  document.getElementById('atelier-btn').textContent=atelierMode?'✕ Vue normale':'🏭 Vue atelier';
+}
+
+async function logAction(action, bogieNum){
+  const entry = { user: currentUserData.name||currentUser.email, action, bogieNum, ts: Date.now() };
+  await db.ref('journal').push(entry);
+}
+
+function etapeColor(idx){ if(idx>=ETAPES.length-1) return 'badge-green'; if(idx>=ETAPES.length*0.7) return 'badge-teal'; if(idx>=ETAPES.length*0.4) return 'badge-blue'; return 'badge-gray'; }
+
+function getEtapeIdx(b){
+  if(!b.etapes) return 0;
+  let last=0;
+  ETAPES.forEach((_,i)=>{ if(b.etapes[i]&&b.etapes[i].done) last=i+1; });
+  return Math.min(last,ETAPES.length-1);
+}
+
+function getPct(b){
+  const done=ETAPES.filter((_,i)=>b.etapes&&b.etapes[i]&&b.etapes[i].done).length;
+  return Math.round((done/ETAPES.length)*100);
+}
+
+function isOverdue(b){
+  if(!b.deadline||getPct(b)===100) return false;
+  return new Date(b.deadline)<new Date();
+}
+
+function renderDashboard(){
+  const bogies=Object.entries(bogiesData);
+  const search=(document.getElementById('search-input')||{}).value?.toLowerCase()||'';
+  const showArchived=document.getElementById('show-archived')?.checked||false;
+  const total=bogies.filter(([,b])=>!b.archived).length;
+  const termine=bogies.filter(([,b])=>!b.archived&&getPct(b)===100).length;
+  const bloque=bogies.filter(([,b])=>!b.archived&&b.blocked).length;
+  const urgent=bogies.filter(([,b])=>!b.archived&&b.priority==='urgent').length;
+  document.getElementById('stats-row').innerHTML=`
+    <div class="stat-card"><div class="stat-num text-accent">${total}</div><div class="stat-label">Total bogies</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--warn)">${total-termine}</div><div class="stat-label">En cours</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--success)">${termine}</div><div class="stat-label">Terminés</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--danger)">${bloque}</div><div class="stat-label">Bloqués</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--urgent)">${urgent}</div><div class="stat-label">Urgents</div></div>
+  `;
+  const filterBar=document.getElementById('filter-bar');
+  const activeFilter=filterBar.dataset.filter||'Tous';
+  filterBar.innerHTML=['Tous',...ETAPES].map((e,i)=>`<span class="chip ${e===activeFilter?'active':''}" onclick="setFilterByIdx(${i-1})">${e}</span>`).join('');
+  filterBar.dataset.filter=activeFilter;
+
+  let filtered=bogies.filter(([,b])=>{
+    if(b.archived&&!showArchived) return false;
+    if(search&&!b.numero.toLowerCase().includes(search)) return false;
+    if(activeFilter!=='Tous'&&ETAPES[getEtapeIdx(b)]!==activeFilter) return false;
+    return true;
+  });
+
+  // Urgents en premier
+  filtered.sort(([,a],[,b])=>{
+    if(a.priority==='urgent'&&b.priority!=='urgent') return -1;
+    if(b.priority==='urgent'&&a.priority!=='urgent') return 1;
+    return 0;
+  });
+
+  const grid=document.getElementById('bogies-grid');
+  if(!filtered.length){ grid.innerHTML='<p class="text-muted">Aucun bogie.</p>'; return; }
+  grid.innerHTML=filtered.map(([id,b])=>{
+    const pct=getPct(b), idx=getEtapeIdx(b);
+    const overdue=isOverdue(b);
+    const deadlineStr=b.deadline?`<div class="${overdue?'overdue-warn':'deadline-ok'}">${overdue?'⚠ En retard':'📅'} ${new Date(b.deadline).toLocaleDateString('fr-FR')}</div>`:'';
+    const nextIdx=idx<ETAPES.length-1&&!b.etapes?.[idx]?.done?idx:idx+1;
+    const canNext=nextIdx<ETAPES.length&&!(b.etapes?.[nextIdx]?.done);
+    const alertCount=b.alerts?Object.values(b.alerts).filter(a=>!a.resolved).length:0;
+    return `<div class="bogie-card ${b.priority==='urgent'?'urgent-card':''} ${overdue?'overdue-card':''}" >
+      <div class="flex-between mb8" style="cursor:pointer" onclick="openFiche('${id}')">
+        <span class="bogie-num" style="font-size:15px;font-weight:600">Bogie #${b.numero}</span>
+        <div class="flex gap8">
+          ${b.priority==='urgent'?'<span class="tag-urgent">🔥</span>':''}
+          ${b.blocked?'<span class="tag-blocked">⚠</span>':''}
+          ${b.archived?'<span class="badge badge-gray">Archivé</span>':''}
+          <span class="badge ${etapeColor(idx)} etape-badge">${pct}%</span>
+        </div>
+      </div>
+      ${b.serie?`<div class="text-sm text-muted mb8">${b.serie}</div>`:''}
+      <div style="cursor:pointer" onclick="openFiche('${id}')">
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div class="step-label text-sm" style="margin-top:5px;color:var(--muted)">${ETAPES[idx]}</div>
+        ${b.archived?`<div class="text-sm mt8" style="color:var(--success)">📦 Sous voiture ${b.voitureSortie||'—'}${b.archivedAt?' · '+new Date(b.archivedAt).toLocaleDateString('fr-FR'):''}</div>`:`
+        ${b.location?`<div class="location-badge mt8">📍 ${b.location}</div>`:''}
+        ${b.voitureArrivee?`<div class="text-sm text-muted mt8">🚃 ${b.voitureArrivee}</div>`:''}
+        ${deadlineStr}`}
+        ${alertCount?`<div class="text-sm mt8" style="color:var(--warn)">🚩 ${alertCount} alerte${alertCount>1?'s':''} active${alertCount>1?'s':''}</div>`:''}
+      </div>
+      ${!b.archived?`<button class="next-step-btn" ${!canNext?'disabled':''} onclick="quickNextStep(event,'${id}')">
+        ${canNext?'→ '+ETAPES[Math.min(idx+(b.etapes?.[idx]?.done?1:0),ETAPES.length-1)]:'✓ Terminé'}
+      </button>`:''}
+    </div>`;
+  }).join('');
+}
+
+function setFilter(val){ document.getElementById('filter-bar').dataset.filter=val; renderDashboard(); }
+function setFilterByIdx(idx){ const val = idx < 0 ? 'Tous' : ETAPES[idx]; document.getElementById('filter-bar').dataset.filter=val||'Tous'; renderDashboard(); }
+
+let quickStepCtx=null;
+let editUserId=null;
+function quickNextStep(e,id){
+  e.stopPropagation();
+  const b=bogiesData[id]; if(!b) return;
+  const idx=getEtapeIdx(b);
+  const targetIdx=b.etapes?.[idx]?.done?idx+1:idx;
+  if(targetIdx>=ETAPES.length) return;
+  quickStepCtx={id, targetIdx};
+  document.getElementById('quick-step-title').textContent=ETAPES[targetIdx];
+  document.getElementById('quick-step-hours').value='';
+  openModal('modal-quickstep');
+  setTimeout(()=>document.getElementById('quick-step-hours').focus(),100);
+}
+
+async function confirmQuickStep(){
+  if(!quickStepCtx) return;
+  const raw=document.getElementById('quick-step-hours').value.replace(',','.').trim();
+  const hours=parseFloat(raw);
+  if(!raw||isNaN(hours)||hours<0){ showToast('Veuillez saisir un temps en heures','var(--danger)'); return; }
+  const {id,targetIdx}=quickStepCtx;
+  const b=bogiesData[id];
+  const minutes=Math.round(hours*60);
+  await db.ref('bogies/'+id+'/etapes/'+targetIdx).set({ done:true, debut:Date.now(), fin:Date.now(), duree:minutes, obs:'', updatedAt:Date.now(), updatedBy:currentUser.uid });
+  await logAction('A validé l\'étape "'+ETAPES[targetIdx]+'" ('+hours+' h)', b.numero);
+  closeModal('modal-quickstep');
+  quickStepCtx=null;
+  showToast('Étape "'+ETAPES[targetIdx]+'" validée !','var(--success)');
+}
+
+function renderBogiesTable(){
+  let bogies=Object.entries(bogiesData);
+  const tbody=document.getElementById('bogies-tbody');
+  if(!bogies.length){ tbody.innerHTML='<tr><td colspan="8" class="text-muted">Aucun bogie.</td></tr>'; return; }
+  const sort=(document.getElementById('bogies-sort')||{}).value||'created-desc';
+  const numVal=x=>{ const n=parseInt(String(x).replace(/\D/g,'')); return isNaN(n)?0:n; };
+  bogies.sort(([,a],[,b])=>{
+    switch(sort){
+      case 'created-asc': return (a.createdAt||0)-(b.createdAt||0);
+      case 'created-desc': return (b.createdAt||0)-(a.createdAt||0);
+      case 'pct-desc': return getPct(b)-getPct(a);
+      case 'pct-asc': return getPct(a)-getPct(b);
+      case 'deadline-asc': return (a.deadline?new Date(a.deadline).getTime():Infinity)-(b.deadline?new Date(b.deadline).getTime():Infinity);
+      case 'deadline-desc': return (b.deadline?new Date(b.deadline).getTime():-Infinity)-(a.deadline?new Date(a.deadline).getTime():-Infinity);
+      case 'num-asc': return numVal(a.numero)-numVal(b.numero);
+      case 'num-desc': return numVal(b.numero)-numVal(a.numero);
+      case 'priority': return (b.priority==='urgent'?1:0)-(a.priority==='urgent'?1:0);
+      default: return 0;
+    }
+  });
+  tbody.innerHTML=bogies.map(([id,b])=>{
+    const pct=getPct(b), idx=getEtapeIdx(b), overdue=isOverdue(b);
+    return `<tr>
+      <td><strong>${b.numero}</strong>${b.priority==='urgent'?' <span class="tag-urgent">🔥</span>':''}</td>
+      <td><span class="badge ${etapeColor(idx,ETAPES.length)}">${ETAPES[idx]||'—'}</span></td>
+      <td>${b.location?`<span class="location-badge">📍 ${b.location}</span>`:'—'}</td>
+      <td>${b.voitureSortie||'—'}</td>
+      <td>${b.deadline?`<span class="${overdue?'text-sm':'text-sm'}" style="color:${overdue?'var(--danger)':'var(--success)'}">${new Date(b.deadline).toLocaleDateString('fr-FR')}</span>`:'—'}</td>
+      <td><div class="progress-bar" style="margin:0;width:80px;display:inline-block"><div class="progress-fill" style="width:${pct}%"></div></div> <span class="text-sm text-muted">${pct}%</span></td>
+      <td>${b.blocked?'<span class="tag-blocked">⚠ Bloqué</span>':b.archived?'<span class="badge badge-gray">Archivé</span>':'<span class="badge badge-green">OK</span>'}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="openFiche('${id}')">Ouvrir</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function openNewBogie(){
+  ['b-num','b-obs','b-voiture-arrivee','b-voiture-sortie','b-deadline'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('b-location').value='';
+  document.getElementById('b-priority').value='normal';
+  openModal('modal-bogie');
+}
+
+async function saveNewBogie(){
+  const num=document.getElementById('b-num').value.trim();
+  if(!num){ showToast('N° bogie requis','var(--danger)'); return; }
+  const ref=await db.ref('bogies').push({
+    numero:num,
+    voitureArrivee:document.getElementById('b-voiture-arrivee').value.trim(),
+    voitureSortie:document.getElementById('b-voiture-sortie').value.trim(),
+    observations:document.getElementById('b-obs').value.trim(),
+    deadline:document.getElementById('b-deadline').value||null,
+    location:document.getElementById('b-location').value||null,
+    priority:document.getElementById('b-priority').value,
+    blocked:false, archived:false, createdAt:Date.now(), etapes:{}
+  });
+  await logAction('A créé la fiche bogie', num);
+  closeModal('modal-bogie');
+  showToast('Bogie créé !','var(--success)');
+  // Auto-link voitures (arrivée + sortie)
+  const links=[
+    {vNum:document.getElementById('b-voiture-arrivee').value.trim(), sortie:false},
+    {vNum:document.getElementById('b-voiture-sortie').value.trim(), sortie:true}
+  ];
+  for(const {vNum,sortie} of links){
+    if(!vNum) continue;
+    const found=findVoitureByNum(vNum);
+    if(found){
+      const [vid,v]=found;
+      if(sortie) await linkBogieToVoitureSortie(vid,v,num);
+      else await linkBogieToVoitureEntree(vid,v,num);
+    } else {
+      if(confirm('La voiture '+vNum+' n\'existe pas. Créer sa fiche automatiquement ?')){
+        const slot=slotForBogie(num)||1;
+        const data={ numero:vNum, type:'caissonné', b1fait:false, b1num:'', b2fait:false, b2num:'', e1num:'', e2num:'', createdAt:Date.now() };
+        data[(sortie?'b':'e')+slot+'num']=num;
+        await db.ref('voitures').push(data);
+        await logAction('A créé automatiquement la fiche voiture '+vNum+' depuis le bogie', num);
+        showToast('Fiche voiture '+vNum+' créée et liée !','var(--success)');
+      }
+    }
+  }
+}
+
+function openFiche(id){
+  currentBogieId=id;
+  const b=bogiesData[id]; if(!b) return;
+  document.getElementById('fiche-title').textContent='Bogie #'+b.numero;
+  document.getElementById('fiche-sub').textContent='';
+  document.getElementById('fiche-numero').value=b.numero||'';
+  document.getElementById('fiche-v-arr').value=b.voitureArrivee||'';
+  document.getElementById('fiche-v-sor').value=b.voitureSortie||'';
+  document.getElementById('fiche-deadline').value=b.deadline||'';
+  const loc=document.getElementById('fiche-location');
+  loc.value=b.location||'';
+  document.getElementById('fiche-blocked-badge').style.display=b.blocked?'inline-flex':'none';
+  document.getElementById('fiche-urgent-badge').style.display=b.priority==='urgent'?'inline-flex':'none';
+  document.getElementById('fiche-block-btn').textContent=b.blocked?'Débloquer':'Marquer bloqué';
+  document.getElementById('fiche-urgent-btn').textContent=b.priority==='urgent'?'Retirer urgent':'Marquer urgent';
+  document.getElementById('fiche-archive-btn').textContent=b.archived?'Désarchiver':'Archiver';
+  document.getElementById('fiche-progress').style.width=getPct(b)+'%';
+
+  // Alertes
+  const alertsDiv=document.getElementById('fiche-alerts');
+  const alerts=b.alerts?Object.entries(b.alerts):[];
+  if(!alerts.length){ alertsDiv.innerHTML='<p class="text-sm text-muted">Aucune alerte.</p>'; }
+  else { alertsDiv.innerHTML=alerts.map(([aid,a])=>`
+    <div class="alert-task ${a.resolved?'resolved':''}">
+      <span style="font-size:14px">${a.resolved?'✅':'🚩'}</span>
+      <div class="alert-task-text">${a.text}<div class="text-sm text-muted">${a.by} · ${new Date(a.ts).toLocaleDateString('fr-FR')}</div></div>
+      ${!a.resolved?`<button class="btn btn-ghost btn-sm" onclick="resolveAlert('${aid}')">Résoudre</button>`:''}
+    </div>`).join(''); }
+
+  // Commentaires
+  const commentsDiv=document.getElementById('fiche-comments');
+  const comments=b.comments?Object.values(b.comments).sort((a,b)=>a.ts-b.ts):[];
+  if(!comments.length){ commentsDiv.innerHTML='<p class="text-sm text-muted mb8">Aucun commentaire.</p>'; }
+  else { commentsDiv.innerHTML=comments.map(c=>`<div class="comment-item"><div class="comment-meta">${c.by} · ${new Date(c.ts).toLocaleString('fr-FR')}</div>${c.text}</div>`).join(''); }
+
+  // Étapes
+  document.getElementById('fiche-steps').innerHTML=ETAPES.map((name,i)=>{
+    const etape=b.etapes&&b.etapes[i];
+    const done=etape&&etape.done;
+    const isCurrent=!done&&i===getEtapeIdx(b);
+    let timeStr='';
+    if(etape&&etape.debut) timeStr=new Date(etape.debut).toLocaleDateString('fr-FR');
+    if(etape&&etape.duree) timeStr+=(timeStr?' · ':'')+etape.duree+' min';
+    return `<div class="step-item ${done?'done':''} ${isCurrent?'current':''}" onclick="openEtape(${i})">
+      <div class="step-dot"></div>
+      <div class="step-name">${name}</div>
+      ${timeStr?`<div class="step-time">${timeStr}</div>`:''}
+      ${done?'<span style="color:var(--success);font-size:12px">✓</span>':''}
+      ${etape&&etape.obs?'<span style="color:var(--warn);font-size:11px" title="'+etape.obs+'">📝</span>':''}
+    </div>`;
+  }).join('');
+
+  document.getElementById('comment-input').value='';
+  openModal('modal-fiche');
+}
+
+async function saveFicheField(field,value){
+  if(!currentBogieId) return;
+  await db.ref('bogies/'+currentBogieId+'/'+field).set(value);
+}
+
+async function saveBogieNumero(value){
+  if(!currentBogieId||!value.trim()) return;
+  const oldNum=bogiesData[currentBogieId].numero;
+  await db.ref('bogies/'+currentBogieId+'/numero').set(value.trim());
+  await logAction('A modifié le n° de bogie ('+oldNum+' → '+value.trim()+')', value.trim());
+  document.getElementById('fiche-title').textContent='Bogie #'+value.trim();
+  showToast('N° bogie modifié','var(--success)');
+}
+
+function findVoitureByNum(num){
+  for(const [id,v] of Object.entries(voituresData)){ if(v.numero===num) return [id,v]; }
+  return null;
+}
+function findBogieByNum(num){
+  for(const [id,b] of Object.entries(bogiesData)){ if(b.numero===num) return [id,b]; }
+  return null;
+}
+// Bogie n°1 = numéro finissant par chiffre IMPAIR, bogie n°2 = chiffre PAIR
+function slotForBogie(num){
+  const m=String(num).match(/(\d)\D*$/);
+  if(!m) return null;
+  return parseInt(m[1])%2===1?1:2;
+}
+async function linkBogieToVoitureSortie(vid,v,bogieNum){
+  const slot=slotForBogie(bogieNum)||((!v.b1num)?1:2);
+  const key='b'+slot+'num';
+  if(v[key]===bogieNum) return;
+  if(v[key]&&v[key]!==bogieNum){ showToast('Emplacement sortie '+slot+' de la voiture '+v.numero+' déjà occupé par '+v[key],'var(--warn)'); return; }
+  await db.ref('voitures/'+vid+'/'+key).set(bogieNum);
+  showToast('Bogie '+bogieNum+' → sortie voiture '+v.numero+' (empl. '+slot+')','var(--success)');
+}
+async function linkBogieToVoitureEntree(vid,v,bogieNum){
+  const slot=slotForBogie(bogieNum)||((!v.e1num)?1:2);
+  const key='e'+slot+'num';
+  if(v[key]===bogieNum) return;
+  if(v[key]&&v[key]!==bogieNum){ showToast('Emplacement arrivée '+slot+' de la voiture '+v.numero+' déjà occupé par '+v[key],'var(--warn)'); return; }
+  await db.ref('voitures/'+vid+'/'+key).set(bogieNum);
+  showToast('Bogie '+bogieNum+' → arrivée voiture '+v.numero+' (empl. '+slot+')','var(--success)');
+}
+
+async function onBogieVoitureChange(field,value){
+  if(!currentBogieId) return;
+  const val=value.trim();
+  await db.ref('bogies/'+currentBogieId+'/'+field).set(val);
+  if(!val) return;
+  const bogieNum=bogiesData[currentBogieId].numero;
+  const isSortie=field==='voitureSortie';
+  const found=findVoitureByNum(val);
+  if(found){
+    const [vid,v]=found;
+    if(isSortie) await linkBogieToVoitureSortie(vid,v,bogieNum);
+    else await linkBogieToVoitureEntree(vid,v,bogieNum);
+  } else {
+    if(confirm('La voiture '+val+' n\'existe pas. Créer sa fiche automatiquement ?')){
+      const slot=slotForBogie(bogieNum)||1;
+      const data={ numero:val, type:'caissonné', b1fait:false, b1num:'', b2fait:false, b2num:'', e1num:'', e2num:'', createdAt:Date.now() };
+      data[(isSortie?'b':'e')+slot+'num']=bogieNum;
+      await db.ref('voitures').push(data);
+      await logAction('A créé automatiquement la fiche voiture '+val+' depuis le bogie', bogieNum);
+      showToast('Fiche voiture '+val+' créée et liée !','var(--success)');
+    }
+  }
+}
+
+async function toggleBlocked(){
+  if(!currentBogieId) return;
+  const b=bogiesData[currentBogieId];
+  const newVal=!b.blocked;
+  await db.ref('bogies/'+currentBogieId+'/blocked').set(newVal);
+  await logAction(newVal?'A marqué le bogie bloqué':'A débloqué le bogie', b.numero);
+  openFiche(currentBogieId);
+}
+
+async function toggleUrgent(){
+  if(!currentBogieId) return;
+  const b=bogiesData[currentBogieId];
+  const newPriority=b.priority==='urgent'?'normal':'urgent';
+  await db.ref('bogies/'+currentBogieId+'/priority').set(newPriority);
+  await logAction(newPriority==='urgent'?'A marqué le bogie urgent':'A retiré l\'urgence', b.numero);
+  openFiche(currentBogieId);
+}
+
+async function toggleArchive(){
+  if(!currentBogieId) return;
+  const b=bogiesData[currentBogieId];
+  const newVal=!b.archived;
+  await db.ref('bogies/'+currentBogieId+'/archived').set(newVal);
+  await logAction(newVal?'A archivé le bogie':'A désarchivé le bogie', b.numero);
+  closeModal('modal-fiche');
+  showToast(newVal?'Bogie archivé':'Bogie désarchivé');
+}
+
+function openAddAlert(){ document.getElementById('alert-text').value=''; openModal('modal-alert'); }
+
+async function saveAlert(){
+  const text=document.getElementById('alert-text').value.trim();
+  if(!text||!currentBogieId) return;
+  await db.ref('bogies/'+currentBogieId+'/alerts').push({ text, resolved:false, by:currentUserData.name||currentUser.email, ts:Date.now() });
+  await logAction('A ajouté une alerte sur le bogie', bogiesData[currentBogieId].numero);
+  closeModal('modal-alert');
+  openFiche(currentBogieId);
+  showToast('Alerte ajoutée','var(--warn)');
+}
+
+async function resolveAlert(aid){
+  await db.ref('bogies/'+currentBogieId+'/alerts/'+aid+'/resolved').set(true);
+  await logAction('A résolu une alerte sur le bogie', bogiesData[currentBogieId].numero);
+  openFiche(currentBogieId);
+  showToast('Alerte résolue','var(--success)');
+}
+
+async function addComment(){
+  const text=document.getElementById('comment-input').value.trim();
+  if(!text||!currentBogieId) return;
+  await db.ref('bogies/'+currentBogieId+'/comments').push({ text, by:currentUserData.name||currentUser.email, ts:Date.now() });
+  document.getElementById('comment-input').value='';
+  openFiche(currentBogieId);
+}
+
+function openEtape(idx){
+  currentEtapeIdx=idx;
+  const b=bogiesData[currentBogieId];
+  const etape=b&&b.etapes&&b.etapes[idx];
+  document.getElementById('etape-title').textContent=ETAPES[idx];
+  const toLocal=d=>new Date(d-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+  document.getElementById('etape-debut').value=etape&&etape.debut?toLocal(etape.debut):toLocal(Date.now());
+  document.getElementById('etape-fin').value=etape&&etape.fin?toLocal(etape.fin):'';
+  document.getElementById('etape-duree').value=etape&&etape.duree?etape.duree:'';
+  document.getElementById('etape-obs').value=etape&&etape.obs?etape.obs:'';
+  openModal('modal-etape');
+}
+
+async function saveEtape(){
+  const debut=document.getElementById('etape-debut').value;
+  const fin=document.getElementById('etape-fin').value;
+  const duree=document.getElementById('etape-duree').value;
+  const obs=document.getElementById('etape-obs').value;
+  const b=bogiesData[currentBogieId];
+
+  await db.ref('bogies/'+currentBogieId+'/etapes/'+currentEtapeIdx).set({
+    done:true, debut:debut?new Date(debut).getTime():Date.now(),
+    fin:fin?new Date(fin).getTime():null,
+    duree:duree?parseInt(duree):null, obs,
+    updatedAt:Date.now(), updatedBy:currentUser.uid
+  });
+  await logAction('A validé l\'étape "'+ETAPES[currentEtapeIdx]+'"', b.numero);
+  closeModal('modal-etape');
+  openFiche(currentBogieId);
+  showToast('Étape validée !','var(--success)');
+}
+
+async function resetEtape(){
+  if(!confirm('Réinitialiser cette étape ?')) return;
+  await db.ref('bogies/'+currentBogieId+'/etapes/'+currentEtapeIdx).remove();
+  closeModal('modal-etape');
+  openFiche(currentBogieId);
+  showToast('Étape réinitialisée');
+}
+
+function openFicheByNum(num){
+  const found=findBogieByNum(num);
+  if(!found){ showToast('Fiche bogie introuvable','var(--warn)'); return; }
+  // Switch to dashboard page context then open
+  openFiche(found[0]);
+}
+
+function renderVoitures(){
+  const grid=document.getElementById('voitures-grid');
+  const voitures=Object.entries(voituresData);
+  if(!voitures.length){ grid.innerHTML='<p class="text-muted">Aucune voiture enregistrée.</p>'; return; }
+  grid.innerHTML=voitures.map(([id,v])=>{
+    const prete=v.b1fait&&v.b2fait;
+    return `<div class="voiture-card">
+      <div class="flex-between mb8">
+        <div class="flex gap8" style="flex:1">
+          <span style="font-size:13px;color:var(--muted)">Voiture #</span>
+          <input style="width:90px;font-size:14px;font-weight:600;padding:3px 8px" value="${v.numero}" onchange="updateVoitureField('${id}','numero',this.value)">
+        </div>
+        ${v.validated?'<span class="badge badge-green">✓ Validée</span>':prete?'<span class="badge badge-teal">Prête</span>':'<span class="badge badge-gray">En cours</span>'}
+      </div>
+      <div class="flex gap8 mb8" style="flex-wrap:wrap">
+        <select style="font-size:12px;padding:4px 8px;width:auto" onchange="updateVoitureField('${id}','type',this.value)">
+          <option ${v.type==='caissonné'?'selected':''}>caissonné</option>
+          <option ${v.type==='non caissonné'?'selected':''}>non caissonné</option>
+        </select>
+        <select style="font-size:12px;padding:4px 8px;width:auto" onchange="updateVoitureField('${id}','maintenance',this.value)">
+          <option ${v.maintenance==='ATTPR6'?'selected':''}>ATTPR6</option>
+          <option ${v.maintenance==='ATP250'?'selected':''}>ATP250</option>
+        </select>
+      </div>
+      <div class="text-sm" style="color:var(--muted);margin-bottom:4px">🔵 Bogies à l'arrivée</div>
+      <div class="bogie-slot pending-slot">
+        <span style="font-size:12px;color:var(--muted);width:60px">Bogie n°1</span>
+        <input style="flex:1;font-size:12px;padding:4px 8px" placeholder="N° bogie (impair)" value="${v.e1num||''}" onchange="updateVoitureEntree('${id}',1,this.value)">
+        ${v.e1num&&findBogieByNum(v.e1num)?`<button class="btn btn-ghost btn-sm" style="padding:3px 8px" onclick="openFicheByNum('${v.e1num}')" title="Ouvrir la fiche">↗</button>`:''}
+      </div>
+      <div class="bogie-slot pending-slot">
+        <span style="font-size:12px;color:var(--muted);width:60px">Bogie n°2</span>
+        <input style="flex:1;font-size:12px;padding:4px 8px" placeholder="N° bogie (pair)" value="${v.e2num||''}" onchange="updateVoitureEntree('${id}',2,this.value)">
+        ${v.e2num&&findBogieByNum(v.e2num)?`<button class="btn btn-ghost btn-sm" style="padding:3px 8px" onclick="openFicheByNum('${v.e2num}')" title="Ouvrir la fiche">↗</button>`:''}
+      </div>
+      <div class="text-sm" style="color:var(--muted);margin:8px 0 4px">🟢 Bogies de sortie</div>
+      <div class="bogie-slot ${v.b1fait?'done-slot':'pending-slot'}">
+        <span style="font-size:12px;color:var(--muted);width:60px">Bogie n°1</span>
+        <input type="checkbox" style="width:14px;accent-color:var(--success)" ${v.b1fait?'checked':''} onchange="updateVoitureBogie('${id}',1,'fait',this.checked)">
+        <input style="flex:1;font-size:12px;padding:4px 8px" placeholder="N° bogie (impair)" value="${v.b1num||''}" onchange="updateVoitureBogie('${id}',1,'num',this.value)">
+        ${v.b1num&&findBogieByNum(v.b1num)?`<button class="btn btn-ghost btn-sm" style="padding:3px 8px" onclick="openFicheByNum('${v.b1num}')" title="Ouvrir la fiche">↗</button>`:''}
+      </div>
+      <div class="bogie-slot ${v.b2fait?'done-slot':'pending-slot'}">
+        <span style="font-size:12px;color:var(--muted);width:60px">Bogie n°2</span>
+        <input type="checkbox" style="width:14px;accent-color:var(--success)" ${v.b2fait?'checked':''} onchange="updateVoitureBogie('${id}',2,'fait',this.checked)">
+        <input style="flex:1;font-size:12px;padding:4px 8px" placeholder="N° bogie (pair)" value="${v.b2num||''}" onchange="updateVoitureBogie('${id}',2,'num',this.value)">
+        ${v.b2num&&findBogieByNum(v.b2num)?`<button class="btn btn-ghost btn-sm" style="padding:3px 8px" onclick="openFicheByNum('${v.b2num}')" title="Ouvrir la fiche">↗</button>`:''}
+      </div>
+      <div class="flex gap8 mt8">
+        ${currentUserData&&currentUserData.role==='responsable'&&prete&&!v.validated?`<button class="btn btn-success btn-sm" onclick="validerVoiture('${id}')">✓ Valider</button>`:''}
+        ${v.validated?`<span class="text-sm text-muted">Validée le ${v.validatedAt?new Date(v.validatedAt).toLocaleDateString('fr-FR'):'—'}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function updateVoitureBogie(id,num,field,val){
+  if(field==='num'&&val&&val.trim()){
+    const expected=slotForBogie(val.trim());
+    if(expected&&expected!==num){
+      showToast('Attention : un bogie '+(num===1?'n°1 finit par un chiffre IMPAIR':'n°2 finit par un chiffre PAIR'),'var(--warn)');
+    }
+  }
+  await db.ref('voitures/'+id+'/b'+num+(field==='fait'?'fait':'num')).set(typeof val==='string'?val.trim():val);
+  if(field==='num'&&val&&val.trim()){
+    const bogieNum=val.trim();
+    const vNum=voituresData[id].numero;
+    const found=findBogieByNum(bogieNum);
+    if(found){
+      const [bid,b]=found;
+      if(b.voitureSortie!==vNum){
+        await db.ref('bogies/'+bid+'/voitureSortie').set(vNum);
+        showToast('Voiture '+vNum+' enregistrée en sortie sur la fiche bogie '+bogieNum,'var(--success)');
+      }
+    } else {
+      if(confirm('Le bogie '+bogieNum+' n\'existe pas. Créer sa fiche automatiquement ?')){
+        await db.ref('bogies').push({
+          numero:bogieNum, serie:'', voitureArrivee:'', voitureSortie:vNum, observations:'',
+          deadline:null, location:null, priority:'normal', blocked:false, archived:false, createdAt:Date.now(), etapes:{}
+        });
+        await logAction('A créé automatiquement la fiche bogie depuis la voiture '+vNum, bogieNum);
+        showToast('Fiche bogie '+bogieNum+' créée et liée !','var(--success)');
+      }
+    }
+  }
+}
+
+async function updateVoitureEntree(id,num,val){
+  const v=val.trim();
+  if(v){
+    const expected=slotForBogie(v);
+    if(expected&&expected!==num){
+      showToast('Attention : un bogie '+(num===1?'n°1 finit par un chiffre IMPAIR':'n°2 finit par un chiffre PAIR'),'var(--warn)');
+    }
+  }
+  await db.ref('voitures/'+id+'/e'+num+'num').set(v);
+  if(!v) return;
+  const vNum=voituresData[id].numero;
+  const found=findBogieByNum(v);
+  if(found){
+    const [bid,b]=found;
+    if(b.voitureArrivee!==vNum){
+      await db.ref('bogies/'+bid+'/voitureArrivee').set(vNum);
+      showToast('Voiture '+vNum+' enregistrée en arrivée sur la fiche bogie '+v,'var(--success)');
+    }
+  } else {
+    if(confirm('Le bogie '+v+' n\'existe pas. Créer sa fiche automatiquement ?')){
+      await db.ref('bogies').push({
+        numero:v, serie:'', voitureArrivee:vNum, voitureSortie:'', observations:'',
+        deadline:null, location:null, priority:'normal', blocked:false, archived:false, createdAt:Date.now(), etapes:{}
+      });
+      await logAction('A créé automatiquement la fiche bogie depuis la voiture '+vNum, v);
+      showToast('Fiche bogie '+v+' créée et liée !','var(--success)');
+    }
+  }
+}
+async function validerVoiture(id){
+  const v=voituresData[id];
+  await db.ref('voitures/'+id).update({validated:true,validatedAt:Date.now(),validatedBy:currentUser.uid});
+  // Archiver les bogies de sortie marqués "traité terminé"
+  const toArchive=[];
+  if(v.b1fait&&v.b1num) toArchive.push(v.b1num);
+  if(v.b2fait&&v.b2num) toArchive.push(v.b2num);
+  for(const bNum of toArchive){
+    const found=findBogieByNum(bNum);
+    if(found){
+      await db.ref('bogies/'+found[0]).update({archived:true, archivedAt:Date.now()});
+      await logAction('Bogie archivé automatiquement (voiture '+v.numero+' validée)', bNum);
+    }
+  }
+  showToast('Voiture validée'+(toArchive.length?' · '+toArchive.length+' bogie(s) archivé(s)':'')+' !','var(--success)');
+}
+
+async function updateVoitureField(id,field,val){
+  await db.ref('voitures/'+id+'/'+field).set(val);
+  if(field==='numero') showToast('N° voiture modifié','var(--success)');
+}
+
+function openNewVoiture(){
+  ['v-num','v-b1-num','v-b2-num','v-e1-num','v-e2-num'].forEach(i=>document.getElementById(i).value='');
+  ['v-b1-fait','v-b2-fait'].forEach(i=>document.getElementById(i).checked=false);
+  openModal('modal-voiture');
+}
+
+async function saveNewVoiture(){
+  const num=document.getElementById('v-num').value.trim();
+  if(!num){ showToast('N° voiture requis','var(--danger)'); return; }
+  const e1=document.getElementById('v-e1-num').value.trim();
+  const e2=document.getElementById('v-e2-num').value.trim();
+  const s1=document.getElementById('v-b1-num').value.trim();
+  const s2=document.getElementById('v-b2-num').value.trim();
+  await db.ref('voitures').push({
+    numero:num, type:document.getElementById('v-type').value,
+    maintenance:document.getElementById('v-maint').value,
+    e1num:e1, e2num:e2,
+    b1fait:document.getElementById('v-b1-fait').checked, b1num:s1,
+    b2fait:document.getElementById('v-b2-fait').checked, b2num:s2,
+    createdAt:Date.now()
+  });
+  closeModal('modal-voiture');
+  showToast('Voiture enregistrée !','var(--success)');
+  // Auto-link : bogies d'arrivée
+  for(const bNum of [e1,e2]){
+    if(!bNum) continue;
+    const found=findBogieByNum(bNum);
+    if(found){
+      const [bid,b]=found;
+      if(b.voitureArrivee!==num) await db.ref('bogies/'+bid+'/voitureArrivee').set(num);
+    } else {
+      if(confirm('Le bogie '+bNum+' n\'existe pas. Créer sa fiche automatiquement ?')){
+        await db.ref('bogies').push({
+          numero:bNum, serie:'', voitureArrivee:num, voitureSortie:'', observations:'',
+          deadline:null, location:null, priority:'normal', blocked:false, archived:false, createdAt:Date.now(), etapes:{}
+        });
+        await logAction('A créé automatiquement la fiche bogie depuis la voiture '+num, bNum);
+        showToast('Fiche bogie '+bNum+' créée !','var(--success)');
+      }
+    }
+  }
+  // Auto-link : bogies de sortie
+  for(const bNum of [s1,s2]){
+    if(!bNum) continue;
+    const found=findBogieByNum(bNum);
+    if(found){
+      const [bid,b]=found;
+      if(b.voitureSortie!==num) await db.ref('bogies/'+bid+'/voitureSortie').set(num);
+    } else {
+      if(confirm('Le bogie '+bNum+' n\'existe pas. Créer sa fiche automatiquement ?')){
+        await db.ref('bogies').push({
+          numero:bNum, serie:'', voitureArrivee:'', voitureSortie:num, observations:'',
+          deadline:null, location:null, priority:'normal', blocked:false, archived:false, createdAt:Date.now(), etapes:{}
+        });
+        await logAction('A créé automatiquement la fiche bogie depuis la voiture '+num, bNum);
+        showToast('Fiche bogie '+bNum+' créée !','var(--success)');
+      }
+    }
+  }
+}
+
+let charts={};
+function loadGraphs(){
+  if(typeof Chart==='undefined'){ return; }
+  const all=Object.values(bogiesData);
+  // 1. Production: bogies terminés par mois (6 derniers mois)
+  const months=[]; const now=new Date();
+  for(let i=5;i>=0;i--){ const d=new Date(now.getFullYear(),now.getMonth()-i,1); months.push({key:d.getFullYear()+'-'+d.getMonth(), label:d.toLocaleDateString('fr-FR',{month:'short',year:'2-digit'})}); }
+  const prodData=months.map(m=>{
+    return all.filter(b=>{
+      if(getPct(b)!==100) return false;
+      // use last etape updatedAt or createdAt
+      let t=b.createdAt;
+      if(b.etapes){ const vals=Object.values(b.etapes).filter(e=>e&&e.updatedAt); if(vals.length) t=Math.max(...vals.map(e=>e.updatedAt)); }
+      const d=new Date(t); return (d.getFullYear()+'-'+d.getMonth())===m.key;
+    }).length;
+  });
+  // 2. Statut
+  const enCours=all.filter(b=>!b.archived&&getPct(b)<100&&!b.blocked).length;
+  const termine=all.filter(b=>getPct(b)===100&&!b.archived).length;
+  const bloque=all.filter(b=>b.blocked&&!b.archived).length;
+  const archive=all.filter(b=>b.archived).length;
+  // 3. Temps moyen par étape (heures), exclure zéros
+  const etapeAvg=ETAPES.map((name,i)=>{
+    const durees=all.map(b=>b.etapes&&b.etapes[i]&&b.etapes[i].duree).filter(d=>d&&d>0);
+    return durees.length?(durees.reduce((a,b)=>a+b,0)/durees.length/60):0;
+  });
+  // 4. Charge par zone
+  const ZONES=["Chantier bogie","Stockage","Zone départ SDsablage","Parc essieux"];
+  const zoneData=ZONES.map(z=>all.filter(b=>!b.archived&&b.location===z).length);
+
+  const txt=getComputedStyle(document.body).getPropertyValue('--text')||'#e8eaf0';
+  const grid='rgba(255,255,255,0.08)';
+  Chart.defaults.color=txt; Chart.defaults.borderColor=grid;
+
+  function mk(id,cfg){ if(charts[id]) charts[id].destroy(); const el=document.getElementById(id); if(el) charts[id]=new Chart(el,cfg); }
+
+  mk('chart-prod',{type:'line',data:{labels:months.map(m=>m.label),datasets:[{label:'Bogies terminés',data:prodData,borderColor:'#4f8ef7',backgroundColor:'rgba(79,142,247,.15)',fill:true,tension:.3}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+  mk('chart-statut',{type:'doughnut',data:{labels:['En cours','Terminés','Bloqués','Archivés'],datasets:[{data:[enCours,termine,bloque,archive],backgroundColor:['#f59e0b','#22c55e','#ef4444','#7b849a']}]},options:{responsive:true,plugins:{legend:{position:'bottom'}}}});
+  mk('chart-etapes',{type:'bar',data:{labels:ETAPES,datasets:[{label:'Heures moy.',data:etapeAvg.map(v=>Math.round(v*10)/10),backgroundColor:'#2dd4bf'}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true}}}});
+  mk('chart-zones',{type:'bar',data:{labels:ZONES,datasets:[{label:'Bogies',data:zoneData,backgroundColor:'#4f8ef7'}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+}
+
+function renderJournal(){
+  const list=document.getElementById('journal-list');
+  const entries=Object.values(journalData).sort((a,b)=>b.ts-a.ts).slice(0,100);
+  if(!entries.length){ list.innerHTML='<p class="text-muted">Aucune activité.</p>'; return; }
+  list.innerHTML=entries.map(e=>`<div class="journal-item">
+    <div class="journal-time">${new Date(e.ts).toLocaleString('fr-FR')}</div>
+    <div class="journal-text"><strong>${e.user}</strong> — ${e.action}${e.bogieNum?' sur bogie #'+e.bogieNum:''}</div>
+  </div>`).join('');
+}
+
+function toggleBilanCustom(){ document.getElementById('bilan-custom').style.display=document.getElementById('bilan-period').value==='custom'?'block':'none'; }
+
+function loadBilan(){
+  const period=document.getElementById('bilan-period').value;
+  const now=new Date(); let from,to;
+  if(period==='week'){ const day=now.getDay()||7; from=new Date(now); from.setDate(now.getDate()-day+1); from.setHours(0,0,0,0); to=new Date(now); to.setHours(23,59,59,999); }
+  else if(period==='month'){ from=new Date(now.getFullYear(),now.getMonth(),1); to=new Date(now); to.setHours(23,59,59,999); }
+  else{ const fv=document.getElementById('bilan-from').value,tv=document.getElementById('bilan-to').value; if(!fv||!tv) return; from=new Date(fv); to=new Date(tv); to.setHours(23,59,59,999); }
+  const bogies=Object.values(bogiesData).filter(b=>b.createdAt>=from.getTime()&&b.createdAt<=to.getTime());
+  const termine=bogies.filter(b=>getPct(b)===100);
+  const bloque=bogies.filter(b=>b.blocked);
+  const etapeStats=ETAPES.map((name,i)=>{
+    const durees=bogies.map(b=>b.etapes&&b.etapes[i]&&b.etapes[i].duree).filter(d=>d&&d>0);
+    const avg=durees.length?Math.round(durees.reduce((a,b)=>a+b,0)/durees.length):null;
+    return{name,count:durees.length,avg};
+  });
+  document.getElementById('bilan-content').innerHTML=`
+    <div class="grid3" style="margin-bottom:16px">
+      <div class="stat-card"><div class="stat-num text-accent">${bogies.length}</div><div class="stat-label">Bogies créés</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--success)">${termine.length}</div><div class="stat-label">Terminés</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--danger)">${bloque.length}</div><div class="stat-label">Bloqués</div></div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <h3 style="margin-bottom:12px">Temps moyen par étape</h3>
+      <table><thead><tr><th>Étape</th><th>Bogies traités</th><th>Durée moyenne (min)</th></tr></thead>
+      <tbody>${etapeStats.map(e=>`<tr><td>${e.name}</td><td>${e.count}</td><td>${e.avg!==null?e.avg:'—'}</td></tr>`).join('')}</tbody></table>
+    </div>
+    <div class="card">
+      <h3 style="margin-bottom:12px">Détail des bogies</h3>
+      <table><thead><tr><th>N° Bogie</th><th>Avancement</th><th>Statut</th><th>Créé le</th></tr></thead>
+      <tbody>${bogies.map(b=>`<tr>
+        <td><strong>${b.numero}</strong>${b.priority==='urgent'?' 🔥':''}</td>
+        <td>${getPct(b)}%</td>
+        <td>${b.blocked?'<span class="tag-blocked">Bloqué</span>':getPct(b)===100?'<span class="badge badge-green">Terminé</span>':'<span class="badge badge-blue">En cours</span>'}</td>
+        <td>${new Date(b.createdAt).toLocaleDateString('fr-FR')}</td>
+      </tr>`).join('')}</tbody></table>
+    </div>`;
+}
+
+function renderUsers(){
+  const users=Object.entries(usersData);
+  const tbody=document.getElementById('users-tbody');
+  if(!users.length){ tbody.innerHTML='<tr><td colspan="4" class="text-muted">Aucun utilisateur.</td></tr>'; return; }
+  tbody.innerHTML=users.map(([uid,u])=>`<tr>
+    <td>${u.name||'—'}</td>
+    <td>${u.email||'—'}</td>
+    <td><span class="badge ${u.role==='responsable'?'badge-amber':'badge-blue'}">${u.role==='responsable'?'Responsable':'Opérateur'}</span></td>
+    <td>
+      <div class="flex gap8" style="flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="openEditUser('${uid}')">Modifier</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetUserPassword('${u.email}')">Réinit. MDP</button>
+        ${uid!==currentUser.uid?`<button class="btn btn-ghost btn-sm" style="color:var(--danger)" onclick="removeUser('${uid}','${(u.name||u.email||'').replace(/'/g,"")}')">Retirer</button>`:''}
+      </div>
+    </td>
+  </tr>`).join('');
+}
+
+function openEditUser(uid){
+  const u=usersData[uid]; if(!u) return;
+  editUserId=uid;
+  document.getElementById('edit-user-name').value=u.name||'';
+  document.getElementById('edit-user-role').value=u.role||'operateur';
+  document.getElementById('edit-user-email-display').textContent=u.email||'';
+  openModal('modal-edituser');
+}
+
+async function saveEditUser(){
+  if(!editUserId) return;
+  const name=document.getElementById('edit-user-name').value.trim();
+  const role=document.getElementById('edit-user-role').value;
+  if(!name){ showToast('Le nom est requis','var(--danger)'); return; }
+  await db.ref('users/'+editUserId).update({name,role});
+  await logAction('A modifié l\'utilisateur '+name,'');
+  closeModal('modal-edituser');
+  showToast('Utilisateur modifié','var(--success)');
+}
+
+async function resetUserPassword(email){
+  if(!email){ showToast('Pas d\'e-mail pour cet utilisateur','var(--warn)'); return; }
+  if(!confirm('Envoyer un e-mail de réinitialisation de mot de passe à '+email+' ?')) return;
+  try{
+    await auth.sendPasswordResetEmail(email);
+    await logAction('A envoyé une réinitialisation de MDP à '+email,'');
+    showToast('E-mail de réinitialisation envoyé à '+email,'var(--success)');
+  }catch(e){ showToast('Erreur : '+e.message,'var(--danger)'); }
+}
+
+async function removeUser(uid,name){
+  if(!confirm('Retirer '+name+' de la liste ?\n\n(Le compte de connexion devra être supprimé manuellement dans Firebase si besoin.)')) return;
+  await db.ref('users/'+uid).remove();
+  await logAction('A retiré l\'utilisateur '+name,'');
+  showToast('Utilisateur retiré','var(--success)');
+}
+
+function openNewUser(){
+  ['u-name','u-email','u-pass'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('user-error').style.display='none';
+  openModal('modal-user');
+}
+
+async function saveNewUser(){
+  const name=document.getElementById('u-name').value.trim(), email=document.getElementById('u-email').value.trim(), pass=document.getElementById('u-pass').value, role=document.getElementById('u-role').value;
+  const err=document.getElementById('user-error'); err.style.display='none';
+  if(!name||!email||!pass){ err.textContent='Tous les champs sont requis.'; err.style.display='block'; return; }
+  try{
+    const res=await auth.createUserWithEmailAndPassword(email,pass);
+    await db.ref('users/'+res.user.uid).set({name,email,role});
+    closeModal('modal-user');
+    showToast('Utilisateur créé ! Reconnectez-vous.','var(--success)');
+    setTimeout(()=>auth.signOut(),1500);
+  }catch(e){ err.textContent=e.message; err.style.display='block'; }
+}
+</script>
+</body>
+</html>
