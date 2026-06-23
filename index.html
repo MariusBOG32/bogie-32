@@ -736,4 +736,188 @@ function renderGantt() {
     Object.entries(bogiesData).forEach(([id, bogie]) => {
         if (bogie.archive) return;
         const progress = getProgress(bogie)/100;
-        html += `<div class="gantt-row"><div class="gantt-label">${bogie.numero||id}</div><div class="gantt-bar-container"><div class="gantt-bar ${bogie.bloque?'blocked':
+        html += `<div class="gantt-row"><div class="gantt-label">${bogie.numero||id}</div><div class="gantt-bar-container"><div class="gantt-bar ${bogie.bloque?'blocked':''}" style="width:${progress*100}%;"></div></div><div style="width:80px;text-align:right;font-size:0.8em;color:var(--text-light);">${bogie.dateSortieEstimee||'—'}</div></div>`;
+    });
+    container.innerHTML = html || '<p style="color:var(--text-light);">Aucun bogie</p>';
+}
+
+// ===== BILAN =====
+let bilanChart = null; let currentBilanTab = 'tendances';
+function showBilanTab(tab) { currentBilanTab = tab; document.querySelectorAll('.bilan-tabs button').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); renderBilan(); }
+function renderBilan() {
+    if (bilanChart) { bilanChart.destroy(); bilanChart = null; }
+    const ctx = document.getElementById('bilanChart').getContext('2d');
+    const tc = document.getElementById('bilanTableContainer'); tc.style.display='none';
+    document.getElementById('bilanChart').parentElement.style.display='block';
+    switch(currentBilanTab) {
+        case 'tendances': renderTendances(ctx); break;
+        case 'heuresBogie': renderHeuresParBogie(ctx, tc); break;
+        case 'budgetReel': renderBudgetVsReel(ctx); break;
+        case 'ecartEtapes': renderEcartEtapes(ctx); break;
+        case 'alertes': renderAlertes(tc); break;
+    }
+}
+
+function renderTendances(ctx) {
+    const now = new Date();
+    const moisLabels = [];
+    for (let i=5;i>=0;i--) { const d=new Date(now.getFullYear(),now.getMonth()-i,1); moisLabels.push(d.toLocaleDateString('fr-FR',{month:'short',year:'2-digit'})); }
+    const etapesCles = [
+        { id: '03', nom: 'Démontage', color: '#e63946' },
+        { id: '09', nom: 'Magnéto', color: '#f77f00' },
+        { id: '13', nom: 'Remontage', color: '#2a9d8f' }
+    ];
+    const datasets = etapesCles.map(etape => {
+        const data = [];
+        for (let i=5;i>=0;i--) {
+            const mD = new Date(now.getFullYear(),now.getMonth()-i,1);
+            const mF = new Date(now.getFullYear(),now.getMonth()-i+1,0);
+            let t=0;
+            Object.values(heuresData).forEach(entry => { if (!entry.date||entry.etape!==etape.id) return; const d=new Date(entry.date); if(d>=mD&&d<=mF) t+=entry.heures||0; });
+            data.push(Math.round(t*10)/10);
+        }
+        return { label: etape.nom, data, borderColor: etape.color, backgroundColor: 'transparent', tension: 0.3, borderWidth: 3, pointRadius: 4 };
+    });
+    const totalData = [];
+    for (let i=5;i>=0;i--) { const mD=new Date(now.getFullYear(),now.getMonth()-i,1); const mF=new Date(now.getFullYear(),now.getMonth()-i+1,0); let t=0; Object.values(heuresData).forEach(entry => { if(!entry.date)return; const d=new Date(entry.date); if(d>=mD&&d<=mF)t+=entry.heures||0; }); totalData.push(Math.round(t*10)/10); }
+    datasets.unshift({label:'TOTAL',data:totalData,borderColor:'#000',backgroundColor:'rgba(0,0,0,0.05)',fill:true,tension:0.3,borderWidth:3,pointRadius:5});
+    bilanChart = new Chart(ctx, { type:'line', data:{labels:moisLabels,datasets}, options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{title:{display:true,text:'Tendance heures — Démontage / Magnéto / Remontage'},legend:{position:'bottom'}},scales:{y:{beginAtZero:true,title:{display:true,text:'Heures'}}}} });
+}
+
+function renderHeuresParBogie(ctx, tc) {
+    document.getElementById('bilanChart').parentElement.style.display='none'; tc.style.display='block';
+    const now=new Date(); const moisLabels=[]; const moisRanges=[];
+    for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);moisLabels.push(d.toLocaleDateString('fr-FR',{month:'short',year:'2-digit'}));moisRanges.push({debut:d,fin:new Date(now.getFullYear(),now.getMonth()-i+1,0)});}
+    const bogieIds=Object.keys(bogiesData).filter(id=>!bogiesData[id].archive);
+    let html=`<div class="chart-container" style="overflow-x:auto;"><h3 style="margin-bottom:12px;">Heures par bogie / mois</h3><table class="liste-table"><thead><tr><th>Bogie</th>`;
+    moisLabels.forEach(m=>{html+=`<th>${m}</th>`;});html+=`<th style="background:var(--accent);">TOTAL</th></tr></thead><tbody>`;
+    const totM=moisLabels.map(()=>0);let gT=0;
+    bogieIds.forEach(id=>{const n=bogiesData[id].numero||id;let tB=0;html+=`<tr><td><strong>${n}</strong></td>`;moisRanges.forEach((r,mi)=>{let h=0;Object.values(heuresData).forEach(e=>{if(e.bogie!==id||!e.date)return;const d=new Date(e.date);if(d>=r.debut&&d<=r.fin)h+=e.heures||0;});h=Math.round(h*10)/10;totM[mi]+=h;tB+=h;const bg=h>0?(h>30?'#fef2f2':h>15?'#fffbeb':'#f0fdf4'):'';html+=`<td style="text-align:center;${bg?'background:'+bg:''}">${h||'—'}</td>`;});gT+=tB;html+=`<td style="text-align:center;font-weight:600;">${Math.round(tB*10)/10}h</td></tr>`;});
+    html+=`<tr style="background:#f3f4f6;font-weight:600;"><td>TOTAL</td>`;totM.forEach(t=>{html+=`<td style="text-align:center;">${Math.round(t*10)/10}h</td>`;});html+=`<td style="text-align:center;">${Math.round(gT*10)/10}h</td></tr></tbody></table></div>`;
+    tc.innerHTML=html;
+}
+
+function renderBudgetVsReel(ctx) {
+    const ids=Object.keys(bogiesData).filter(id=>!bogiesData[id].archive);
+    const labels=ids.map(id=>bogiesData[id].numero||id);
+    const reel=ids.map(id=>getTotalHeuresBogie(id));
+    bilanChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Budget (150h)',data:ids.map(()=>BUDGET_STANDARD),backgroundColor:'rgba(42,157,143,0.2)',borderColor:'#2a9d8f',borderWidth:2},{label:'Réel',data:reel,backgroundColor:reel.map(v=>v>BUDGET_STANDARD?'rgba(230,57,70,0.7)':'rgba(0,180,216,0.7)')}]},options:{responsive:true,plugins:{title:{display:true,text:'Budget 150h vs Réel'}},scales:{y:{beginAtZero:true}}}});
+}
+
+function renderEcartEtapes(ctx) {
+    const etapes=currentChantier==='Y32'?ETAPES_Y32:ETAPES_Y25;
+    const labels=etapes.map(e=>e.id+'. '+e.nom.substring(0,18));
+    const nb=Object.keys(bogiesData).filter(id=>!bogiesData[id].archive).length||1;
+    const hpe={};etapes.forEach(e=>{hpe[e.id]=0;});Object.values(heuresData).forEach(e=>{if(hpe[e.etape]!==undefined)hpe[e.etape]+=e.heures||0;});
+    const gamme=BUDGET_STANDARD/etapes.length;
+    const data=etapes.map(e=>Math.round((hpe[e.id]/(gamme*nb))*100)||0);
+    bilanChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'% vs gamme',data,backgroundColor:data.map(v=>v>100?'#e63946':v>70?'#f77f00':'#2a9d8f')}]},options:{responsive:true,indexAxis:'y',plugins:{title:{display:true,text:'% Écart par étape vs gamme'}},scales:{x:{beginAtZero:true}}}});
+}
+
+// ===== ALERTES (remplace Synthèse dates) =====
+function renderAlertes(tc) {
+    document.getElementById('bilanChart').parentElement.style.display='none';
+    tc.style.display='block';
+    const now = new Date();
+    const alertes = [];
+
+    Object.entries(bogiesData).forEach(([id, bogie]) => {
+        if (bogie.archive) return;
+        const numero = bogie.numero || id;
+
+        // 🔴 Bogie bloqué depuis >3 jours
+        if (bogie.bloque && bogie.blocages) {
+            const blocages = Object.values(bogie.blocages);
+            const lastBlocage = blocages[blocages.length - 1];
+            if (lastBlocage && lastBlocage.debut && !lastBlocage.fin) {
+                const jours = Math.floor((now - new Date(lastBlocage.debut)) / (1000*60*60*24));
+                if (jours >= 3) {
+                    alertes.push({ type: 'critical', icon: 'red', iconName: 'block', title: `Bogie ${numero} — Bloqué depuis ${jours} jours`, desc: lastBlocage.motif || 'Aucun motif', bogieId: id });
+                }
+            }
+        }
+
+        // 🟠 Budget dépassé (>150h)
+        const heures = getTotalHeuresBogie(id);
+        if (heures > BUDGET_STANDARD) {
+            alertes.push({ type: '', icon: 'orange', iconName: 'trending_up', title: `Bogie ${numero} — Budget dépassé`, desc: `${heures}h / ${BUDGET_STANDARD}h (+${Math.round(heures - BUDGET_STANDARD)}h)`, bogieId: id });
+        }
+
+        // 🟠 Budget à 80% et pas terminé
+        if (heures > BUDGET_STANDARD * 0.8 && heures <= BUDGET_STANDARD && getProgress(bogie) < 100) {
+            alertes.push({ type: '', icon: 'orange', iconName: 'warning', title: `Bogie ${numero} — 80% du budget consommé`, desc: `${heures}h / ${BUDGET_STANDARD}h — avancement: ${getProgress(bogie)}%`, bogieId: id });
+        }
+
+        // 🔴 Date de sortie dépassée et pas terminé
+        if (bogie.dateSortieEstimee && getProgress(bogie) < 100) {
+            const sortie = new Date(bogie.dateSortieEstimee);
+            const ecart = Math.floor((now - sortie) / (1000*60*60*24));
+            if (ecart > 0) {
+                alertes.push({ type: 'critical', icon: 'red', iconName: 'event_busy', title: `Bogie ${numero} — En retard de ${ecart} jours`, desc: `Sortie prévue le ${bogie.dateSortieEstimee}`, bogieId: id });
+            }
+        }
+
+        // 🔵 Bogie sans mouvement depuis 5 jours (pas bloqué, pas terminé)
+        if (!bogie.bloque && getProgress(bogie) > 0 && getProgress(bogie) < 100) {
+            // Vérifier la dernière saisie d'heures
+            let lastDate = null;
+            Object.values(heuresData).forEach(e => {
+                if (e.bogie === id && e.date) {
+                    const d = new Date(e.date);
+                    if (!lastDate || d > lastDate) lastDate = d;
+                }
+            });
+            if (lastDate) {
+                const joursInactif = Math.floor((now - lastDate) / (1000*60*60*24));
+                if (joursInactif >= 5) {
+                    alertes.push({ type: 'info', icon: 'blue', iconName: 'hourglass_empty', title: `Bogie ${numero} — Inactif depuis ${joursInactif} jours`, desc: `Dernière saisie le ${lastDate.toLocaleDateString('fr-FR')}`, bogieId: id });
+                }
+            }
+        }
+    });
+
+    // Trier : critiques en premier
+    alertes.sort((a, b) => { const order = { critical: 0, '': 1, info: 2 }; return (order[a.type]||1) - (order[b.type]||1); });
+
+    let html = `<div class="chart-container"><h3 style="margin-bottom:16px;">⚠️ Alertes actives (${alertes.length})</h3>`;
+    if (alertes.length === 0) {
+        html += '<p style="color:var(--text-light);text-align:center;padding:40px;">✅ Aucune alerte — Tout est sous contrôle !</p>';
+    } else {
+        alertes.forEach(a => {
+            html += `<div class="alerte-card ${a.type}" onclick="openFicheBogie('${a.bogieId}')"><div class="alerte-icon ${a.icon}"><span class="material-icons">${a.iconName}</span></div><div class="alerte-content"><div class="alerte-title">${a.title}</div><div class="alerte-desc">${a.desc}</div></div><span class="material-icons" style="color:var(--text-light);">chevron_right</span></div>`;
+        });
+    }
+    html += '</div>';
+    tc.innerHTML = html;
+}
+
+// ===== RECAP / JOURNAL =====
+function renderRecap() {
+    const container=document.getElementById('recapList');const today=new Date().toISOString().split('T')[0];
+    db.ref(`journal/${currentChantier}`).orderByChild('date').equalTo(today).once('value',snap=>{
+        const entries=snap.val()||{};let html='';
+        Object.values(entries).reverse().forEach(e=>{const ic=e.action.includes('Bloqué')?'blocked':'up';html+=`<div class="recap-item"><div class="recap-icon ${ic}"><span class="material-icons">${ic==='blocked'?'block':'check_circle'}</span></div><div><strong>Bogie ${e.bogie}</strong> — ${e.action}<div style="font-size:0.8em;color:var(--text-light);">${e.heure||''} — ${e.agent||''}</div></div></div>`;});
+        container.innerHTML=html||'<p style="color:var(--text-light);">Aucun mouvement aujourd\'hui</p>';
+    });
+}
+function renderJournal() {
+    const container=document.getElementById('journalContainer');
+    db.ref(`journal/${currentChantier}`).orderByKey().limitToLast(50).once('value',snap=>{
+        const entries=snap.val()||{};let html='';
+        Object.values(entries).reverse().forEach(e=>{html+=`<div class="recap-item"><div><strong>Bogie ${e.bogie}</strong> — ${e.action}<div style="font-size:0.8em;color:var(--text-light);">${e.date} ${e.heure||''} — ${e.agent||''}</div></div></div>`;});
+        container.innerHTML=html||'<p style="color:var(--text-light);">Aucune entrée</p>';
+    });
+}
+function logAction(bogieId, action) {
+    const now=new Date();
+    db.ref(`journal/${currentChantier}`).push({bogie:bogieId,action,agent:currentUser.nom||currentUser.email,date:now.toISOString().split('T')[0],heure:now.toTimeString().split(' ')[0].substring(0,5),timestamp:now.toISOString()});
+}
+
+// ===== MODALS =====
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});});
+document.addEventListener('DOMContentLoaded',()=>{document.getElementById('saisieDate').value=new Date().toISOString().split('T')[0];});
+</script>
+</body>
+</html>
+```
