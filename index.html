@@ -117,6 +117,7 @@
         .recap-item .recap-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; }
         .recap-item .recap-icon.up { background: var(--green); }
         .recap-item .recap-icon.blocked { background: var(--red); }
+        .recap-item .recap-icon.warning { background: var(--orange); }
 
         .voitures-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
         .voiture-card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); border-left: 4px solid var(--accent); transition: transform 0.15s, box-shadow 0.15s; }
@@ -149,6 +150,19 @@
         .gantt-bar-container { flex: 1; height: 24px; position: relative; background: #f3f4f6; border-radius: 4px; }
         .gantt-bar { position: absolute; height: 100%; border-radius: 4px; background: var(--accent); opacity: 0.8; }
         .gantt-bar.blocked { background: var(--red); }
+
+        /* ALERTES */
+        .alerte-card { background: var(--card); border-radius: var(--radius); padding: 16px 20px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 16px; margin-bottom: 12px; border-left: 4px solid var(--orange); cursor: pointer; transition: all 0.15s; }
+        .alerte-card:hover { transform: translateX(4px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+        .alerte-card.critical { border-left-color: var(--red); }
+        .alerte-card.info { border-left-color: var(--accent); }
+        .alerte-icon { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
+        .alerte-icon.red { background: var(--red); }
+        .alerte-icon.orange { background: var(--orange); }
+        .alerte-icon.blue { background: var(--accent); }
+        .alerte-content { flex: 1; }
+        .alerte-content .alerte-title { font-weight: 600; font-size: 0.95em; margin-bottom: 2px; }
+        .alerte-content .alerte-desc { font-size: 0.8em; color: var(--text-light); }
 
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
@@ -243,7 +257,7 @@
                     <button onclick="showBilanTab('heuresBogie')">Heures/Bogie/Mois</button>
                     <button onclick="showBilanTab('budgetReel')">Budget vs Réel</button>
                     <button onclick="showBilanTab('ecartEtapes')">Écart étapes</button>
-                    <button onclick="showBilanTab('synthese')">Synthèse dates</button>
+                    <button onclick="showBilanTab('alertes')">⚠️ Alertes</button>
                 </div>
                 <div class="chart-container"><canvas id="bilanChart"></canvas></div>
                 <div id="bilanTableContainer" style="display:none;"></div>
@@ -363,7 +377,6 @@ const ETAPES_Y25 = [
 const COLONNES_Y32 = ['Attente démontage', 'Démontage', 'Grenaillage', 'Magnétoscopie', 'Peinture', 'Remontage', 'Terminés'];
 const COLONNES_Y25 = ['Attente', 'Démonté', 'Magnéto faite', 'Prêt'];
 const BUDGET_STANDARD = 150;
-const ETAPE_COLORS = ['#e63946','#f77f00','#2a9d8f','#264653','#00b4d8','#e76f51','#606c38','#9b2226','#003049','#669bbc','#8338ec','#3a86ff','#fb5607','#ff006e','#8ac926','#06d6a0'];
 
 // ===== AUTH =====
 function login() {
@@ -509,7 +522,6 @@ function openFicheBogie(bogieId) {
     etapes.forEach(e => { const status = (bogie.etapes&&bogie.etapes[e.id])||'rouge'; html += `<div class="etape-label">${e.id}. ${e.nom}</div><div class="voyant ${status}" onclick="cycleVoyant('${bogieId}','${e.id}')" title="${status}"></div>`; });
     html += `</div>`;
 
-    // Champ voiture arrivée éditable (Y32 uniquement)
     if (currentChantier === 'Y32') {
         html += `<div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
             <div><label style="font-size:0.85em;font-weight:500;color:var(--text-light);">Voiture d'arrivée</label>
@@ -529,45 +541,20 @@ function openFicheBogie(bogieId) {
 function updateVoitureBogie(bogieId, champ, valeur) {
     valeur = valeur.trim();
     db.ref(`bogies/${currentChantier}/${bogieId}/${champ}`).set(valeur);
-
-    // Auto-créer ou mettre à jour la fiche voiture
-    if (valeur && champ === 'voitureArrivee') {
-        syncVoiture(bogieId, valeur);
-    }
+    if (valeur && champ === 'voitureArrivee') syncVoiture(bogieId, valeur);
 }
 
-// Synchroniser la voiture : crée si n'existe pas, met à jour les bogies rattachés
 function syncVoiture(bogieId, numeroVoiture) {
     const bogie = bogiesData[bogieId];
     const bogieNumero = bogie.numero || bogieId;
-
-    // Chercher si cette voiture existe déjà
     let voitureKey = null;
-    Object.entries(voituresData).forEach(([key, v]) => {
-        if (v.numero === numeroVoiture) voitureKey = key;
-    });
-
+    Object.entries(voituresData).forEach(([key, v]) => { if (v.numero === numeroVoiture) voitureKey = key; });
     if (voitureKey) {
-        // Voiture existe → rattacher ce bogie si pas déjà fait
         const voiture = voituresData[voitureKey];
-        if (!voiture.b1num || voiture.b1num === bogieNumero) {
-            db.ref(`voitures/${voitureKey}/b1num`).set(bogieNumero);
-        } else if (!voiture.b2num || voiture.b2num === bogieNumero) {
-            db.ref(`voitures/${voitureKey}/b2num`).set(bogieNumero);
-        }
+        if (!voiture.b1num || voiture.b1num === bogieNumero) db.ref(`voitures/${voitureKey}/b1num`).set(bogieNumero);
+        else if (!voiture.b2num || voiture.b2num === bogieNumero) db.ref(`voitures/${voitureKey}/b2num`).set(bogieNumero);
     } else {
-        // Voiture n'existe pas → la créer
-        db.ref('voitures').push({
-            numero: numeroVoiture,
-            maintenance: '',
-            type: '',
-            b1num: bogieNumero,
-            b1fait: false,
-            b2num: '',
-            b2fait: false,
-            validated: false,
-            createdAt: Date.now()
-        });
+        db.ref('voitures').push({ numero: numeroVoiture, maintenance: '', type: '', b1num: bogieNumero, b1fait: false, b2num: '', b2fait: false, validated: false, createdAt: Date.now() });
     }
 }
 
@@ -581,25 +568,20 @@ function cycleVoyant(bogieId, etapeId) {
         const d = new Date(); d.setDate(d.getDate()+42);
         db.ref(`bogies/${currentChantier}/${bogieId}/dateSortieEstimee`).set(d.toISOString().split('T')[0]);
     }
-    // Mettre à jour le statut "fait" du bogie dans la voiture
     if (next === 'vert') checkBogieCompletionForVoiture(bogieId);
     logAction(bogieId, `Étape ${etapeId} → ${next}`);
     setTimeout(() => openFicheBogie(bogieId), 200);
 }
 
-// Vérifier si le bogie est terminé et mettre à jour la voiture
 function checkBogieCompletionForVoiture(bogieId) {
     const bogie = bogiesData[bogieId];
     const etapes = currentChantier==='Y32' ? ETAPES_Y32 : ETAPES_Y25;
     const allVert = etapes.every(e => (bogie.etapes&&bogie.etapes[e.id])==='vert');
-
     if (allVert) {
         const bogieNumero = bogie.numero || bogieId;
-        // Chercher la voiture liée
         Object.entries(voituresData).forEach(([key, v]) => {
             if (v.b1num === bogieNumero) db.ref(`voitures/${key}/b1fait`).set(true);
             if (v.b2num === bogieNumero) db.ref(`voitures/${key}/b2fait`).set(true);
-            // Si les 2 bogies sont faits → valider la voiture
             if ((v.b1num === bogieNumero && v.b2fait) || (v.b2num === bogieNumero && v.b1fait)) {
                 db.ref(`voitures/${key}/validated`).set(true);
                 db.ref(`voitures/${key}/validatedAt`).set(Date.now());
@@ -686,10 +668,7 @@ function creerBogie() {
         newBogie.voitureSortie = document.getElementById('newBogieVoitSort').value;
         newBogie.localisation = document.getElementById('newBogieLoc').value;
         newBogie.observations = document.getElementById('newBogieObs').value;
-        // Auto-créer la voiture si renseignée
-        if (newBogie.voitureArrivee) {
-            setTimeout(() => syncVoiture(numero, newBogie.voitureArrivee), 500);
-        }
+        if (newBogie.voitureArrivee) setTimeout(() => syncVoiture(numero, newBogie.voitureArrivee), 500);
     } else {
         newBogie.typologie = document.getElementById('newBogieTypo').value;
         newBogie.construction = document.getElementById('newBogieConstruc').value;
@@ -703,117 +682,49 @@ function creerBogie() {
 // ===== VOITURES =====
 function renderVoitures() {
     const container = document.getElementById('voituresContainer');
-
-    // Combiner les voitures de la base + celles détectées dans les bogies
-    const voituresMap = {}; // numero → données
-
-    // 1. Voitures depuis la base `voitures/`
-    Object.entries(voituresData).forEach(([id, v]) => {
-        voituresMap[v.numero || id] = { ...v, firebaseKey: id };
-    });
-
-    // 2. Voitures détectées depuis les bogies (auto-découverte)
+    const voituresMap = {};
+    Object.entries(voituresData).forEach(([id, v]) => { voituresMap[v.numero || id] = { ...v, firebaseKey: id }; });
     Object.entries(bogiesData).forEach(([bogieId, bogie]) => {
         if (bogie.archive) return;
         const voitNum = bogie.voitureArrivee;
         if (voitNum && !voituresMap[voitNum]) {
-            // Voiture référencée mais pas dans la base → afficher quand même
-            voituresMap[voitNum] = {
-                numero: voitNum,
-                maintenance: '',
-                type: '',
-                b1num: bogie.numero || bogieId,
-                b1fait: false,
-                b2num: '',
-                b2fait: false,
-                validated: false,
-                autoDetected: true
-            };
+            voituresMap[voitNum] = { numero: voitNum, maintenance: '', type: '', b1num: bogie.numero || bogieId, b1fait: false, b2num: '', b2fait: false, validated: false, autoDetected: true };
         } else if (voitNum && voituresMap[voitNum]) {
-            // Voiture existe, vérifier que ce bogie est bien rattaché
-            const v = voituresMap[voitNum];
-            const bogieNum = bogie.numero || bogieId;
-            if (v.b1num !== bogieNum && v.b2num !== bogieNum) {
-                if (!v.b1num) v.b1num = bogieNum;
-                else if (!v.b2num) v.b2num = bogieNum;
-            }
+            const v = voituresMap[voitNum]; const bogieNum = bogie.numero || bogieId;
+            if (v.b1num !== bogieNum && v.b2num !== bogieNum) { if (!v.b1num) v.b1num = bogieNum; else if (!v.b2num) v.b2num = bogieNum; }
         }
     });
-
-    if (Object.keys(voituresMap).length === 0) {
-        container.innerHTML = '<p style="color:var(--text-light);">Aucune voiture enregistrée</p>';
-        return;
-    }
-
+    if (Object.keys(voituresMap).length === 0) { container.innerHTML = '<p style="color:var(--text-light);">Aucune voiture enregistrée</p>'; return; }
     let html = '';
     Object.entries(voituresMap).forEach(([numero, voiture]) => {
         const isValidated = voiture.validated === true;
         const b1Done = voiture.b1fait === true || isBogieTermine(voiture.b1num);
         const b2Done = voiture.b2fait === true || isBogieTermine(voiture.b2num);
         const allDone = b1Done && b2Done && voiture.b1num && voiture.b2num;
-
-        html += `
-            <div class="voiture-card ${isValidated||allDone ? 'validated' : ''}">
-                <div class="voiture-header">
-                    <span class="voiture-numero">🚃 Voiture ${voiture.numero || numero}</span>
-                    <span class="voiture-badge ${isValidated||allDone ? 'voiture-badge-validated' : 'voiture-badge-pending'}">
-                        ${isValidated||allDone ? '✓ Validée' : 'En cours'}
-                    </span>
-                </div>
-                <div class="voiture-info">
-                    ${voiture.maintenance ? `<div><strong>Maintenance:</strong> ${voiture.maintenance}</div>` : ''}
-                    ${voiture.type ? `<div><strong>Type:</strong> ${voiture.type}</div>` : ''}
-                    ${voiture.autoDetected ? '<div style="color:var(--orange);font-style:italic;">⚡ Auto-détectée depuis fiche bogie</div>' : ''}
-                </div>
-                <div style="font-size:0.8em;font-weight:600;color:var(--text-light);margin-bottom:8px;">BOGIES RATTACHÉS</div>
-                <div class="voiture-bogies">
-                    ${voiture.b1num ? `<div class="voiture-bogie-chip ${b1Done?'done':'pending'}" onclick="openFicheBogieByNumero('${voiture.b1num}')"><span class="chip-icon">${b1Done?'✓':'⏳'}</span> Bogie ${voiture.b1num}</div>` : '<div class="voiture-bogie-chip pending">⏳ Bogie 1 non assigné</div>'}
-                    ${voiture.b2num ? `<div class="voiture-bogie-chip ${b2Done?'done':'pending'}" onclick="openFicheBogieByNumero('${voiture.b2num}')"><span class="chip-icon">${b2Done?'✓':'⏳'}</span> Bogie ${voiture.b2num}</div>` : '<div class="voiture-bogie-chip pending">⏳ Bogie 2 non assigné</div>'}
-                </div>
-            </div>
-        `;
+        html += `<div class="voiture-card ${isValidated||allDone ? 'validated' : ''}"><div class="voiture-header"><span class="voiture-numero">🚃 Voiture ${voiture.numero || numero}</span><span class="voiture-badge ${isValidated||allDone ? 'voiture-badge-validated' : 'voiture-badge-pending'}">${isValidated||allDone ? '✓ Validée' : 'En cours'}</span></div><div class="voiture-info">${voiture.maintenance ? `<div><strong>Maintenance:</strong> ${voiture.maintenance}</div>` : ''}${voiture.type ? `<div><strong>Type:</strong> ${voiture.type}</div>` : ''}${voiture.autoDetected ? '<div style="color:var(--orange);font-style:italic;">⚡ Auto-détectée depuis fiche bogie</div>' : ''}</div><div style="font-size:0.8em;font-weight:600;color:var(--text-light);margin-bottom:8px;">BOGIES RATTACHÉS</div><div class="voiture-bogies">${voiture.b1num ? `<div class="voiture-bogie-chip ${b1Done?'done':'pending'}" onclick="openFicheBogieByNumero('${voiture.b1num}')"><span class="chip-icon">${b1Done?'✓':'⏳'}</span> Bogie ${voiture.b1num}</div>` : '<div class="voiture-bogie-chip pending">⏳ Bogie 1 non assigné</div>'}${voiture.b2num ? `<div class="voiture-bogie-chip ${b2Done?'done':'pending'}" onclick="openFicheBogieByNumero('${voiture.b2num}')"><span class="chip-icon">${b2Done?'✓':'⏳'}</span> Bogie ${voiture.b2num}</div>` : '<div class="voiture-bogie-chip pending">⏳ Bogie 2 non assigné</div>'}</div></div>`;
     });
     container.innerHTML = html;
 }
-
-// Vérifier si un bogie est terminé (toutes étapes au vert)
 function isBogieTermine(bogieNumero) {
     if (!bogieNumero) return false;
     const found = Object.entries(bogiesData).find(([id, b]) => b.numero === bogieNumero || id === bogieNumero);
     if (!found) return false;
-    const bogie = found[1];
     const etapes = currentChantier === 'Y32' ? ETAPES_Y32 : ETAPES_Y25;
-    return etapes.every(e => (bogie.etapes && bogie.etapes[e.id]) === 'vert');
+    return etapes.every(e => (found[1].etapes && found[1].etapes[e.id]) === 'vert');
 }
-
 function openFicheBogieByNumero(numero) {
     const found = Object.entries(bogiesData).find(([id, b]) => b.numero === numero || id === numero);
-    if (found) openFicheBogie(found[0]);
-    else alert(`Bogie ${numero} non trouvé dans ${currentChantier}`);
+    if (found) openFicheBogie(found[0]); else alert(`Bogie ${numero} non trouvé`);
 }
-
 function openNewVoiture() {
-    const html = `<div class="saisie-form">
-        <div><label>N° Voiture</label><input type="text" id="newVoitureNumero" placeholder="Ex: 062"></div>
-        <div><label>Type de maintenance</label><select id="newVoitureMaint"><option value="ATP250">ATP250</option><option value="ATP500">ATP500</option><option value="GVG">GVG</option><option value="Autre">Autre</option></select></div>
-        <div><label>Caissonnage</label><select id="newVoitureType"><option value="non caissonné">Non caissonné</option><option value="caissonné">Caissonné</option></select></div>
-        <div><label>Bogie 1 (N°)</label><input type="text" id="newVoitureB1" placeholder="Ex: 4045"></div>
-        <div><label>Bogie 2 (N°)</label><input type="text" id="newVoitureB2" placeholder="Ex: 870"></div>
-        <button class="btn btn-primary" onclick="creerVoiture()">Créer</button>
-    </div>`;
+    const html = `<div class="saisie-form"><div><label>N° Voiture</label><input type="text" id="newVoitureNumero" placeholder="Ex: 062"></div><div><label>Type de maintenance</label><select id="newVoitureMaint"><option value="ATP250">ATP250</option><option value="ATP500">ATP500</option><option value="GVG">GVG</option><option value="Autre">Autre</option></select></div><div><label>Caissonnage</label><select id="newVoitureType"><option value="non caissonné">Non caissonné</option><option value="caissonné">Caissonné</option></select></div><div><label>Bogie 1 (N°)</label><input type="text" id="newVoitureB1" placeholder="Ex: 4045"></div><div><label>Bogie 2 (N°)</label><input type="text" id="newVoitureB2" placeholder="Ex: 870"></div><button class="btn btn-primary" onclick="creerVoiture()">Créer</button></div>`;
     document.getElementById('newVoitureForm').innerHTML = html;
     document.getElementById('modalNewVoiture').classList.add('open');
 }
 function creerVoiture() {
     const numero = document.getElementById('newVoitureNumero').value.trim();
     if (!numero) { alert('N° voiture requis'); return; }
-    db.ref('voitures').push({
-        numero, maintenance: document.getElementById('newVoitureMaint').value,
-        type: document.getElementById('newVoitureType').value,
-        b1num: document.getElementById('newVoitureB1').value.trim(), b1fait: false,
-        b2num: document.getElementById('newVoitureB2').value.trim(), b2fait: false,
-        validated: false, createdAt: Date.now()
-    });
+    db.ref('voitures').push({ numero, maintenance: document.getElementById('newVoitureMaint').value, type: document.getElementById('newVoitureType').value, b1num: document.getElementById('newVoitureB1').value.trim(), b1fait: false, b2num: document.getElementById('newVoitureB2').value.trim(), b2fait: false, validated: false, createdAt: Date.now() });
     closeModal('modalNewVoiture');
 }
 
@@ -825,137 +736,4 @@ function renderGantt() {
     Object.entries(bogiesData).forEach(([id, bogie]) => {
         if (bogie.archive) return;
         const progress = getProgress(bogie)/100;
-        html += `<div class="gantt-row"><div class="gantt-label">${bogie.numero||id}</div><div class="gantt-bar-container"><div class="gantt-bar ${bogie.bloque?'blocked':''}" style="width:${progress*100}%;"></div></div><div style="width:80px;text-align:right;font-size:0.8em;color:var(--text-light);">${bogie.dateSortieEstimee||'—'}</div></div>`;
-    });
-    container.innerHTML = html || '<p style="color:var(--text-light);">Aucun bogie</p>';
-}
-
-// ===== BILAN =====
-let bilanChart = null; let currentBilanTab = 'tendances';
-function showBilanTab(tab) { currentBilanTab = tab; document.querySelectorAll('.bilan-tabs button').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); renderBilan(); }
-function renderBilan() {
-    if (bilanChart) bilanChart.destroy();
-    const ctx = document.getElementById('bilanChart').getContext('2d');
-    const tc = document.getElementById('bilanTableContainer'); tc.style.display='none';
-    document.getElementById('bilanChart').parentElement.style.display='block';
-    switch(currentBilanTab) {
-        case 'tendances': renderTendances(ctx); break;
-        case 'heuresBogie': renderHeuresParBogie(ctx, tc); break;
-        case 'budgetReel': renderBudgetVsReel(ctx); break;
-        case 'ecartEtapes': renderEcartEtapes(ctx); break;
-        case 'synthese': renderSyntheseDates(ctx); break;
-    }
-}
-
-function renderTendances(ctx) {
-    const now = new Date();
-    const moisLabels = [];
-    for (let i=5;i>=0;i--) { const d=new Date(now.getFullYear(),now.getMonth()-i,1); moisLabels.push(d.toLocaleDateString('fr-FR',{month:'short',year:'2-digit'})); }
-
-    // 3 courbes principales : Démontage (03), Magnéto (09), Remontage (13) + TOTAL
-    const etapesCles = [
-        { id: '03', nom: 'Démontage', color: '#e63946' },
-        { id: '09', nom: 'Magnéto', color: '#f77f00' },
-        { id: '13', nom: 'Remontage', color: '#2a9d8f' }
-    ];
-
-    const datasets = etapesCles.map(etape => {
-        const data = [];
-        for (let i=5;i>=0;i--) {
-            const mD = new Date(now.getFullYear(),now.getMonth()-i,1);
-            const mF = new Date(now.getFullYear(),now.getMonth()-i+1,0);
-            let t=0;
-            Object.values(heuresData).forEach(entry => {
-                if (!entry.date||entry.etape!==etape.id) return;
-                const d = new Date(entry.date);
-                if (d>=mD&&d<=mF) t+=entry.heures||0;
-            });
-            data.push(Math.round(t*10)/10);
-        }
-        return { label: etape.nom, data, borderColor: etape.color, backgroundColor: 'transparent', tension: 0.3, borderWidth: 3, pointRadius: 4 };
-    });
-
-    // Courbe TOTAL
-    const totalData = [];
-    for (let i=5;i>=0;i--) {
-        const mD=new Date(now.getFullYear(),now.getMonth()-i,1);
-        const mF=new Date(now.getFullYear(),now.getMonth()-i+1,0);
-        let t=0;
-        Object.values(heuresData).forEach(entry => { if(!entry.date)return; const d=new Date(entry.date); if(d>=mD&&d<=mF)t+=entry.heures||0; });
-        totalData.push(Math.round(t*10)/10);
-    }
-    datasets.unshift({label:'TOTAL',data:totalData,borderColor:'#000',backgroundColor:'rgba(0,0,0,0.05)',fill:true,tension:0.3,borderWidth:3,pointRadius:5,borderDash:[]});
-
-    bilanChart = new Chart(ctx, {
-        type:'line', data:{labels:moisLabels,datasets},
-        options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{title:{display:true,text:'Tendance heures — Démontage / Magnéto / Remontage'},legend:{position:'bottom'}},scales:{y:{beginAtZero:true,title:{display:true,text:'Heures'}}}}
-    });
-}
-
-function renderHeuresParBogie(ctx, tc) {
-    document.getElementById('bilanChart').parentElement.style.display='none'; tc.style.display='block';
-    const now=new Date(); const moisLabels=[]; const moisRanges=[];
-    for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);moisLabels.push(d.toLocaleDateString('fr-FR',{month:'short',year:'2-digit'}));moisRanges.push({debut:d,fin:new Date(now.getFullYear(),now.getMonth()-i+1,0)});}
-    const bogieIds=Object.keys(bogiesData).filter(id=>!bogiesData[id].archive);
-    let html=`<div class="chart-container" style="overflow-x:auto;"><h3 style="margin-bottom:12px;">Heures par bogie / mois</h3><table class="liste-table"><thead><tr><th>Bogie</th>`;
-    moisLabels.forEach(m=>{html+=`<th>${m}</th>`;});html+=`<th style="background:var(--accent);">TOTAL</th></tr></thead><tbody>`;
-    const totM=moisLabels.map(()=>0);let gT=0;
-    bogieIds.forEach(id=>{const n=bogiesData[id].numero||id;let tB=0;html+=`<tr><td><strong>${n}</strong></td>`;moisRanges.forEach((r,mi)=>{let h=0;Object.values(heuresData).forEach(e=>{if(e.bogie!==id||!e.date)return;const d=new Date(e.date);if(d>=r.debut&&d<=r.fin)h+=e.heures||0;});h=Math.round(h*10)/10;totM[mi]+=h;tB+=h;const bg=h>0?(h>30?'#fef2f2':h>15?'#fffbeb':'#f0fdf4'):'';html+=`<td style="text-align:center;${bg?'background:'+bg:''}">${h||'—'}</td>`;});gT+=tB;html+=`<td style="text-align:center;font-weight:600;">${Math.round(tB*10)/10}h</td></tr>`;});
-    html+=`<tr style="background:#f3f4f6;font-weight:600;"><td>TOTAL</td>`;totM.forEach(t=>{html+=`<td style="text-align:center;">${Math.round(t*10)/10}h</td>`;});html+=`<td style="text-align:center;">${Math.round(gT*10)/10}h</td></tr></tbody></table></div>`;
-    tc.innerHTML=html;
-}
-
-function renderBudgetVsReel(ctx) {
-    const ids=Object.keys(bogiesData).filter(id=>!bogiesData[id].archive);
-    const labels=ids.map(id=>bogiesData[id].numero||id);
-    const reel=ids.map(id=>getTotalHeuresBogie(id));
-    bilanChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Budget (150h)',data:ids.map(()=>BUDGET_STANDARD),backgroundColor:'rgba(42,157,143,0.2)',borderColor:'#2a9d8f',borderWidth:2},{label:'Réel',data:reel,backgroundColor:reel.map(v=>v>BUDGET_STANDARD?'rgba(230,57,70,0.7)':'rgba(0,180,216,0.7)')}]},options:{responsive:true,plugins:{title:{display:true,text:'Budget 150h vs Réel'}},scales:{y:{beginAtZero:true}}}});
-}
-
-function renderEcartEtapes(ctx) {
-    const etapes=currentChantier==='Y32'?ETAPES_Y32:ETAPES_Y25;
-    const labels=etapes.map(e=>e.id+'. '+e.nom.substring(0,18));
-    const nb=Object.keys(bogiesData).filter(id=>!bogiesData[id].archive).length||1;
-    const hpe={};etapes.forEach(e=>{hpe[e.id]=0;});Object.values(heuresData).forEach(e=>{if(hpe[e.etape]!==undefined)hpe[e.etape]+=e.heures||0;});
-    const gamme=BUDGET_STANDARD/etapes.length;
-    const data=etapes.map(e=>Math.round((hpe[e.id]/(gamme*nb))*100)||0);
-    bilanChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'% vs gamme',data,backgroundColor:data.map(v=>v>100?'#e63946':v>70?'#f77f00':'#2a9d8f')}]},options:{responsive:true,indexAxis:'y',plugins:{title:{display:true,text:'% Écart par étape vs gamme'}},scales:{x:{beginAtZero:true}}}});
-}
-
-function renderSyntheseDates(ctx) {
-    const ids=Object.keys(bogiesData).filter(id=>!bogiesData[id].archive&&bogiesData[id].dateSortieEstimee);
-    const labels=ids.map(id=>bogiesData[id].numero||id);const now=new Date();
-    const data=ids.map(id=>{const s=new Date(bogiesData[id].dateSortieEstimee);return Math.round((s-now)/(1000*60*60*24));});
-    bilanChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Jours restants',data,backgroundColor:data.map(v=>v<0?'#e63946':v<7?'#f77f00':'#2a9d8f')}]},options:{responsive:true,plugins:{title:{display:true,text:'Synthèse dates — écarts sortie'}}}});
-}
-
-// ===== RECAP / JOURNAL =====
-function renderRecap() {
-    const container=document.getElementById('recapList');const today=new Date().toISOString().split('T')[0];
-    db.ref(`journal/${currentChantier}`).orderByChild('date').equalTo(today).once('value',snap=>{
-        const entries=snap.val()||{};let html='';
-        Object.values(entries).reverse().forEach(e=>{const ic=e.action.includes('Bloqué')?'blocked':'up';html+=`<div class="recap-item"><div class="recap-icon ${ic}"><span class="material-icons">${ic==='blocked'?'block':'check_circle'}</span></div><div><strong>Bogie ${e.bogie}</strong> — ${e.action}<div style="font-size:0.8em;color:var(--text-light);">${e.heure||''} — ${e.agent||''}</div></div></div>`;});
-        container.innerHTML=html||'<p style="color:var(--text-light);">Aucun mouvement aujourd\'hui</p>';
-    });
-}
-function renderJournal() {
-    const container=document.getElementById('journalContainer');
-    db.ref(`journal/${currentChantier}`).orderByKey().limitToLast(50).once('value',snap=>{
-        const entries=snap.val()||{};let html='';
-        Object.values(entries).reverse().forEach(e=>{html+=`<div class="recap-item"><div><strong>Bogie ${e.bogie}</strong> — ${e.action}<div style="font-size:0.8em;color:var(--text-light);">${e.date} ${e.heure||''} — ${e.agent||''}</div></div></div>`;});
-        container.innerHTML=html||'<p style="color:var(--text-light);">Aucune entrée</p>';
-    });
-}
-function logAction(bogieId, action) {
-    const now=new Date();
-    db.ref(`journal/${currentChantier}`).push({bogie:bogieId,action,agent:currentUser.nom||currentUser.email,date:now.toISOString().split('T')[0],heure:now.toTimeString().split(' ')[0].substring(0,5),timestamp:now.toISOString()});
-}
-
-// ===== MODALS =====
-function closeModal(id){document.getElementById(id).classList.remove('open');}
-document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});});
-document.addEventListener('DOMContentLoaded',()=>{document.getElementById('saisieDate').value=new Date().toISOString().split('T')[0];});
-</script>
-</body>
-</html>
-```
+        html += `<div class="gantt-row"><div class="gantt-label">${bogie.numero||id}</div><div class="gantt-bar-container"><div class="gantt-bar ${bogie.bloque?'blocked':
