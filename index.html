@@ -177,7 +177,6 @@
         .gantt-date { font-size: 0.8em; color: var(--text-light); text-align: right; }
         .gantt-loc { font-size: 0.75em; color: var(--text-light); background: #f3f4f6; padding: 3px 8px; border-radius: 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* ALERTES */
         .alerte-card { background: var(--card); border-radius: var(--radius); padding: 16px 20px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 16px; margin-bottom: 12px; border-left: 4px solid var(--orange); cursor: pointer; transition: all 0.15s; }
         .alerte-card:hover { transform: translateX(4px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
         .alerte-card.critical { border-left-color: var(--red); }
@@ -189,6 +188,29 @@
         .alerte-content { flex: 1; }
         .alerte-content .alerte-title { font-weight: 600; font-size: 0.95em; margin-bottom: 2px; }
         .alerte-content .alerte-desc { font-size: 0.8em; color: var(--text-light); }
+
+        /* ADMIN */
+        .admin-section { background: var(--card); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); margin-bottom: 20px; }
+        .admin-section h3 { font-size: 1em; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .admin-user-row { display: grid; grid-template-columns: 1fr 1fr 120px 100px 60px; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
+        .admin-user-row:last-child { border-bottom: none; }
+        .admin-user-row .user-email { font-size: 0.85em; color: var(--text-light); }
+        .admin-user-row .user-nom { font-size: 0.9em; font-weight: 600; }
+        .admin-user-row select { padding: 6px 10px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 0.8em; }
+        .admin-user-row .access-badges { display: flex; gap: 4px; }
+        .admin-user-row .access-badge { padding: 2px 8px; border-radius: 4px; font-size: 0.7em; font-weight: 600; }
+        .access-badge-y32 { background: #e0f7fa; color: #006064; }
+        .access-badge-y25 { background: #ede9fe; color: #4338ca; }
+        .admin-create-form { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 12px; align-items: end; }
+        .admin-create-form input, .admin-create-form select { padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.9em; }
+        .admin-create-form label { font-size: 0.75em; color: var(--text-light); margin-bottom: 4px; display: block; }
+        .admin-msg { padding: 10px 16px; border-radius: 8px; font-size: 0.85em; margin-top: 12px; display: none; }
+        .admin-msg.success { display: block; background: #d1fae5; color: #065f46; }
+        .admin-msg.error { display: block; background: #fef2f2; color: var(--red); }
+        .admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .admin-stat-card { background: var(--bg); border-radius: 8px; padding: 16px; text-align: center; }
+        .admin-stat-card .stat-num { font-size: 1.8em; font-weight: 700; color: var(--accent); }
+        .admin-stat-card .stat-label { font-size: 0.75em; color: var(--text-light); margin-top: 4px; }
 
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
@@ -202,6 +224,8 @@
             .liste-table { font-size: 0.8em; }
             .liste-table td, .liste-table th { padding: 8px 10px; }
             .gantt-header, .gantt-row { grid-template-columns: 60px 70px 1fr 70px 80px; font-size: 0.7em; }
+            .admin-create-form { grid-template-columns: 1fr; }
+            .admin-user-row { grid-template-columns: 1fr; gap: 6px; }
         }
 
         .login-page { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; background: var(--primary); }
@@ -370,6 +394,7 @@ let currentUser = null;
 let bogiesData = {};
 let voituresData = {};
 let heuresData = {};
+let usersData = {};
 let currentView = 'kanban';
 
 const ETAPES_Y32 = [
@@ -428,7 +453,7 @@ function loadUserInfo() {
             const k = Object.keys(data)[0]; const u = data[k];
             document.getElementById('userName').textContent = u.nom || currentUser.email;
             document.getElementById('userRole').textContent = u.role || 'Agent';
-            currentUser.role = u.role; currentUser.nom = u.nom;
+            currentUser.role = u.role; currentUser.nom = u.nom; currentUser.dbKey = k;
         } else {
             document.getElementById('userName').textContent = currentUser.email;
             document.getElementById('userRole').textContent = 'Agent';
@@ -441,17 +466,16 @@ function loadData() {
     db.ref(`bogies/${currentChantier}`).on('value', snap => { bogiesData = snap.val() || {}; renderKanban(); renderListe(); renderGantt(); renderRecap(); });
     db.ref(`heures/${currentChantier}`).on('value', snap => { heuresData = snap.val() || {}; if (document.getElementById('pageBilan').classList.contains('active')) renderBilan(); });
     db.ref('voitures').on('value', snap => { voituresData = snap.val() || {}; if (document.getElementById('pageVoitures').classList.contains('active')) renderVoitures(); });
+    db.ref('utilisateurs').on('value', snap => { usersData = snap.val() || {}; if (document.getElementById('pageAdmin').classList.contains('active')) renderAdmin(); });
 }
 function switchChantier(c) {
     currentChantier = c;
     document.getElementById('btnY32').classList.toggle('active', c==='Y32');
     document.getElementById('btnY25').classList.toggle('active', c==='Y25');
     document.body.classList.toggle('y25-mode', c==='Y25');
-    // Update badge
     const badge = document.getElementById('topbarChantierBadge');
     badge.textContent = c;
     badge.className = 'chantier-badge ' + (c==='Y32' ? 'chantier-badge-y32' : 'chantier-badge-y25');
-    // Update labels pour Y25 = wagon
     const vLabel = c==='Y25' ? 'Wagons' : 'Voitures';
     document.getElementById('navVoituresLabel').textContent = vLabel;
     document.getElementById('voituresPageTitle').textContent = vLabel;
@@ -476,13 +500,13 @@ document.querySelectorAll('.sidebar nav a').forEach(link => {
         link.classList.add('active');
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById('page' + page.charAt(0).toUpperCase() + page.slice(1)).classList.add('active');
-        // Update topbar title
         const titles = {kanban:'Kanban',planification:'Planification',bilan:'Bilan',recap:'Récap',voitures:currentChantier==='Y25'?'Wagons':'Voitures',journal:'Journal',admin:'Admin'};
         document.getElementById('topbarPageTitle').textContent = titles[page]||page;
         if (page==='bilan') renderBilan();
         if (page==='recap') renderRecap();
         if (page==='journal') renderJournal();
         if (page==='voitures') renderVoitures();
+        if (page==='admin') renderAdmin();
         document.getElementById('sidebar').classList.remove('open');
     });
 });
@@ -580,7 +604,6 @@ function openFicheBogie(bogieId) {
     });
     html += `</div>`;
 
-    // Zone saisie inline
     html += `<div class="saisie-inline" id="saisieInline">
         <div><label style="font-size:0.75em;color:var(--text-light);">Heures</label><input type="number" id="inlineHeures" step="0.5" min="0.5" max="12" placeholder="2.5"></div>
         <div><label style="font-size:0.75em;color:var(--text-light);">Date</label><input type="date" id="inlineDate" value="${new Date().toISOString().split('T')[0]}"></div>
@@ -602,7 +625,7 @@ function openFicheBogie(bogieId) {
     document.getElementById('modalBogie').classList.add('open');
 }
 
-// ===== SAISIE HEURES INLINE (dans fiche bogie) =====
+// ===== SAISIE HEURES INLINE =====
 let currentSaisieBogieId = null;
 let currentSaisieEtapeId = null;
 
@@ -628,7 +651,6 @@ function enregistrerHeuresInline() {
         timestamp: new Date().toISOString()
     });
     logAction(currentSaisieBogieId, `Saisie ${heures}h sur étape ${currentSaisieEtapeId}`);
-    // Refresh fiche après enregistrement
     setTimeout(() => openFicheBogie(currentSaisieBogieId), 300);
 }
 
@@ -807,7 +829,7 @@ function creerVoiture() {
     closeModal('modalNewVoiture');
 }
 
-// ===== PLANIFICATION (améliorée) =====
+// ===== PLANIFICATION =====
 function renderGantt() {
     const container = document.getElementById('ganttContainer');
     if (currentChantier!=='Y32') { container.innerHTML = '<p style="color:var(--text-light);">Planification disponible pour Y32</p>'; return; }
@@ -886,29 +908,19 @@ function renderHeuresParBogie(ctx, tc) {
 }
 
 function renderBudgetVsReel(ctx) {
-    // Légende
     const legend = document.getElementById('bilanLegend');
     legend.style.display = 'block';
-    legend.innerHTML = `<strong>Comment lire ce graphique :</strong><br>
-    • La barre transparente (contour vert) = <strong>budget alloué de 150h</strong> par bogie (gamme standard)<br>
-    • La barre pleine bleue = <strong>heures réellement consommées</strong> sur ce bogie<br>
-    • Si la barre passe en rouge = <strong>dépassement du budget</strong> (plus de 150h consommées)`;
-
+    legend.innerHTML = `<strong>Comment lire ce graphique :</strong><br>• La barre transparente (contour vert) = <strong>budget alloué de 150h</strong> par bogie (gamme standard)<br>• La barre pleine bleue = <strong>heures réellement consommées</strong> sur ce bogie<br>• Si la barre passe en rouge = <strong>dépassement du budget</strong> (plus de 150h consommées)`;
     const ids=Object.keys(bogiesData).filter(id=>!bogiesData[id].archive);
     const labels=ids.map(id=>bogiesData[id].numero||id);
     const reel=ids.map(id=>getTotalHeuresBogie(id));
-    bilanChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Budget (150h)',data:ids.map(()=>BUDGET_STANDARD),backgroundColor:'rgba(42,157,143,0.2)',borderColor:'#2a9d8f',borderWidth:2},{label:'Réel',data:reel,backgroundColor:reel.map(v=>v>BUDGET_STANDARD?'rgba(230,57,70,0.7)':'rgba(0,180,216,0.7)')}]},options:{responsive:true,plugins:{title:{display:true,text:'Budget 150h vs Heures réelles par bogie (100% = budget atteint)'},legend:{position:'bottom'}},scales:{y:{beginAtZero:true,title:{display:true,text:'Heures'}}}}});
+    bilanChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Budget (150h)',data:ids.map(()=>BUDGET_STANDARD),backgroundColor:'rgba(42,157,143,0.2)',borderColor:'#2a9d8f',borderWidth:2},{label:'Réel',data:reel,backgroundColor:reel.map(v=>v>BUDGET_STANDARD?'rgba(230,57,70,0.7)':'rgba(0,180,216,0.7)')}]},options:{responsive:true,plugins:{title:{display:true,text:'Budget 150h vs Heures réelles par bogie'},legend:{position:'bottom'}},scales:{y:{beginAtZero:true,title:{display:true,text:'Heures'}}}}});
 }
 
 function renderEcartEtapes(ctx) {
-    // Légende
     const legend = document.getElementById('bilanLegend');
     legend.style.display = 'block';
-    legend.innerHTML = `<strong>Comment lire ce graphique :</strong><br>
-    • Chaque barre = <strong>% du budget théorique consommé</strong> pour cette étape (budget total 150h réparti équitablement entre les étapes)<br>
-    • <span style="color:#2a9d8f;">■ Vert</span> = dans les clous (<70%) — <span style="color:#f77f00;">■ Orange</span> = attention (70-100%) — <span style="color:#e63946;">■ Rouge</span> = dépassement (>100%)<br>
-    • 100% signifie que l'étape a consommé tout son budget théorique`;
-
+    legend.innerHTML = `<strong>Comment lire ce graphique :</strong><br>• Chaque barre = <strong>% du budget théorique consommé</strong> pour cette étape<br>• <span style="color:#2a9d8f;">■ Vert</span> = dans les clous (<70%) — <span style="color:#f77f00;">■ Orange</span> = attention (70-100%) — <span style="color:#e63946;">■ Rouge</span> = dépassement (>100%)<br>• 100% = l'étape a consommé tout son budget théorique`;
     const etapes=currentChantier==='Y32'?ETAPES_Y32:ETAPES_Y25;
     const labels=etapes.map(e=>e.id+'. '+e.nom.substring(0,18));
     const nb=Object.keys(bogiesData).filter(id=>!bogiesData[id].archive).length||1;
@@ -924,77 +936,47 @@ function renderAlertes(tc) {
     tc.style.display='block';
     const now = new Date();
     const alertes = [];
-
     Object.entries(bogiesData).forEach(([id, bogie]) => {
         if (bogie.archive) return;
         const numero = bogie.numero || id;
-
         if (bogie.bloque && bogie.blocages) {
             const blocages = Object.values(bogie.blocages);
             const lastBlocage = blocages[blocages.length - 1];
             if (lastBlocage && lastBlocage.debut && !lastBlocage.fin) {
                 const jours = Math.floor((now - new Date(lastBlocage.debut)) / (1000*60*60*24));
-                if (jours >= 3) {
-                    alertes.push({ type: 'critical', icon: 'red', iconName: 'block', title: `Bogie ${numero} — Bloqué depuis ${jours} jours`, desc: lastBlocage.motif || 'Aucun motif', bogieId: id });
-                }
+                if (jours >= 3) alertes.push({ type: 'critical', icon: 'red', iconName: 'block', title: `Bogie ${numero} — Bloqué depuis ${jours} jours`, desc: lastBlocage.motif || 'Aucun motif', bogieId: id });
             }
         }
-
         const heures = getTotalHeuresBogie(id);
-        if (heures > BUDGET_STANDARD) {
-            alertes.push({ type: '', icon: 'orange', iconName: 'trending_up', title: `Bogie ${numero} — Budget dépassé`, desc: `${heures}h / ${BUDGET_STANDARD}h (+${Math.round(heures - BUDGET_STANDARD)}h)`, bogieId: id });
-        }
-        if (heures > BUDGET_STANDARD * 0.8 && heures <= BUDGET_STANDARD && getProgress(bogie) < 100) {
-            alertes.push({ type: '', icon: 'orange', iconName: 'warning', title: `Bogie ${numero} — 80% du budget consommé`, desc: `${heures}h / ${BUDGET_STANDARD}h — avancement: ${getProgress(bogie)}%`, bogieId: id });
-        }
-
+        if (heures > BUDGET_STANDARD) alertes.push({ type: '', icon: 'orange', iconName: 'trending_up', title: `Bogie ${numero} — Budget dépassé`, desc: `${heures}h / ${BUDGET_STANDARD}h (+${Math.round(heures - BUDGET_STANDARD)}h)`, bogieId: id });
+        if (heures > BUDGET_STANDARD * 0.8 && heures <= BUDGET_STANDARD && getProgress(bogie) < 100) alertes.push({ type: '', icon: 'orange', iconName: 'warning', title: `Bogie ${numero} — 80% du budget consommé`, desc: `${heures}h / ${BUDGET_STANDARD}h — avancement: ${getProgress(bogie)}%`, bogieId: id });
         if (bogie.dateSortieEstimee && getProgress(bogie) < 100) {
             const sortie = new Date(bogie.dateSortieEstimee);
             const ecart = Math.floor((now - sortie) / (1000*60*60*24));
-            if (ecart > 0) {
-                alertes.push({ type: 'critical', icon: 'red', iconName: 'event_busy', title: `Bogie ${numero} — En retard de ${ecart} jours`, desc: `Sortie prévue le ${bogie.dateSortieEstimee}`, bogieId: id });
-            }
+            if (ecart > 0) alertes.push({ type: 'critical', icon: 'red', iconName: 'event_busy', title: `Bogie ${numero} — En retard de ${ecart} jours`, desc: `Sortie prévue le ${bogie.dateSortieEstimee}`, bogieId: id });
         }
-
         if (!bogie.bloque && getProgress(bogie) > 0 && getProgress(bogie) < 100) {
             let lastDate = null;
             Object.values(heuresData).forEach(e => { if (e.bogie === id && e.date) { const d = new Date(e.date); if (!lastDate || d > lastDate) lastDate = d; } });
-            if (lastDate) {
-                const joursInactif = Math.floor((now - lastDate) / (1000*60*60*24));
-                if (joursInactif >= 5) {
-                    alertes.push({ type: 'info', icon: 'blue', iconName: 'hourglass_empty', title: `Bogie ${numero} — Inactif depuis ${joursInactif} jours`, desc: `Dernière saisie le ${lastDate.toLocaleDateString('fr-FR')}`, bogieId: id });
-                }
-            }
+            if (lastDate) { const joursInactif = Math.floor((now - lastDate) / (1000*60*60*24)); if (joursInactif >= 5) alertes.push({ type: 'info', icon: 'blue', iconName: 'hourglass_empty', title: `Bogie ${numero} — Inactif depuis ${joursInactif} jours`, desc: `Dernière saisie le ${lastDate.toLocaleDateString('fr-FR')}`, bogieId: id }); }
         }
     });
-
     alertes.sort((a, b) => { const order = { critical: 0, '': 1, info: 2 }; return (order[a.type]||1) - (order[b.type]||1); });
-
     let html = `<div class="chart-container"><h3 style="margin-bottom:16px;">⚠️ Alertes actives (${alertes.length})</h3>`;
-    if (alertes.length === 0) {
-        html += '<p style="color:var(--text-light);text-align:center;padding:40px;">✅ Aucune alerte — Tout est sous contrôle !</p>';
-    } else {
-        alertes.forEach(a => {
-            html += `<div class="alerte-card ${a.type}" onclick="openFicheBogie('${a.bogieId}')"><div class="alerte-icon ${a.icon}"><span class="material-icons">${a.iconName}</span></div><div class="alerte-content"><div class="alerte-title">${a.title}</div><div class="alerte-desc">${a.desc}</div></div><span class="material-icons" style="color:var(--text-light);">chevron_right</span></div>`;
-        });
-    }
+    if (alertes.length === 0) html += '<p style="color:var(--text-light);text-align:center;padding:40px;">✅ Aucune alerte — Tout est sous contrôle !</p>';
+    else alertes.forEach(a => { html += `<div class="alerte-card ${a.type}" onclick="openFicheBogie('${a.bogieId}')"><div class="alerte-icon ${a.icon}"><span class="material-icons">${a.iconName}</span></div><div class="alerte-content"><div class="alerte-title">${a.title}</div><div class="alerte-desc">${a.desc}</div></div><span class="material-icons" style="color:var(--text-light);">chevron_right</span></div>`; });
     html += '</div>';
     tc.innerHTML = html;
 }
 
-// ===== RECAP (dernière action par bogie uniquement) =====
+// ===== RECAP =====
 function renderRecap() {
     const container = document.getElementById('recapList');
     const today = new Date().toISOString().split('T')[0];
     db.ref(`journal/${currentChantier}`).orderByChild('date').equalTo(today).once('value', snap => {
         const entries = snap.val() || {};
-        // Garder uniquement la dernière action par bogie
         const lastByBogie = {};
-        Object.values(entries).forEach(e => {
-            if (!lastByBogie[e.bogie] || e.timestamp > lastByBogie[e.bogie].timestamp) {
-                lastByBogie[e.bogie] = e;
-            }
-        });
+        Object.values(entries).forEach(e => { if (!lastByBogie[e.bogie] || e.timestamp > lastByBogie[e.bogie].timestamp) lastByBogie[e.bogie] = e; });
         let html = '';
         Object.values(lastByBogie).sort((a,b) => (b.timestamp||'').localeCompare(a.timestamp||'')).forEach(e => {
             const ic = e.action.includes('Bloqué') ? 'blocked' : e.action.includes('Urgent') ? 'warning' : 'up';
@@ -1016,6 +998,160 @@ function renderJournal() {
 function logAction(bogieId, action) {
     const now=new Date();
     db.ref(`journal/${currentChantier}`).push({bogie:bogieId,action,agent:currentUser.nom||currentUser.email,date:now.toISOString().split('T')[0],heure:now.toTimeString().split(' ')[0].substring(0,5),timestamp:now.toISOString()});
+}
+
+// ===== ADMIN =====
+function renderAdmin() {
+    const container = document.getElementById('adminContainer');
+    const isAdmin = currentUser.role === 'admin' || currentUser.role === 'Responsable';
+
+    if (!isAdmin) {
+        container.innerHTML = `<div class="admin-section"><p style="color:var(--text-light);text-align:center;padding:40px;">🔒 Accès réservé aux administrateurs et responsables.</p></div>`;
+        return;
+    }
+
+    const usersList = Object.entries(usersData);
+    const nbBogiesY32 = Object.keys(bogiesData).filter(id => !bogiesData[id].archive).length;
+
+    let html = '';
+
+    // Stats rapides
+    html += `<div class="admin-stats">
+        <div class="admin-stat-card"><div class="stat-num">${usersList.length}</div><div class="stat-label">Utilisateurs</div></div>
+        <div class="admin-stat-card"><div class="stat-num">${usersList.filter(([k,u]) => u.role==='admin').length}</div><div class="stat-label">Admins</div></div>
+        <div class="admin-stat-card"><div class="stat-num">${usersList.filter(([k,u]) => u.role==='Responsable').length}</div><div class="stat-label">Responsables</div></div>
+        <div class="admin-stat-card"><div class="stat-num">${usersList.filter(([k,u]) => u.role==='Opérateur'||u.role==='operateur').length}</div><div class="stat-label">Opérateurs</div></div>
+    </div>`;
+
+    // Formulaire de création
+    html += `<div class="admin-section">
+        <h3><span class="material-icons">person_add</span> Créer un utilisateur</h3>
+        <div class="admin-create-form">
+            <div><label>Email</label><input type="email" id="adminNewEmail" placeholder="agent@email.fr"></div>
+            <div><label>Mot de passe</label><input type="text" id="adminNewPassword" placeholder="Min. 6 car." value="Bogie2026!"></div>
+            <div><label>Nom complet</label><input type="text" id="adminNewNom" placeholder="DUPONT Jean"></div>
+            <div><label>Rôle</label><select id="adminNewRole"><option value="Opérateur">Opérateur</option><option value="Responsable">Responsable</option><option value="admin">Admin</option></select></div>
+            <div><label>&nbsp;</label><button class="btn btn-primary" onclick="adminCreateUser()"><span class="material-icons" style="font-size:16px;vertical-align:middle;">add</span> Créer</button></div>
+        </div>
+        <div style="margin-top:12px;">
+            <label style="font-size:0.8em;color:var(--text-light);">Accès chantiers :</label>
+            <label style="font-size:0.85em;margin-left:12px;"><input type="checkbox" id="adminNewY32" checked> Y32</label>
+            <label style="font-size:0.85em;margin-left:12px;"><input type="checkbox" id="adminNewY25" checked> Y25</label>
+        </div>
+        <div id="adminCreateMsg" class="admin-msg"></div>
+    </div>`;
+
+    // Liste des utilisateurs
+    html += `<div class="admin-section">
+        <h3><span class="material-icons">group</span> Utilisateurs (${usersList.length})</h3>
+        <div style="border-bottom:2px solid #e5e7eb;padding-bottom:8px;margin-bottom:8px;display:grid;grid-template-columns:1fr 1fr 120px 100px 60px;gap:12px;font-size:0.75em;font-weight:600;text-transform:uppercase;color:var(--text-light);">
+            <div>Nom</div><div>Email</div><div>Rôle</div><div>Accès</div><div></div>
+        </div>`;
+
+    usersList.forEach(([key, user]) => {
+        const accessY32 = user.accessY32 !== false;
+        const accessY25 = user.accessY25 !== false;
+        html += `<div class="admin-user-row">
+            <div class="user-nom">${user.nom || '—'}</div>
+            <div class="user-email">${user.email || '—'}</div>
+            <select onchange="adminChangeRole('${key}', this.value)" ${user.email===currentUser.email?'disabled':''}>
+                <option value="Opérateur" ${user.role==='Opérateur'||user.role==='operateur'?'selected':''}>Opérateur</option>
+                <option value="Responsable" ${user.role==='Responsable'?'selected':''}>Responsable</option>
+                <option value="admin" ${user.role==='admin'?'selected':''}>Admin</option>
+            </select>
+            <div class="access-badges">
+                <span class="access-badge access-badge-y32" style="cursor:pointer;opacity:${accessY32?'1':'0.3'}" onclick="adminToggleAccess('${key}','accessY32',${!accessY32})" title="Toggle Y32">Y32</span>
+                <span class="access-badge access-badge-y25" style="cursor:pointer;opacity:${accessY25?'1':'0.3'}" onclick="adminToggleAccess('${key}','accessY25',${!accessY25})" title="Toggle Y25">Y25</span>
+            </div>
+            <div>${user.email!==currentUser.email?`<button class="btn btn-danger" style="padding:4px 8px;font-size:0.7em;" onclick="adminDeleteUser('${key}','${user.email}')"><span class="material-icons" style="font-size:14px;">delete</span></button>`:''}</div>
+        </div>`;
+    });
+    html += `</div>`;
+
+    // Paramètres
+    html += `<div class="admin-section">
+        <h3><span class="material-icons">settings</span> Paramètres</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div><label style="font-size:0.85em;font-weight:500;color:var(--text-light);">Budget standard (heures/bogie)</label><input type="number" value="${BUDGET_STANDARD}" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:8px;margin-top:4px;" disabled><p style="font-size:0.75em;color:var(--text-light);margin-top:4px;">Modifiable dans le code (BUDGET_STANDARD)</p></div>
+            <div><label style="font-size:0.85em;font-weight:500;color:var(--text-light);">Cycle standard (semaines)</label><input type="number" value="6" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:8px;margin-top:4px;" disabled><p style="font-size:0.75em;color:var(--text-light);margin-top:4px;">Calcul auto date sortie = S+6</p></div>
+        </div>
+    </div>`;
+
+    container.innerHTML = html;
+}
+
+function adminCreateUser() {
+    const email = document.getElementById('adminNewEmail').value.trim();
+    const password = document.getElementById('adminNewPassword').value;
+    const nom = document.getElementById('adminNewNom').value.trim();
+    const role = document.getElementById('adminNewRole').value;
+    const accessY32 = document.getElementById('adminNewY32').checked;
+    const accessY25 = document.getElementById('adminNewY25').checked;
+    const msgEl = document.getElementById('adminCreateMsg');
+
+    if (!email || !password || password.length < 6) {
+        msgEl.className = 'admin-msg error';
+        msgEl.textContent = '❌ Email requis et mot de passe min. 6 caractères';
+        return;
+    }
+    if (!nom) {
+        msgEl.className = 'admin-msg error';
+        msgEl.textContent = '❌ Nom complet requis';
+        return;
+    }
+
+    msgEl.className = 'admin-msg';
+    msgEl.style.display = 'block';
+    msgEl.style.background = '#f3f4f6';
+    msgEl.style.color = 'var(--text-light)';
+    msgEl.textContent = '⏳ Création en cours...';
+
+    // On utilise une seconde instance Firebase Auth pour ne pas déconnecter l'admin
+    const secondaryApp = firebase.apps.find(a => a.name === 'Secondary') || firebase.initializeApp(firebaseConfig, 'Secondary');
+    const secondaryAuth = secondaryApp.auth();
+
+    secondaryAuth.createUserWithEmailAndPassword(email, password).then(cred => {
+        // Enregistrer dans la base
+        db.ref('utilisateurs').push({
+            email: email,
+            nom: nom,
+            role: role,
+            accessY32: accessY32,
+            accessY25: accessY25,
+            createdAt: new Date().toISOString(),
+            createdBy: currentUser.nom || currentUser.email
+        });
+        // Déconnecter de la seconde instance
+        secondaryAuth.signOut();
+
+        msgEl.className = 'admin-msg success';
+        msgEl.textContent = `✅ Compte créé — ${nom} (${email}) — Rôle: ${role}`;
+        document.getElementById('adminNewEmail').value = '';
+        document.getElementById('adminNewNom').value = '';
+        document.getElementById('adminNewPassword').value = 'Bogie2026!';
+
+        setTimeout(() => renderAdmin(), 1000);
+    }).catch(err => {
+        msgEl.className = 'admin-msg error';
+        if (err.code === 'auth/email-already-in-use') msgEl.textContent = '❌ Cet email est déjà utilisé';
+        else if (err.code === 'auth/invalid-email') msgEl.textContent = '❌ Format email invalide';
+        else msgEl.textContent = `❌ Erreur: ${err.message}`;
+    });
+}
+
+function adminChangeRole(userKey, newRole) {
+    db.ref(`utilisateurs/${userKey}/role`).set(newRole);
+}
+
+function adminToggleAccess(userKey, field, value) {
+    db.ref(`utilisateurs/${userKey}/${field}`).set(value);
+    setTimeout(() => renderAdmin(), 300);
+}
+
+function adminDeleteUser(userKey, email) {
+    if (!confirm(`Supprimer l'utilisateur ${email} de la base ?\n\n⚠️ Le compte Firebase Auth ne sera pas supprimé (nécessite la console Firebase).`)) return;
+    db.ref(`utilisateurs/${userKey}`).remove();
+    setTimeout(() => renderAdmin(), 300);
 }
 
 // ===== MODALS =====
