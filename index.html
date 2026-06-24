@@ -79,19 +79,22 @@ const firebaseConfig={apiKey:"AIzaSyCCDfoX-eetDi7M7bd9tPqtFyddrW6AsMg",authDomai
 firebase.initializeApp(firebaseConfig);const auth=firebase.auth();const db=firebase.database();
 
 let currentChantier='Y32';let currentUser=null;let bogiesData={};let voituresData={};let heuresData={};let usersData={};let currentView='kanban';
+
+// Helper : accepte "nom" OU "name" depuis la base
+function getUserName(u){return u.nom||u.name||'';}
+
 const ETAPES_Y32=[{id:'01',nom:'Nettoyage',colonne:'Attente démontage'},{id:'02',nom:'Manutention',colonne:'Attente démontage'},{id:'03',nom:'Démontage',colonne:'Démontage'},{id:'04',nom:'Préparation expédition PRM',colonne:'Démontage'},{id:'05',nom:'Manutentions Grenaillage',colonne:'Grenaillage'},{id:'06',nom:'Expertise châssis',colonne:'Magnétoscopie'},{id:'07',nom:'Découpe supports patins',colonne:'Magnétoscopie'},{id:'08',nom:'Réparations',colonne:'Magnétoscopie'},{id:'09',nom:'Magnéto',colonne:'Magnétoscopie'},{id:'10',nom:'Re-Réparations',colonne:'Magnétoscopie'},{id:'11',nom:'Re-Magnéto',colonne:'Magnétoscopie'},{id:'12',nom:'Manutentions Peinture',colonne:'Peinture'},{id:'13',nom:'Remontage + contrôle pièces',colonne:'Remontage'},{id:'14',nom:'Pose sur essieux',colonne:'Remontage'},{id:'15',nom:'Essai de frein',colonne:'Remontage'},{id:'16',nom:'Montage suspension + traverse',colonne:'Remontage'}];
 const ETAPES_Y25=[{id:'01',nom:'Gauche'},{id:'02',nom:'Démontage'},{id:'03',nom:'Bague'},{id:'04',nom:'Plaque'},{id:'05',nom:'Géométrie'},{id:'06',nom:'Magnétoscopie'},{id:'07',nom:'Remontage'},{id:'08',nom:'Terminer'}];
 const COLONNES_Y32=['Attente démontage','Démontage','Grenaillage','Magnétoscopie','Peinture','Remontage','Terminés'];
 const COLONNES_Y25=['Attente','Démonté','Magnéto faite','Prêt'];
 const BUDGET_STANDARD=150;
 
-// Nœud Firebase pour voitures/wagons selon chantier (SÉPARATION COMPLÈTE)
 function getVoituresRef(){return currentChantier==='Y32'?'voitures':'wagons';}
 
 function login(){const e=document.getElementById('loginEmail').value;const p=document.getElementById('loginPassword').value;auth.signInWithEmailAndPassword(e,p).catch(()=>{document.getElementById('loginError').textContent='Email ou mot de passe incorrect';document.getElementById('loginError').style.display='block';})}
 function logout(){auth.signOut();}
 auth.onAuthStateChanged(user=>{if(user){currentUser=user;document.getElementById('loginPage').style.display='none';document.getElementById('app').style.display='flex';loadUserInfo();loadData();}else{document.getElementById('loginPage').style.display='flex';document.getElementById('app').style.display='none';}});
-function loadUserInfo(){db.ref('utilisateurs').orderByChild('email').equalTo(currentUser.email).once('value',snap=>{const data=snap.val();if(data){const k=Object.keys(data)[0];const u=data[k];document.getElementById('userName').textContent=u.nom||currentUser.email;document.getElementById('userRole').textContent=u.role||'Agent';currentUser.role=u.role;currentUser.nom=u.nom;currentUser.dbKey=k;}else{document.getElementById('userName').textContent=currentUser.email;document.getElementById('userRole').textContent='Agent';}});}
+function loadUserInfo(){db.ref('utilisateurs').orderByChild('email').equalTo(currentUser.email).once('value',snap=>{const data=snap.val();if(data){const k=Object.keys(data)[0];const u=data[k];const displayName=getUserName(u);document.getElementById('userName').textContent=displayName||currentUser.email;document.getElementById('userRole').textContent=u.role||'Agent';currentUser.role=u.role;currentUser.nom=displayName;currentUser.dbKey=k;}else{document.getElementById('userName').textContent=currentUser.email;document.getElementById('userRole').textContent='Agent';}});}
 
 function loadData(){
     db.ref(`bogies/${currentChantier}`).on('value',snap=>{bogiesData=snap.val()||{};renderKanban();renderListe();renderGantt();renderRecap();});
@@ -100,7 +103,6 @@ function loadData(){
     db.ref('utilisateurs').on('value',snap=>{usersData=snap.val()||{};if(document.getElementById('pageAdmin').classList.contains('active'))renderAdmin();});
 }
 function switchChantier(c){
-    // Detach old listeners
     db.ref(`bogies/${currentChantier}`).off();db.ref(`heures/${currentChantier}`).off();db.ref(getVoituresRef()).off();
     currentChantier=c;
     document.getElementById('btnY32').classList.toggle('active',c==='Y32');document.getElementById('btnY25').classList.toggle('active',c==='Y25');
@@ -134,7 +136,6 @@ function getHeuresEtape(bogieId,etapeId){let t=0;Object.values(heuresData).forEa
 function openFicheBogie(bogieId){
     const bogie=bogiesData[bogieId];if(!bogie)return;
     const etapes=currentChantier==='Y32'?ETAPES_Y32:ETAPES_Y25;
-    const labelVW=currentChantier==='Y25'?'Wagon':'Voiture';
     document.getElementById('modalBogieTitle').textContent=`Bogie ${bogie.numero||bogieId}`;
     let html=`<div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">${bogie.bloque?`<button class="btn btn-primary" onclick="debloquerBogie('${bogieId}')">🔓 Débloquer</button>`:`<button class="btn btn-danger" onclick="bloquerBogie('${bogieId}')">🔒 Bloquer</button>`}${bogie.urgent?`<button class="btn btn-outline" onclick="toggleUrgent('${bogieId}',false)">Retirer urgent</button>`:`<button class="btn btn-outline" onclick="toggleUrgent('${bogieId}',true)">⚠️ Urgent</button>`}</div>`;
     if(currentChantier==='Y32'){
@@ -147,7 +148,6 @@ function openFicheBogie(bogieId){
     html+=`<h3 style="margin-bottom:12px;font-size:1em;">Étapes & Heures</h3><div class="etapes-grid">`;
     etapes.forEach(e=>{const status=(bogie.etapes&&bogie.etapes[e.id])||'rouge';const hEtape=getHeuresEtape(bogieId,e.id);const btnClass=hEtape>0?'etape-heures-btn has-hours':'etape-heures-btn';html+=`<div class="etape-label">${e.id}. ${e.nom}</div><div class="voyant ${status}" onclick="cycleVoyant('${bogieId}','${e.id}')" title="Cliquer pour changer"></div><button class="${btnClass}" onclick="toggleSaisieInline('${bogieId}','${e.id}')">${hEtape>0?hEtape+'h':'+ h'}</button>`;});
     html+=`</div><div class="saisie-inline" id="saisieInline"><div><label style="font-size:.75em;color:var(--text-light);">Heures</label><input type="number" id="inlineHeures" step="0.5" min="0.5" max="12" placeholder="2.5"></div><div><label style="font-size:.75em;color:var(--text-light);">Date</label><input type="date" id="inlineDate" value="${new Date().toISOString().split('T')[0]}"></div><button onclick="enregistrerHeuresInline()">✓</button></div>`;
-    // Section voiture/wagon de sortie (bidirectionnelle)
     if(currentChantier==='Y32'){
         html+=`<div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px;"><div><label style="font-size:.85em;font-weight:500;color:var(--text-light);">Voiture d'arrivée</label><input type="text" value="${bogie.voitureArrivee||''}" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:8px;margin-top:4px;" onblur="updateBogieField('${bogieId}','voitureArrivee',this.value)"></div><div><label style="font-size:.85em;font-weight:500;color:var(--text-light);">Voiture de sortie</label><input type="text" value="${bogie.voitureSortie||''}" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:8px;margin-top:4px;" onblur="updateBogieVoitureSortie('${bogieId}',this.value)"></div></div>`;
     }else{
@@ -161,56 +161,27 @@ let currentSaisieBogieId=null;let currentSaisieEtapeId=null;
 function toggleSaisieInline(bogieId,etapeId){currentSaisieBogieId=bogieId;currentSaisieEtapeId=etapeId;const zone=document.getElementById('saisieInline');zone.classList.add('open');document.getElementById('inlineHeures').value='';document.getElementById('inlineDate').value=new Date().toISOString().split('T')[0];document.getElementById('inlineHeures').focus();}
 function enregistrerHeuresInline(){const heures=parseFloat(document.getElementById('inlineHeures').value);const date=document.getElementById('inlineDate').value;if(!heures||!date){alert('Remplir heures et date');return;}db.ref(`heures/${currentChantier}`).push({agent:currentUser.nom||currentUser.email,bogie:currentSaisieBogieId,etape:currentSaisieEtapeId,heures,date,timestamp:new Date().toISOString()});logAction(currentSaisieBogieId,`Saisie ${heures}h sur étape ${currentSaisieEtapeId}`);setTimeout(()=>openFicheBogie(currentSaisieBogieId),300);}
 
-// === SYNC BIDIRECTIONNELLE BOGIE ↔ VOITURE/WAGON ===
 function updateBogieField(bogieId,champ,valeur){db.ref(`bogies/${currentChantier}/${bogieId}/${champ}`).set(valeur.trim());}
-
-// Quand on écrit une voiture de sortie sur la fiche bogie → greffe dans la fiche voiture
 function updateBogieVoitureSortie(bogieId,valeur){
-    valeur=valeur.trim();
-    db.ref(`bogies/${currentChantier}/${bogieId}/voitureSortie`).set(valeur);
-    if(!valeur)return;
-    const bogieNumero=bogiesData[bogieId].numero||bogieId;
-    // Chercher la voiture existante
-    let found=null;
+    valeur=valeur.trim();db.ref(`bogies/${currentChantier}/${bogieId}/voitureSortie`).set(valeur);if(!valeur)return;
+    const bogieNumero=bogiesData[bogieId].numero||bogieId;let found=null;
     Object.entries(voituresData).forEach(([key,v])=>{if(v.numero===valeur)found=key;});
-    if(found){
-        const voiture=voituresData[found];
-        if(!voiture.b1num||voiture.b1num===bogieNumero)db.ref(`${getVoituresRef()}/${found}/b1num`).set(bogieNumero);
-        else if(!voiture.b2num||voiture.b2num===bogieNumero)db.ref(`${getVoituresRef()}/${found}/b2num`).set(bogieNumero);
-    }else{
-        // Créer la voiture automatiquement
-        db.ref(getVoituresRef()).push({numero:valeur,maintenance:'',type:'',b1num:bogieNumero,b1fait:false,b2num:'',b2fait:false,validated:false,createdAt:Date.now()});
-    }
+    if(found){const voiture=voituresData[found];if(!voiture.b1num||voiture.b1num===bogieNumero)db.ref(`${getVoituresRef()}/${found}/b1num`).set(bogieNumero);else if(!voiture.b2num||voiture.b2num===bogieNumero)db.ref(`${getVoituresRef()}/${found}/b2num`).set(bogieNumero);}
+    else{db.ref(getVoituresRef()).push({numero:valeur,maintenance:'',type:'',b1num:bogieNumero,b1fait:false,b2num:'',b2fait:false,validated:false,createdAt:Date.now()});}
 }
-// Même logique côté Y25 (wagon)
 function updateBogieWagonSortie(bogieId,valeur){
-    valeur=valeur.trim();
-    db.ref(`bogies/${currentChantier}/${bogieId}/wagonSortie`).set(valeur);
-    if(!valeur)return;
-    const bogieNumero=bogiesData[bogieId].numero||bogieId;
-    let found=null;
+    valeur=valeur.trim();db.ref(`bogies/${currentChantier}/${bogieId}/wagonSortie`).set(valeur);if(!valeur)return;
+    const bogieNumero=bogiesData[bogieId].numero||bogieId;let found=null;
     Object.entries(voituresData).forEach(([key,v])=>{if(v.numero===valeur)found=key;});
-    if(found){
-        const wagon=voituresData[found];
-        if(!wagon.b1num||wagon.b1num===bogieNumero)db.ref(`${getVoituresRef()}/${found}/b1num`).set(bogieNumero);
-        else if(!wagon.b2num||wagon.b2num===bogieNumero)db.ref(`${getVoituresRef()}/${found}/b2num`).set(bogieNumero);
-    }else{
-        db.ref(getVoituresRef()).push({numero:valeur,b1num:bogieNumero,b1fait:false,b2num:'',b2fait:false,validated:false,createdAt:Date.now()});
-    }
+    if(found){const wagon=voituresData[found];if(!wagon.b1num||wagon.b1num===bogieNumero)db.ref(`${getVoituresRef()}/${found}/b1num`).set(bogieNumero);else if(!wagon.b2num||wagon.b2num===bogieNumero)db.ref(`${getVoituresRef()}/${found}/b2num`).set(bogieNumero);}
+    else{db.ref(getVoituresRef()).push({numero:valeur,b1num:bogieNumero,b1fait:false,b2num:'',b2fait:false,validated:false,createdAt:Date.now()});}
 }
-
-// Quand sur la fiche voiture/wagon on assigne un bogie → greffe sur la fiche bogie
 function assignBogieToVoiture(voitureKey,slot,voitureNumero){
-    const bogieNumero=prompt(`N° du bogie à assigner sur le slot ${slot==='b1num'?'1':'2'} :`);
-    if(!bogieNumero||!bogieNumero.trim())return;
-    const num=bogieNumero.trim();
+    const bogieNumero=prompt(`N° du bogie à assigner sur le slot ${slot==='b1num'?'1':'2'} :`);if(!bogieNumero||!bogieNumero.trim())return;const num=bogieNumero.trim();
     db.ref(`${getVoituresRef()}/${voitureKey}/${slot}`).set(num);
-    // Greffer sur la fiche bogie correspondante
     const fieldName=currentChantier==='Y32'?'voitureSortie':'wagonSortie';
     const foundBogie=Object.entries(bogiesData).find(([id,b])=>b.numero===num||id===num);
-    if(foundBogie){
-        db.ref(`bogies/${currentChantier}/${foundBogie[0]}/${fieldName}`).set(voitureNumero);
-    }
+    if(foundBogie)db.ref(`bogies/${currentChantier}/${foundBogie[0]}/${fieldName}`).set(voitureNumero);
     setTimeout(()=>renderVoitures(),400);
 }
 
@@ -228,39 +199,21 @@ function openNewBogie(){let html='';if(currentChantier==='Y32'){html=`<div class
 function toggleAcierFourrure(){const d=document.getElementById('acierFourrureDiv');if(d)d.style.display=document.getElementById('newBogieTypo').value==='Fixe'?'block':'none';}
 function creerBogie(){const numero=document.getElementById('newBogieNumero').value.trim();if(!numero){alert('N° bogie requis');return;}let newBogie={numero,dateCreation:new Date().toISOString(),etapes:{},archive:false,bloque:false,urgent:false};const etapes=currentChantier==='Y32'?ETAPES_Y32:ETAPES_Y25;etapes.forEach(e=>{newBogie.etapes[e.id]='rouge';});if(currentChantier==='Y32'){newBogie.voitureArrivee=document.getElementById('newBogieVoitArr').value;newBogie.voitureSortie=document.getElementById('newBogieVoitSort').value;newBogie.localisation=document.getElementById('newBogieLoc').value;newBogie.observations=document.getElementById('newBogieObs').value;if(newBogie.voitureSortie)setTimeout(()=>updateBogieVoitureSortie(numero,newBogie.voitureSortie),500);}else{newBogie.typologie=document.getElementById('newBogieTypo').value;newBogie.construction=document.getElementById('newBogieConstruc').value;if(newBogie.typologie==='Fixe')newBogie.acierFourrure=document.getElementById('newBogieAcier').value;const wagon=document.getElementById('newBogieWagon').value.trim();if(wagon){newBogie.wagonSortie=wagon;setTimeout(()=>updateBogieWagonSortie(numero,wagon),500);}}db.ref(`bogies/${currentChantier}/${numero}`).set(newBogie);logAction(numero,'Bogie créé');closeModal('modalNewBogie');}
 
-// VOITURES / WAGONS — avec assignation bidirectionnelle
+// VOITURES / WAGONS
 function renderVoitures(){
-    const container=document.getElementById('voituresContainer');
-    const labelCap=currentChantier==='Y25'?'Wagon':'Voiture';
-    const icon=currentChantier==='Y25'?'🚂':'🚃';
+    const container=document.getElementById('voituresContainer');const labelCap=currentChantier==='Y25'?'Wagon':'Voiture';const icon=currentChantier==='Y25'?'🚂':'🚃';
     if(Object.keys(voituresData).length===0){container.innerHTML=`<p style="color:var(--text-light);">Aucun ${labelCap.toLowerCase()} enregistré</p>`;return;}
     let html='';
     Object.entries(voituresData).forEach(([key,voiture])=>{
-        const b1Done=voiture.b1fait===true||isBogieTermine(voiture.b1num);
-        const b2Done=voiture.b2fait===true||isBogieTermine(voiture.b2num);
-        const allDone=b1Done&&b2Done&&voiture.b1num&&voiture.b2num;
-        const isValidated=voiture.validated===true||allDone;
-        html+=`<div class="voiture-card ${isValidated?'validated':''}">
-            <div class="voiture-header"><span class="voiture-numero">${icon} ${labelCap} ${voiture.numero||key}</span><span class="voiture-badge ${isValidated?'voiture-badge-validated':'voiture-badge-pending'}">${isValidated?'✓ Validé':'En cours'}</span></div>
-            <div class="voiture-info">${voiture.maintenance?`<div><strong>Maintenance:</strong> ${voiture.maintenance}</div>`:''}${voiture.type?`<div><strong>Caissonnage:</strong> ${voiture.type}</div>`:''}</div>
-            <div style="font-size:.8em;font-weight:600;color:var(--text-light);margin-bottom:8px;">BOGIES RATTACHÉS</div>
-            <div class="voiture-bogies">
-                ${voiture.b1num?`<div class="voiture-bogie-chip ${b1Done?'done':'pending'}" onclick="openFicheBogieByNumero('${voiture.b1num}')"><span class="chip-icon">${b1Done?'✓':'⏳'}</span> Bogie ${voiture.b1num}</div>`:`<div class="voiture-bogie-chip assign" onclick="assignBogieToVoiture('${key}','b1num','${voiture.numero||key}')"><span class="chip-icon">+</span> Assigner bogie 1</div>`}
-                ${voiture.b2num?`<div class="voiture-bogie-chip ${b2Done?'done':'pending'}" onclick="openFicheBogieByNumero('${voiture.b2num}')"><span class="chip-icon">${b2Done?'✓':'⏳'}</span> Bogie ${voiture.b2num}</div>`:`<div class="voiture-bogie-chip assign" onclick="assignBogieToVoiture('${key}','b2num','${voiture.numero||key}')"><span class="chip-icon">+</span> Assigner bogie 2</div>`}
-            </div>
-        </div>`;
-    });
-    container.innerHTML=html;
+        const b1Done=voiture.b1fait===true||isBogieTermine(voiture.b1num);const b2Done=voiture.b2fait===true||isBogieTermine(voiture.b2num);
+        const allDone=b1Done&&b2Done&&voiture.b1num&&voiture.b2num;const isValidated=voiture.validated===true||allDone;
+        html+=`<div class="voiture-card ${isValidated?'validated':''}"><div class="voiture-header"><span class="voiture-numero">${icon} ${labelCap} ${voiture.numero||key}</span><span class="voiture-badge ${isValidated?'voiture-badge-validated':'voiture-badge-pending'}">${isValidated?'✓ Validé':'En cours'}</span></div><div class="voiture-info">${voiture.maintenance?`<div><strong>Maintenance:</strong> ${voiture.maintenance}</div>`:''}${voiture.type?`<div><strong>Caissonnage:</strong> ${voiture.type}</div>`:''}</div><div style="font-size:.8em;font-weight:600;color:var(--text-light);margin-bottom:8px;">BOGIES RATTACHÉS</div><div class="voiture-bogies">${voiture.b1num?`<div class="voiture-bogie-chip ${b1Done?'done':'pending'}" onclick="openFicheBogieByNumero('${voiture.b1num}')"><span class="chip-icon">${b1Done?'✓':'⏳'}</span> Bogie ${voiture.b1num}</div>`:`<div class="voiture-bogie-chip assign" onclick="assignBogieToVoiture('${key}','b1num','${voiture.numero||key}')"><span class="chip-icon">+</span> Assigner bogie 1</div>`}${voiture.b2num?`<div class="voiture-bogie-chip ${b2Done?'done':'pending'}" onclick="openFicheBogieByNumero('${voiture.b2num}')"><span class="chip-icon">${b2Done?'✓':'⏳'}</span> Bogie ${voiture.b2num}</div>`:`<div class="voiture-bogie-chip assign" onclick="assignBogieToVoiture('${key}','b2num','${voiture.numero||key}')"><span class="chip-icon">+</span> Assigner bogie 2</div>`}</div></div>`;
+    });container.innerHTML=html;
 }
 function isBogieTermine(bogieNumero){if(!bogieNumero)return false;const found=Object.entries(bogiesData).find(([id,b])=>b.numero===bogieNumero||id===bogieNumero);if(!found)return false;const etapes=currentChantier==='Y32'?ETAPES_Y32:ETAPES_Y25;return etapes.every(e=>(found[1].etapes&&found[1].etapes[e.id])==='vert');}
 function openFicheBogieByNumero(numero){const found=Object.entries(bogiesData).find(([id,b])=>b.numero===numero||id===numero);if(found)openFicheBogie(found[0]);else alert(`Bogie ${numero} non trouvé`);}
 function openNewVoiture(){const label=currentChantier==='Y25'?'Wagon':'Voiture';const html=`<div class="saisie-form"><div><label>N° ${label}</label><input type="text" id="newVoitureNumero" placeholder="Ex: 062"></div><div><label>Type de maintenance</label><select id="newVoitureMaint"><option value="ATP250">ATP250</option><option value="ATP500">ATP500</option><option value="GVG">GVG</option><option value="Autre">Autre</option></select></div><div><label>Caissonnage</label><select id="newVoitureType"><option value="non caissonné">Non caissonné</option><option value="caissonné">Caissonné</option></select></div><div><label>Bogie 1 (N°)</label><input type="text" id="newVoitureB1" placeholder="Ex: 4045"></div><div><label>Bogie 2 (N°)</label><input type="text" id="newVoitureB2" placeholder="Ex: 870"></div><button class="btn btn-primary" onclick="creerVoiture()">Créer</button></div>`;document.getElementById('newVoitureForm').innerHTML=html;document.getElementById('modalNewVoiture').classList.add('open');}
-function creerVoiture(){const numero=document.getElementById('newVoitureNumero').value.trim();if(!numero){alert('N° requis');return;}const b1=document.getElementById('newVoitureB1').value.trim();const b2=document.getElementById('newVoitureB2').value.trim();const voitureNumero=numero;db.ref(getVoituresRef()).push({numero,maintenance:document.getElementById('newVoitureMaint').value,type:document.getElementById('newVoitureType').value,b1num:b1,b1fait:false,b2num:b2,b2fait:false,validated:false,createdAt:Date.now()});
-// Sync bidirectionnelle : greffage sur les fiches bogies
-const fieldName=currentChantier==='Y32'?'voitureSortie':'wagonSortie';
-if(b1){const f=Object.entries(bogiesData).find(([id,bg])=>bg.numero===b1||id===b1);if(f)db.ref(`bogies/${currentChantier}/${f[0]}/${fieldName}`).set(voitureNumero);}
-if(b2){const f=Object.entries(bogiesData).find(([id,bg])=>bg.numero===b2||id===b2);if(f)db.ref(`bogies/${currentChantier}/${f[0]}/${fieldName}`).set(voitureNumero);}
-closeModal('modalNewVoiture');}
+function creerVoiture(){const numero=document.getElementById('newVoitureNumero').value.trim();if(!numero){alert('N° requis');return;}const b1=document.getElementById('newVoitureB1').value.trim();const b2=document.getElementById('newVoitureB2').value.trim();db.ref(getVoituresRef()).push({numero,maintenance:document.getElementById('newVoitureMaint').value,type:document.getElementById('newVoitureType').value,b1num:b1,b1fait:false,b2num:b2,b2fait:false,validated:false,createdAt:Date.now()});const fieldName=currentChantier==='Y32'?'voitureSortie':'wagonSortie';if(b1){const f=Object.entries(bogiesData).find(([id,bg])=>bg.numero===b1||id===b1);if(f)db.ref(`bogies/${currentChantier}/${f[0]}/${fieldName}`).set(numero);}if(b2){const f=Object.entries(bogiesData).find(([id,bg])=>bg.numero===b2||id===b2);if(f)db.ref(`bogies/${currentChantier}/${f[0]}/${fieldName}`).set(numero);}closeModal('modalNewVoiture');}
 
 // PLANIFICATION
 function renderGantt(){const container=document.getElementById('ganttContainer');if(currentChantier!=='Y32'){container.innerHTML='<p style="color:var(--text-light);">Planification disponible pour Y32</p>';return;}const list=Object.entries(bogiesData).filter(([id,b])=>!b.archive).sort((a,b)=>(a[1].dateSortieEstimee||'9999').localeCompare(b[1].dateSortieEstimee||'9999'));if(list.length===0){container.innerHTML='<p style="color:var(--text-light);">Aucun bogie</p>';return;}let html=`<div class="gantt-header"><div>Bogie</div><div>Voit. sortie</div><div>Avancement</div><div>Date fin</div><div>Zone</div></div>`;list.forEach(([id,bogie])=>{const progress=getProgress(bogie);const barClass=bogie.bloque?'gantt-bar blocked':'gantt-bar';html+=`<div class="gantt-row" style="cursor:pointer;" onclick="openFicheBogie('${id}')"><div class="gantt-label">${bogie.numero||id}</div><div class="gantt-voiture">${bogie.voitureSortie||'—'}</div><div class="gantt-bar-container"><div class="${barClass}" style="width:${progress}%">${progress>15?progress+'%':''}</div></div><div class="gantt-date">${bogie.dateSortieEstimee||'—'}</div><div class="gantt-loc">${bogie.localisation||'—'}</div></div>`;});container.innerHTML=html;}
@@ -284,7 +237,7 @@ function logAction(bogieId,action){const now=new Date();db.ref(`journal/${curren
 function renderAdmin(){const container=document.getElementById('adminContainer');const isAdmin=currentUser.role==='admin'||currentUser.role==='Responsable';if(!isAdmin){container.innerHTML=`<div class="admin-section"><p style="color:var(--text-light);text-align:center;padding:40px;">🔒 Accès réservé aux admins/responsables.</p></div>`;return;}const usersList=Object.entries(usersData);let html=`<div class="admin-stats"><div class="admin-stat-card"><div class="stat-num">${usersList.length}</div><div class="stat-label">Utilisateurs</div></div><div class="admin-stat-card"><div class="stat-num">${usersList.filter(([k,u])=>u.role==='admin').length}</div><div class="stat-label">Admins</div></div><div class="admin-stat-card"><div class="stat-num">${usersList.filter(([k,u])=>u.role==='Responsable').length}</div><div class="stat-label">Responsables</div></div><div class="admin-stat-card"><div class="stat-num">${usersList.filter(([k,u])=>u.role==='Opérateur'||u.role==='operateur').length}</div><div class="stat-label">Opérateurs</div></div></div>`;
 html+=`<div class="admin-section"><h3><span class="material-icons">person_add</span> Créer un utilisateur</h3><div class="admin-create-form"><div><label>Email</label><input type="email" id="adminNewEmail" placeholder="agent@email.fr"></div><div><label>Mot de passe</label><input type="text" id="adminNewPassword" value="Bogie2026!"></div><div><label>Nom</label><input type="text" id="adminNewNom" placeholder="NOM Prénom"></div><div><label>Rôle</label><select id="adminNewRole"><option value="Opérateur">Opérateur</option><option value="Responsable">Responsable</option><option value="admin">Admin</option></select></div><div><label>&nbsp;</label><button class="btn btn-primary" onclick="adminCreateUser()"><span class="material-icons" style="font-size:16px;vertical-align:middle;">add</span> Créer</button></div></div><div style="margin-top:12px;"><label style="font-size:.8em;color:var(--text-light);">Accès :</label><label style="font-size:.85em;margin-left:12px;"><input type="checkbox" id="adminNewY32" checked> Y32</label><label style="font-size:.85em;margin-left:12px;"><input type="checkbox" id="adminNewY25" checked> Y25</label></div><div id="adminCreateMsg" class="admin-msg"></div></div>`;
 html+=`<div class="admin-section"><h3><span class="material-icons">group</span> Utilisateurs (${usersList.length})</h3><div style="border-bottom:2px solid #e5e7eb;padding-bottom:8px;margin-bottom:8px;display:grid;grid-template-columns:1fr 1fr 120px 100px 60px;gap:12px;font-size:.75em;font-weight:600;text-transform:uppercase;color:var(--text-light);"><div>Nom</div><div>Email</div><div>Rôle</div><div>Accès</div><div></div></div>`;
-usersList.forEach(([key,user])=>{const a32=user.accessY32!==false;const a25=user.accessY25!==false;html+=`<div class="admin-user-row"><div class="user-nom">${user.nom||'—'}</div><div class="user-email">${user.email||'—'}</div><select onchange="adminChangeRole('${key}',this.value)" ${user.email===currentUser.email?'disabled':''}><option value="Opérateur" ${user.role==='Opérateur'||user.role==='operateur'?'selected':''}>Opérateur</option><option value="Responsable" ${user.role==='Responsable'?'selected':''}>Responsable</option><option value="admin" ${user.role==='admin'?'selected':''}>Admin</option></select><div class="access-badges"><span class="access-badge access-badge-y32" style="cursor:pointer;opacity:${a32?'1':'.3'}" onclick="adminToggleAccess('${key}','accessY32',${!a32})">Y32</span><span class="access-badge access-badge-y25" style="cursor:pointer;opacity:${a25?'1':'.3'}" onclick="adminToggleAccess('${key}','accessY25',${!a25})">Y25</span></div><div>${user.email!==currentUser.email?`<button class="btn btn-danger" style="padding:4px 8px;font-size:.7em;" onclick="adminDeleteUser('${key}','${user.email}')"><span class="material-icons" style="font-size:14px;">delete</span></button>`:''}</div></div>`;});html+=`</div>`;container.innerHTML=html;}
+usersList.forEach(([key,user])=>{const a32=user.accessY32!==false;const a25=user.accessY25!==false;const displayName=getUserName(user);html+=`<div class="admin-user-row"><div class="user-nom">${displayName||'—'}</div><div class="user-email">${user.email||'—'}</div><select onchange="adminChangeRole('${key}',this.value)" ${user.email===currentUser.email?'disabled':''}><option value="Opérateur" ${user.role==='Opérateur'||user.role==='operateur'?'selected':''}>Opérateur</option><option value="Responsable" ${user.role==='Responsable'?'selected':''}>Responsable</option><option value="admin" ${user.role==='admin'?'selected':''}>Admin</option></select><div class="access-badges"><span class="access-badge access-badge-y32" style="cursor:pointer;opacity:${a32?'1':'.3'}" onclick="adminToggleAccess('${key}','accessY32',${!a32})">Y32</span><span class="access-badge access-badge-y25" style="cursor:pointer;opacity:${a25?'1':'.3'}" onclick="adminToggleAccess('${key}','accessY25',${!a25})">Y25</span></div><div>${user.email!==currentUser.email?`<button class="btn btn-danger" style="padding:4px 8px;font-size:.7em;" onclick="adminDeleteUser('${key}','${user.email}')"><span class="material-icons" style="font-size:14px;">delete</span></button>`:''}</div></div>`;});html+=`</div>`;container.innerHTML=html;}
 function adminCreateUser(){const email=document.getElementById('adminNewEmail').value.trim();const password=document.getElementById('adminNewPassword').value;const nom=document.getElementById('adminNewNom').value.trim();const role=document.getElementById('adminNewRole').value;const a32=document.getElementById('adminNewY32').checked;const a25=document.getElementById('adminNewY25').checked;const msgEl=document.getElementById('adminCreateMsg');if(!email||!password||password.length<6){msgEl.className='admin-msg error';msgEl.textContent='❌ Email + mdp min. 6 car.';return;}if(!nom){msgEl.className='admin-msg error';msgEl.textContent='❌ Nom requis';return;}msgEl.className='admin-msg';msgEl.style.display='block';msgEl.style.background='#f3f4f6';msgEl.style.color='var(--text-light)';msgEl.textContent='⏳ Création...';const secondaryApp=firebase.apps.find(a=>a.name==='Secondary')||firebase.initializeApp(firebaseConfig,'Secondary');const secondaryAuth=secondaryApp.auth();secondaryAuth.createUserWithEmailAndPassword(email,password).then(()=>{db.ref('utilisateurs').push({email,nom,role,accessY32:a32,accessY25:a25,createdAt:new Date().toISOString(),createdBy:currentUser.nom||currentUser.email});secondaryAuth.signOut();msgEl.className='admin-msg success';msgEl.textContent=`✅ ${nom} (${email}) — ${role}`;document.getElementById('adminNewEmail').value='';document.getElementById('adminNewNom').value='';document.getElementById('adminNewPassword').value='Bogie2026!';setTimeout(()=>renderAdmin(),1000);}).catch(err=>{msgEl.className='admin-msg error';msgEl.textContent=err.code==='auth/email-already-in-use'?'❌ Email déjà utilisé':`❌ ${err.message}`;});}
 function adminChangeRole(k,v){db.ref(`utilisateurs/${k}/role`).set(v);}
 function adminToggleAccess(k,f,v){db.ref(`utilisateurs/${k}/${f}`).set(v);setTimeout(()=>renderAdmin(),300);}
