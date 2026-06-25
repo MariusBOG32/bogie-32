@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -41,11 +40,34 @@
         @media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.btn-menu-mobile{display:block}.kanban{flex-direction:column}.kanban-col{min-width:100%}.content{padding:15px}.voitures-grid{grid-template-columns:1fr}.liste-table{font-size:.8em}.liste-table td,.liste-table th{padding:8px 10px}.admin-create-form{grid-template-columns:1fr}.admin-user-row{grid-template-columns:1fr;gap:6px}.voiture-bogies{grid-template-columns:1fr}}
         .login-page{display:flex;align-items:center;justify-content:center;height:100vh;width:100vw;background:var(--primary)}.login-box{background:#fff;border-radius:var(--radius);padding:40px;width:90%;max-width:400px;text-align:center}.login-box h1{margin-bottom:4px;font-size:2.2em;letter-spacing:3px}.login-box p{color:var(--text-light);margin-bottom:24px}.login-box input{width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:12px;font-size:.95em}
         .badge{padding:3px 8px;border-radius:4px;font-size:.7em;font-weight:600;text-transform:uppercase}.badge-blocked{background:#fef2f2;color:var(--red)}.badge-urgent{background:#fff7ed;color:var(--orange)}.badge-archived{background:#f3f4f6;color:#6b7280}.badge-done{background:#d1fae5;color:#065f46}
+        .about-link{color:rgba(255,255,255,.5);font-size:.8em;cursor:pointer;margin-top:20px;text-decoration:underline;transition:color .2s}.about-link:hover{color:rgba(255,255,255,.8)}
+        .about-panel{display:none;background:#fff;border-radius:var(--radius);padding:30px;width:90%;max-width:460px;text-align:left;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 20px 60px rgba(0,0,0,.3);z-index:100;max-height:80vh;overflow-y:auto}.about-panel.open{display:block}.about-panel h2{font-size:1.4em;margin-bottom:4px;letter-spacing:2px}.about-panel .about-subtitle{color:var(--text-light);font-size:.85em;margin-bottom:20px}.about-panel h3{font-size:.95em;margin:16px 0 8px;color:var(--accent)}.about-panel p{font-size:.85em;color:var(--text);line-height:1.6;margin-bottom:10px}.about-panel ul{font-size:.85em;color:var(--text);line-height:1.8;padding-left:20px;margin-bottom:12px}.about-panel .about-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-light)}
         @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.page.active{animation:fadeIn .3s ease}
     </style>
 </head>
 <body>
-<div id="loginPage" class="login-page"><div class="login-box"><img src="JANUS_LOGO.png" alt="JANUS" style="width:130px;margin-bottom:12px;"><h1>JANUS</h1><p>Suivi bogies — SNCF Voyageurs</p><input type="email" id="loginEmail" placeholder="Identifiant"><input type="password" id="loginPassword" placeholder="Mot de passe"><button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="login()">Connexion</button><p id="loginError" style="color:var(--red);margin-top:12px;font-size:.85em;display:none;"></p></div></div>
+<div id="loginPage" class="login-page">
+    <div class="login-box"><img src="JANUS_LOGO.png" alt="JANUS" style="width:130px;margin-bottom:12px;"><h1>JANUS</h1><p>Suivi bogies — SNCF Voyageurs</p><input type="email" id="loginEmail" placeholder="Identifiant"><input type="password" id="loginPassword" placeholder="Mot de passe"><button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="login()">Connexion</button><p id="loginError" style="color:var(--red);margin-top:12px;font-size:.85em;display:none;"></p><div class="about-link" onclick="toggleAbout()">À propos</div></div>
+    <div class="about-panel" id="aboutPanel">
+        <button class="about-close" onclick="toggleAbout()">×</button>
+        <h2>JANUS</h2>
+        <div class="about-subtitle">Suivi bogies — SNCF Voyageurs</div>
+        <h3>Pourquoi JANUS ?</h3>
+        <p>Janus est le dieu romain des passages et des transitions. Représenté avec deux visages — l'un tourné vers le passé, l'autre vers l'avenir — il veille sur chaque seuil.</p>
+        <p>Comme lui, JANUS accompagne chaque bogie dans sa transformation : de l'arrivée en rénovation jusqu'à la sortie prête à rouler. Deux chantiers (Y32 & Y25), deux regards, un seul outil de suivi.</p>
+        <h3>L'application</h3>
+        <p>JANUS est l'outil de suivi de rénovation des bogies pour les chantiers Y32 (bogies moteurs) et Y25 (bogies porteurs) de SNCF Voyageurs. Il permet de :</p>
+        <ul>
+            <li>Suivre chaque bogie étape par étape (Kanban visuel)</li>
+            <li>Saisir les heures de travail par agent et par étape</li>
+            <li>Planifier les sorties avec calcul automatique des dates</li>
+            <li>Gérer les blocages, urgences et alertes</li>
+            <li>Rattacher les bogies aux voitures/wagons de sortie</li>
+            <li>Visualiser les statistiques de production en temps réel</li>
+        </ul>
+        <p style="color:var(--text-light);font-size:.8em;margin-top:16px;">Version 2.7 — Développé pour le TI de Saintes</p>
+    </div>
+</div>
 
 <div id="app" style="display:none;width:100%;">
     <aside class="sidebar" id="sidebar">
@@ -88,6 +110,8 @@ firebase.initializeApp(firebaseConfig);const auth=firebase.auth();const db=fireb
 let currentChantier='Y32';let currentUser=null;let bogiesData={};let voituresData={};let heuresData={};let usersData={};let currentView='kanban';let showArchived=false;
 
 function getUserName(u){return u.nom||u.name||'';}
+
+function toggleAbout(){document.getElementById('aboutPanel').classList.toggle('open');}
 
 const ETAPES_Y32=[{id:'01',nom:'Nettoyage',colonne:'Attente démontage',semaine:0},{id:'02',nom:'Manutention',colonne:'Attente démontage',semaine:0},{id:'03',nom:'Démontage',colonne:'Démontage',semaine:1},{id:'04',nom:'Préparation expédition PRM',colonne:'Démontage',semaine:1},{id:'05',nom:'Manutentions Grenaillage',colonne:'Grenaillage',semaine:2},{id:'06',nom:'Expertise châssis',colonne:'Magnétoscopie',semaine:3},{id:'07',nom:'Découpe supports patins',colonne:'Magnétoscopie',semaine:3},{id:'08',nom:'Réparations',colonne:'Magnétoscopie',semaine:3},{id:'09',nom:'Magnéto',colonne:'Magnétoscopie',semaine:3},{id:'10',nom:'Re-Réparations',colonne:'Magnétoscopie',semaine:3},{id:'11',nom:'Re-Magnéto',colonne:'Magnétoscopie',semaine:3},{id:'12',nom:'Manutentions Peinture',colonne:'Peinture',semaine:4},{id:'13',nom:'Remontage + contrôle pièces',colonne:'Remontage',semaine:5},{id:'14',nom:'Pose sur essieux',colonne:'Remontage',semaine:5},{id:'15',nom:'Essai de frein',colonne:'Remontage',semaine:5},{id:'16',nom:'Montage suspension + traverse',colonne:'Remontage',semaine:5}];
 const ETAPES_Y25=[{id:'01',nom:'Gauche'},{id:'02',nom:'Démontage'},{id:'03',nom:'Bague'},{id:'04',nom:'Plaque'},{id:'05',nom:'Géométrie'},{id:'06',nom:'Magnétoscopie'},{id:'07',nom:'Remontage'},{id:'08',nom:'Terminer'}];
