@@ -14,7 +14,7 @@
     <style>
         :root{--primary:#0d1b2a;--accent:#00b4d8;--accent-hover:#0096c7;--accent-y25:#6366f1;--accent-y25-hover:#4f46e5;--red:#e63946;--orange:#f77f00;--green:#2a9d8f;--bg:#f0f2f5;--card:#fff;--text:#1d1d1d;--text-light:#6b7280;--sidebar-w:240px;--radius:12px;--shadow:0 2px 12px rgba(0,0,0,.08)}
         *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}body.y25-mode{--accent:#6366f1;--accent-hover:#4f46e5}
-        .sidebar{width:var(--sidebar-w);background:var(--primary);color:#fff;padding:20px 0;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:1000;transition:transform .3s}.sidebar .logo{padding:0 20px 20px;font-size:1.4em;font-weight:700;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:10px}.sidebar .logo span{color:var(--accent)}.sidebar-chantier{padding:10px 20px 15px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:10px}.sidebar-chantier-label{font-size:.7em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px;letter-spacing:1px}.chantier-switch{display:flex;background:rgba(255,255,255,.08);border-radius:8px;overflow:hidden;width:100%}.chantier-switch button{flex:1;padding:10px 0;border:none;background:transparent;font-weight:600;cursor:pointer;transition:all .2s;font-size:.9em;color:rgba(255,255,255,.6)}.chantier-switch button.active{background:var(--accent);color:#fff}.sidebar nav{flex:1;padding:10px 0}.sidebar nav a{display:flex;align-items:center;gap:12px;padding:12px 20px;color:rgba(255,255,255,.7);text-decoration:none;font-size:.9em;transition:all .2s;border-left:3px solid transparent}.sidebar nav a:hover,.sidebar nav a.active{color:#fff;background:rgba(255,255,255,.05);border-left-color:var(--accent)}.sidebar nav a .material-icons{font-size:20px}.sidebar-bottom{padding:15px 20px;border-top:1px solid rgba(255,255,255,.1)}.sidebar-bottom .user-name{font-size:.85em;color:rgba(255,255,255,.8);margin-bottom:8px}.sidebar-bottom .user-role{font-size:.7em;color:rgba(255,255,255,.4);margin-bottom:12px}.btn-logout{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid rgba(255,255,255,.2);border-radius:6px;background:transparent;color:rgba(255,255,255,.7);cursor:pointer;font-size:.8em;transition:all .2s;width:100%}.btn-logout:hover{background:rgba(255,255,255,.1);color:#fff}
+        .sidebar{width:var(--sidebar-w);background:var(--primary);color:#fff;padding:20px 0;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:1000;transition:transform .3s}.sidebar .logo{padding:0 20px 20px;font-size:1.4em;font-weight:700;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:10px;display:flex;align-items:center;gap:10px}.sidebar .logo img{width:26px;filter:invert(1)}.sidebar-chantier{padding:10px 20px 15px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:10px}.sidebar-chantier-label{font-size:.7em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px;letter-spacing:1px}.chantier-switch{display:flex;background:rgba(255,255,255,.08);border-radius:8px;overflow:hidden;width:100%}.chantier-switch button{flex:1;padding:10px 0;border:none;background:transparent;font-weight:600;cursor:pointer;transition:all .2s;font-size:.9em;color:rgba(255,255,255,.6)}.chantier-switch button.active{background:var(--accent);color:#fff}.sidebar nav{flex:1;padding:10px 0}.sidebar nav a{display:flex;align-items:center;gap:12px;padding:12px 20px;color:rgba(255,255,255,.7);text-decoration:none;font-size:.9em;transition:all .2s;border-left:3px solid transparent}.sidebar nav a:hover,.sidebar nav a.active{color:#fff;background:rgba(255,255,255,.05);border-left-color:var(--accent)}.sidebar nav a .material-icons{font-size:20px}.sidebar-bottom{padding:15px 20px;border-top:1px solid rgba(255,255,255,.1)}.sidebar-bottom .user-name{font-size:.85em;color:rgba(255,255,255,.8);margin-bottom:8px}.sidebar-bottom .user-role{font-size:.7em;color:rgba(255,255,255,.4);margin-bottom:12px}.btn-logout{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid rgba(255,255,255,.2);border-radius:6px;background:transparent;color:rgba(255,255,255,.7);cursor:pointer;font-size:.8em;transition:all .2s;width:100%}.btn-logout:hover{background:rgba(255,255,255,.1);color:#fff}
         .main{margin-left:var(--sidebar-w);flex:1;min-height:100vh}.topbar{background:var(--card);padding:15px 30px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);position:sticky;top:0;z-index:500}.topbar-title{font-weight:700;font-size:1.1em;display:flex;align-items:center;gap:10px}.topbar-title .chantier-badge{padding:4px 12px;border-radius:6px;font-size:.75em;font-weight:700}.chantier-badge-y32{background:#e0f7fa;color:#006064}.chantier-badge-y25{background:#ede9fe;color:#4338ca}.topbar-right{display:flex;align-items:center;gap:15px}.btn-menu-mobile{display:none;background:none;border:none;font-size:24px;cursor:pointer}
         .content{padding:30px}.page{display:none}.page.active{display:block}
         .view-switch{display:flex;gap:4px;background:var(--bg);border-radius:8px;padding:4px;margin-bottom:16px;width:fit-content}.view-switch button{padding:8px 16px;border:none;background:transparent;border-radius:6px;cursor:pointer;font-size:.85em;font-weight:500;display:flex;align-items:center;gap:6px;transition:all .2s}.view-switch button.active{background:var(--card);box-shadow:0 1px 4px rgba(0,0,0,.1)}.view-switch button .material-icons{font-size:18px}
@@ -39,18 +39,17 @@
         .link-voiture{color:var(--accent);cursor:pointer;text-decoration:underline;font-weight:600}.link-voiture:hover{color:var(--accent-hover)}
         .sort-select{padding:6px 10px;border:1px solid #e5e7eb;border-radius:6px;font-size:.8em;background:#fff;cursor:pointer}
         @media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.btn-menu-mobile{display:block}.kanban{flex-direction:column}.kanban-col{min-width:100%}.content{padding:15px}.voitures-grid{grid-template-columns:1fr}.liste-table{font-size:.8em}.liste-table td,.liste-table th{padding:8px 10px}.admin-create-form{grid-template-columns:1fr}.admin-user-row{grid-template-columns:1fr;gap:6px}.voiture-bogies{grid-template-columns:1fr}}
-        .login-page{display:flex;align-items:center;justify-content:center;height:100vh;width:100vw;background:var(--primary)}.login-box{background:#fff;border-radius:var(--radius);padding:40px;width:90%;max-width:400px;text-align:center}.login-box h1{margin-bottom:8px}.login-box p{color:var(--text-light);margin-bottom:24px}.login-box input{width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:12px;font-size:.95em}
+        .login-page{display:flex;align-items:center;justify-content:center;height:100vh;width:100vw;background:var(--primary)}.login-box{background:#fff;border-radius:var(--radius);padding:40px;width:90%;max-width:400px;text-align:center}.login-box h1{margin-bottom:4px;font-size:2.2em;letter-spacing:3px}.login-box p{color:var(--text-light);margin-bottom:24px}.login-box input{width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:12px;font-size:.95em}
         .badge{padding:3px 8px;border-radius:4px;font-size:.7em;font-weight:600;text-transform:uppercase}.badge-blocked{background:#fef2f2;color:var(--red)}.badge-urgent{background:#fff7ed;color:var(--orange)}.badge-archived{background:#f3f4f6;color:#6b7280}.badge-done{background:#d1fae5;color:#065f46}
         @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.page.active{animation:fadeIn .3s ease}
     </style>
 </head>
 <body>
-<div id="loginPage" class="login-page"><div class="login-box"><img src="JANUS_LOGO.png" alt="JANUS" style="width:130px;margin-bottom:12px;"><h1 style="font-size:2.2em;letter-spacing:3px;margin-bottom:4px;">JANUS</h1><p>Suivi bogies — SNCF Voyageurs</p>
-<input type="email" id="loginEmail" placeholder="Email"><input type="password" id="loginPassword" placeholder="Mot de passe"><button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="login()">Connexion</button><p id="loginError" style="color:var(--red);margin-top:12px;font-size:.85em;display:none;"></p></div></div>
+<div id="loginPage" class="login-page"><div class="login-box"><img src="JANUS_LOGO.png" alt="JANUS" style="width:130px;margin-bottom:12px;"><h1>JANUS</h1><p>Suivi bogies — SNCF Voyageurs</p><input type="email" id="loginEmail" placeholder="Identifiant"><input type="password" id="loginPassword" placeholder="Mot de passe"><button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="login()">Connexion</button><p id="loginError" style="color:var(--red);margin-top:12px;font-size:.85em;display:none;"></p></div></div>
 
 <div id="app" style="display:none;width:100%;">
     <aside class="sidebar" id="sidebar">
-        <div class="logo"><img src="JANUS_LOGO.png" alt="J" style="width:26px;filter:invert(1);vertical-align:middle;margin-right:8px;">JANUS</div>
+        <div class="logo"><img src="JANUS_LOGO.png" alt="J">JANUS</div>
         <div class="sidebar-chantier"><div class="sidebar-chantier-label">Chantier</div><div class="chantier-switch"><button id="btnY32" class="active" onclick="switchChantier('Y32')">Y32</button><button id="btnY25" onclick="switchChantier('Y25')">Y25</button></div></div>
         <nav>
             <a href="#" class="active" data-page="kanban"><span class="material-icons">view_kanban</span> Planification</a>
@@ -108,7 +107,7 @@ function getDateSortieEstimee(bogie){if(bogie.dateSortieEstimee)return bogie.dat
 function formatDateFr(dateStr){if(!dateStr)return'—';const d=new Date(dateStr);return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});}
 function isRetard(dateStr){if(!dateStr)return false;return new Date(dateStr)<new Date(new Date().toISOString().split('T')[0]);}
 
-function login(){const e=document.getElementById('loginEmail').value;const p=document.getElementById('loginPassword').value;auth.signInWithEmailAndPassword(e,p).catch(()=>{document.getElementById('loginError').textContent='Email ou mot de passe incorrect';document.getElementById('loginError').style.display='block';})}
+function login(){const e=document.getElementById('loginEmail').value;const p=document.getElementById('loginPassword').value;auth.signInWithEmailAndPassword(e,p).catch(()=>{document.getElementById('loginError').textContent='Identifiant ou mot de passe incorrect';document.getElementById('loginError').style.display='block';})}
 function logout(){auth.signOut();}
 auth.onAuthStateChanged(user=>{if(user){currentUser=user;document.getElementById('loginPage').style.display='none';document.getElementById('app').style.display='flex';loadUserInfo();loadData();}else{document.getElementById('loginPage').style.display='flex';document.getElementById('app').style.display='none';}});
 function loadUserInfo(){db.ref('users').orderByChild('email').equalTo(currentUser.email).once('value',snap=>{const data=snap.val();if(data){const k=Object.keys(data)[0];const u=data[k];const displayName=getUserName(u);document.getElementById('userName').textContent=displayName||currentUser.email;document.getElementById('userRole').textContent=u.role||'Agent';currentUser.role=u.role;currentUser.nom=displayName;currentUser.dbKey=k;}else{document.getElementById('userName').textContent=currentUser.email;document.getElementById('userRole').textContent='Agent';}});}
@@ -174,7 +173,7 @@ function openNewBogie(){let html='';if(currentChantier==='Y32'){html=`<div class
 function toggleAcierFourrure(){const d=document.getElementById('acierFourrureDiv');if(d)d.style.display=document.getElementById('newBogieTypo').value==='Fixe'?'block':'none';}
 function creerBogie(){const numero=document.getElementById('newBogieNumero').value.trim();if(!numero){alert('N° bogie requis');return;}let newBogie={numero,dateCreation:new Date().toISOString(),etapes:{},archive:false,bloque:false,urgent:false};const etapes=currentChantier==='Y32'?ETAPES_Y32:ETAPES_Y25;etapes.forEach(e=>{newBogie.etapes[e.id]='rouge';});if(currentChantier==='Y32'){newBogie.voitureArrivee=document.getElementById('newBogieVoitArr').value;newBogie.voitureSortie=document.getElementById('newBogieVoitSort').value;newBogie.localisation=document.getElementById('newBogieLoc').value;newBogie.observations=document.getElementById('newBogieObs').value;if(newBogie.voitureSortie)setTimeout(()=>updateBogieVoitureSortie(numero,newBogie.voitureSortie),500);}else{newBogie.typologie=document.getElementById('newBogieTypo').value;newBogie.construction=document.getElementById('newBogieConstruc').value;if(newBogie.typologie==='Fixe')newBogie.acierFourrure=document.getElementById('newBogieAcier').value;const wagon=document.getElementById('newBogieWagon').value.trim();if(wagon){newBogie.wagonSortie=wagon;setTimeout(()=>updateBogieWagonSortie(numero,wagon),500);}}db.ref(`bogies/${currentChantier}/${numero}`).set(newBogie);logAction(numero,'Bogie créé');closeModal('modalNewBogie');}
 
-// VOITURES / WAGONS — NOUVELLE VERSION (liens cliquables + bouton éditer)
+// VOITURES / WAGONS
 function renderVoitures(){
     const container=document.getElementById('voituresContainer');const labelCap=currentChantier==='Y25'?'Wagon':'Voiture';const icon=currentChantier==='Y25'?'🚂':'🚃';
     if(Object.keys(voituresData).length===0){container.innerHTML=`<p style="color:var(--text-light);">Aucun ${labelCap.toLowerCase()} enregistré</p>`;return;}
@@ -188,11 +187,9 @@ function renderVoitures(){
         html+=`<div class="voiture-info">${voiture.maintenance?`<div><strong>Maintenance:</strong> ${voiture.maintenance}</div>`:''}${voiture.type?`<div><strong>Caissonnage:</strong> ${voiture.type}</div>`:''}</div>`;
         html+=`<div style="font-size:.8em;font-weight:600;color:var(--text-light);margin-bottom:8px;">BOGIES RATTACHÉS</div>`;
         html+=`<div class="voiture-bogies">`;
-        // Bogie 1
         html+=`<div class="voiture-bogie-slot"><label>Bogie 1</label><div class="voiture-bogie-link"><span class="chip-status">${b1Done?'✅':'⏳'}</span>`;
         if(voiture.b1num){const b1Found=findBogieByNumero(voiture.b1num);html+=`<span class="link-bogie" onclick="openFicheBogie('${b1Found?b1Found[0]:voiture.b1num}')">${voiture.b1num}</span>`;}else{html+=`<span class="empty">Non assigné</span>`;}
         html+=`</div></div>`;
-        // Bogie 2
         html+=`<div class="voiture-bogie-slot"><label>Bogie 2</label><div class="voiture-bogie-link"><span class="chip-status">${b2Done?'✅':'⏳'}</span>`;
         if(voiture.b2num){const b2Found=findBogieByNumero(voiture.b2num);html+=`<span class="link-bogie" onclick="openFicheBogie('${b2Found?b2Found[0]:voiture.b2num}')">${voiture.b2num}</span>`;}else{html+=`<span class="empty">Non assigné</span>`;}
         html+=`</div></div>`;
@@ -200,7 +197,6 @@ function renderVoitures(){
     });container.innerHTML=html;
 }
 
-// EDITION VOITURE (modal)
 function openEditVoiture(voitureKey){
     const voiture=voituresData[voitureKey];if(!voiture)return;
     const label=currentChantier==='Y25'?'Wagon':'Voiture';
@@ -224,12 +220,9 @@ function saveEditVoiture(voitureKey){
     const newB1=document.getElementById('editVoitB1').value.trim();
     const newB2=document.getElementById('editVoitB2').value.trim();
     if(!newNumero){alert('N° requis');return;}
-    // Mise à jour numéro
     if(newNumero!==voiture.numero)updateVoitureNumero(voitureKey,newNumero);
-    // Mise à jour maintenance & type
     db.ref(`${getVoituresRef()}/${voitureKey}/maintenance`).set(newMaint);
     db.ref(`${getVoituresRef()}/${voitureKey}/type`).set(newType);
-    // Mise à jour bogies
     if(newB1!==(voiture.b1num||''))updateVoitureBogieSlot(voitureKey,'b1num',newB1,newNumero);
     if(newB2!==(voiture.b2num||''))updateVoitureBogieSlot(voitureKey,'b2num',newB2,newNumero);
     closeModal('modalEditVoiture');
