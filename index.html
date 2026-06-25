@@ -1,251 +1,431 @@
+# 🚀 CODE HTML/JS COMPLET - App Bogies v2.8
+
 ```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suivi Bogies v2.7</title>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>Suivi Bogies SNCF - v2.8</title>
     <style>
-        :root{--primary:#0d1b2a;--accent:#00b4d8;--accent-hover:#0096c7;--accent-y25:#6366f1;--accent-y25-hover:#4f46e5;--red:#e63946;--orange:#f77f00;--green:#2a9d8f;--bg:#f0f2f5;--card:#fff;--text:#1d1d1d;--text-light:#6b7280;--sidebar-w:240px;--radius:12px;--shadow:0 2px 12px rgba(0,0,0,.08)}
-        *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}body.y25-mode{--accent:#6366f1;--accent-hover:#4f46e5}
-        .sidebar{width:var(--sidebar-w);background:var(--primary);color:#fff;padding:20px 0;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:1000;transition:transform .3s}.sidebar .logo{padding:0 20px 20px;font-size:1.4em;font-weight:700;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:10px}.sidebar .logo span{color:var(--accent)}.sidebar-chantier{padding:10px 20px 15px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:10px}.sidebar-chantier-label{font-size:.7em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px;letter-spacing:1px}.chantier-switch{display:flex;background:rgba(255,255,255,.08);border-radius:8px;overflow:hidden;width:100%}.chantier-switch button{flex:1;padding:10px 0;border:none;background:transparent;font-weight:600;cursor:pointer;transition:all .2s;font-size:.9em;color:rgba(255,255,255,.6)}.chantier-switch button.active{background:var(--accent);color:#fff}.sidebar nav{flex:1;padding:10px 0}.sidebar nav a{display:flex;align-items:center;gap:12px;padding:12px 20px;color:rgba(255,255,255,.7);text-decoration:none;font-size:.9em;transition:all .2s;border-left:3px solid transparent}.sidebar nav a:hover,.sidebar nav a.active{color:#fff;background:rgba(255,255,255,.05);border-left-color:var(--accent)}.sidebar nav a .material-icons{font-size:20px}.sidebar-bottom{padding:15px 20px;border-top:1px solid rgba(255,255,255,.1)}.sidebar-bottom .user-name{font-size:.85em;color:rgba(255,255,255,.8);margin-bottom:8px}.sidebar-bottom .user-role{font-size:.7em;color:rgba(255,255,255,.4);margin-bottom:12px}.btn-logout{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid rgba(255,255,255,.2);border-radius:6px;background:transparent;color:rgba(255,255,255,.7);cursor:pointer;font-size:.8em;transition:all .2s;width:100%}.btn-logout:hover{background:rgba(255,255,255,.1);color:#fff}
-        .main{margin-left:var(--sidebar-w);flex:1;min-height:100vh}.topbar{background:var(--card);padding:15px 30px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);position:sticky;top:0;z-index:500}.topbar-title{font-weight:700;font-size:1.1em;display:flex;align-items:center;gap:10px}.topbar-title .chantier-badge{padding:4px 12px;border-radius:6px;font-size:.75em;font-weight:700}.chantier-badge-y32{background:#e0f7fa;color:#006064}.chantier-badge-y25{background:#ede9fe;color:#4338ca}.topbar-right{display:flex;align-items:center;gap:15px}.btn-menu-mobile{display:none;background:none;border:none;font-size:24px;cursor:pointer}
-        .content{padding:30px}.page{display:none}.page.active{display:block}
-        .view-switch{display:flex;gap:4px;background:var(--bg);border-radius:8px;padding:4px;margin-bottom:16px;width:fit-content}.view-switch button{padding:8px 16px;border:none;background:transparent;border-radius:6px;cursor:pointer;font-size:.85em;font-weight:500;display:flex;align-items:center;gap:6px;transition:all .2s}.view-switch button.active{background:var(--card);box-shadow:0 1px 4px rgba(0,0,0,.1)}.view-switch button .material-icons{font-size:18px}
-        .kanban{display:flex;gap:12px;overflow-x:auto;padding-bottom:20px}.kanban-col{min-width:200px;flex:1;background:var(--bg);border-radius:var(--radius);padding:12px}.kanban-col-header{font-weight:600;font-size:.85em;text-transform:uppercase;color:var(--text-light);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}.kanban-col-header .count{background:var(--accent);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:.75em}.kanban-card{background:var(--card);border-radius:8px;padding:12px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06);cursor:pointer;transition:transform .15s,box-shadow .15s;border-left:4px solid var(--accent)}.kanban-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.12)}.kanban-card.blocked{border-left-color:var(--red)}.kanban-card.urgent{border-left-color:var(--orange)}.kanban-card .card-title{font-weight:600;font-size:.95em;margin-bottom:4px}.kanban-card .card-sub{font-size:.8em;color:var(--text-light)}.kanban-card .card-progress{margin-top:8px;height:4px;background:#e5e7eb;border-radius:2px;overflow:hidden}.kanban-card .card-progress-bar{height:100%;background:var(--green);transition:width .3s}
-        .liste-bogies{display:none}.liste-bogies.active{display:block}.liste-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}.liste-table thead th{background:var(--primary);color:#fff;padding:12px 16px;text-align:left;font-size:.8em;text-transform:uppercase;font-weight:600}.liste-table tbody tr{border-bottom:1px solid #f3f4f6;cursor:pointer;transition:background .15s}.liste-table tbody tr:hover{background:#f9fafb}.liste-table td{padding:12px 16px;font-size:.9em}.progress-bar-mini{height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden}.progress-bar-mini-fill{height:100%;background:var(--green);border-radius:3px}.status-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}.status-dot.normal{background:var(--accent)}.status-dot.blocked{background:var(--red)}.status-dot.urgent{background:var(--orange)}
-        .modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:2000;align-items:center;justify-content:center}.modal-overlay.open{display:flex}.modal{background:var(--card);border-radius:var(--radius);width:90%;max-width:700px;max-height:85vh;overflow-y:auto;padding:30px;box-shadow:0 20px 60px rgba(0,0,0,.2)}.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.modal-header h2{font-size:1.3em}.modal-close{background:none;border:none;font-size:24px;cursor:pointer;color:var(--text-light)}
-        .etapes-grid{display:grid;grid-template-columns:1fr auto auto;gap:8px 12px;align-items:center}.etape-label{font-size:.85em;font-weight:500}.voyant{width:32px;height:32px;border-radius:50%;cursor:pointer;transition:all .2s;border:3px solid transparent}.voyant.rouge{background:var(--red)}.voyant.orange{background:var(--orange)}.voyant.vert{background:var(--green)}.voyant:hover{transform:scale(1.2);border-color:rgba(0,0,0,.2)}
-        .etape-heures-btn{padding:4px 10px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;font-size:.75em;cursor:pointer;color:var(--text-light);transition:all .2s;white-space:nowrap}.etape-heures-btn:hover{border-color:var(--accent);color:var(--accent)}.etape-heures-btn.has-hours{background:#f0fdf4;border-color:var(--green);color:var(--green)}
-        .saisie-inline{background:#f9fafb;border-radius:8px;padding:12px;margin-top:8px;display:none;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end}.saisie-inline.open{display:grid}.saisie-inline input{padding:8px;border:1px solid #e5e7eb;border-radius:6px;font-size:.85em}.saisie-inline button{padding:8px 12px;border:none;border-radius:6px;background:var(--accent);color:#fff;cursor:pointer;font-size:.85em}
-        .saisie-form{display:grid;gap:15px}.saisie-form label{font-size:.85em;font-weight:500;color:var(--text-light)}.saisie-form select,.saisie-form input{width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:.95em;outline:none;transition:border .2s}.saisie-form select:focus,.saisie-form input:focus{border-color:var(--accent)}
-        .bilan-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}.bilan-tabs button{padding:8px 16px;border:1px solid #e5e7eb;background:#fff;border-radius:20px;cursor:pointer;font-size:.85em;transition:all .2s}.bilan-tabs button.active{background:var(--accent);color:#fff;border-color:var(--accent)}.chart-container{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:20px}.chart-container canvas{width:100%!important;max-height:500px}.chart-legend{background:#f9fafb;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:.8em;color:var(--text-light);line-height:1.6}.chart-legend strong{color:var(--text)}
-        .recap-list{display:grid;gap:10px}.recap-item{background:var(--card);border-radius:8px;padding:15px;box-shadow:var(--shadow);display:flex;align-items:center;gap:15px}.recap-item .recap-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}.recap-item .recap-icon.up{background:var(--green)}.recap-item .recap-icon.blocked{background:var(--red)}.recap-item .recap-icon.warning{background:var(--orange)}
-        .voitures-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}.voiture-card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border-left:4px solid var(--accent);transition:transform .15s,box-shadow .15s}.voiture-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.12)}.voiture-card.validated{border-left-color:var(--green)}.voiture-card .voiture-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.voiture-card .voiture-numero{font-size:1.2em;font-weight:700}.voiture-card .voiture-badge{padding:3px 10px;border-radius:12px;font-size:.7em;font-weight:600;text-transform:uppercase}.voiture-badge-validated{background:#d1fae5;color:#065f46}.voiture-badge-pending{background:#fef3c7;color:#92400e}.voiture-card .voiture-info{font-size:.85em;color:var(--text-light);margin-bottom:12px}.voiture-card .voiture-info div{margin-bottom:4px}.voiture-bogies{display:flex;gap:10px;flex-wrap:wrap}.voiture-bogie-chip{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:.8em;font-weight:500;cursor:pointer;transition:all .2s}.voiture-bogie-chip:hover{transform:scale(1.05)}.voiture-bogie-chip.done{background:#d1fae5;color:#065f46}.voiture-bogie-chip.pending{background:#fef3c7;color:#92400e}.voiture-bogie-chip.assign{background:#f3f4f6;color:var(--text-light);border:1px dashed #d1d5db}.voiture-bogie-chip .chip-icon{font-size:14px}
-        .btn{padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-weight:500;font-size:.9em;transition:all .2s}.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-hover)}.btn-danger{background:var(--red);color:#fff}.btn-outline{background:transparent;border:1px solid #e5e7eb}.btn-outline:hover{background:var(--bg)}
-        .gantt-container{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);overflow-x:auto}.gantt-header{display:grid;grid-template-columns:80px 100px 1fr 90px 100px;gap:8px;padding:10px 0;border-bottom:2px solid #e5e7eb;font-size:.75em;font-weight:600;text-transform:uppercase;color:var(--text-light)}.gantt-row{display:grid;grid-template-columns:80px 100px 1fr 90px 100px;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid #f3f4f6}.gantt-row:hover{background:#f9fafb}.gantt-label{font-size:.85em;font-weight:600}.gantt-voiture{font-size:.8em;color:var(--text-light)}.gantt-bar-container{height:20px;position:relative;background:#f3f4f6;border-radius:4px;overflow:hidden}.gantt-bar{position:absolute;height:100%;border-radius:4px;background:var(--accent);opacity:.8;display:flex;align-items:center;justify-content:center;font-size:.7em;color:#fff;font-weight:600}.gantt-bar.blocked{background:var(--red)}.gantt-date{font-size:.8em;color:var(--text-light);text-align:right}.gantt-loc{font-size:.75em;color:var(--text-light);background:#f3f4f6;padding:3px 8px;border-radius:4px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .alerte-card{background:var(--card);border-radius:var(--radius);padding:16px 20px;box-shadow:var(--shadow);display:flex;align-items:center;gap:16px;margin-bottom:12px;border-left:4px solid var(--orange);cursor:pointer;transition:all .15s}.alerte-card:hover{transform:translateX(4px);box-shadow:0 4px 16px rgba(0,0,0,.1)}.alerte-card.critical{border-left-color:var(--red)}.alerte-card.info{border-left-color:var(--accent)}.alerte-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}.alerte-icon.red{background:var(--red)}.alerte-icon.orange{background:var(--orange)}.alerte-icon.blue{background:var(--accent)}.alerte-content{flex:1}.alerte-content .alerte-title{font-weight:600;font-size:.95em;margin-bottom:2px}.alerte-content .alerte-desc{font-size:.8em;color:var(--text-light)}
-        .admin-section{background:var(--card);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);margin-bottom:20px}.admin-section h3{font-size:1em;margin-bottom:16px;display:flex;align-items:center;gap:8px}.admin-user-row{display:grid;grid-template-columns:1fr 1fr 120px 100px 60px;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #f3f4f6}.admin-user-row:last-child{border-bottom:none}.admin-user-row .user-email{font-size:.85em;color:var(--text-light)}.admin-user-row .user-nom{font-size:.9em;font-weight:600}.admin-user-row select{padding:6px 10px;border:1px solid #e5e7eb;border-radius:6px;font-size:.8em}.admin-user-row .access-badges{display:flex;gap:4px}.admin-user-row .access-badge{padding:2px 8px;border-radius:4px;font-size:.7em;font-weight:600}.access-badge-y32{background:#e0f7fa;color:#006064}.access-badge-y25{background:#ede9fe;color:#4338ca}.admin-create-form{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:12px;align-items:end}.admin-create-form input,.admin-create-form select{padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:.9em}.admin-create-form label{font-size:.75em;color:var(--text-light);margin-bottom:4px;display:block}.admin-msg{padding:10px 16px;border-radius:8px;font-size:.85em;margin-top:12px;display:none}.admin-msg.success{display:block;background:#d1fae5;color:#065f46}.admin-msg.error{display:block;background:#fef2f2;color:var(--red)}.admin-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}.admin-stat-card{background:var(--bg);border-radius:8px;padding:16px;text-align:center}.admin-stat-card .stat-num{font-size:1.8em;font-weight:700;color:var(--accent)}.admin-stat-card .stat-label{font-size:.75em;color:var(--text-light);margin-top:4px}
-        @media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.btn-menu-mobile{display:block}.kanban{flex-direction:column}.kanban-col{min-width:100%}.content{padding:15px}.voitures-grid{grid-template-columns:1fr}.liste-table{font-size:.8em}.liste-table td,.liste-table th{padding:8px 10px}.gantt-header,.gantt-row{grid-template-columns:60px 70px 1fr 70px 80px;font-size:.7em}.admin-create-form{grid-template-columns:1fr}.admin-user-row{grid-template-columns:1fr;gap:6px}}
-        .login-page{display:flex;align-items:center;justify-content:center;height:100vh;width:100vw;background:var(--primary)}.login-box{background:#fff;border-radius:var(--radius);padding:40px;width:90%;max-width:400px;text-align:center}.login-box h1{margin-bottom:8px}.login-box p{color:var(--text-light);margin-bottom:24px}.login-box input{width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:12px;font-size:.95em}
-        .badge{padding:3px 8px;border-radius:4px;font-size:.7em;font-weight:600;text-transform:uppercase}.badge-blocked{background:#fef2f2;color:var(--red)}.badge-urgent{background:#fff7ed;color:var(--orange)}
-        @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.page.active{animation:fadeIn .3s ease}
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; }
+        
+        .container { display: flex; height: 100vh; }
+        
+        /* SIDEBAR */
+        .sidebar { 
+            width: 250px; 
+            background: #1a3a52; 
+            color: white; 
+            padding: 20px; 
+            overflow-y: auto;
+        }
+        .sidebar h2 { margin-bottom: 20px; font-size: 18px; }
+        .sidebar button { 
+            display: block; 
+            width: 100%; 
+            padding: 12px; 
+            margin: 8px 0; 
+            background: #2a5a7a; 
+            border: none; 
+            color: white; 
+            cursor: pointer;
+            border-radius: 4px;
+            text-align: left;
+        }
+        .sidebar button:hover { background: #3a7aaa; }
+        .sidebar button.active { background: #ff6b35; }
+        
+        /* MAIN CONTENT */
+        .main { flex: 1; display: flex; flex-direction: column; }
+        .header { background: white; padding: 20px; border-bottom: 2px solid #ddd; }
+        .header h1 { font-size: 24px; color: #1a3a52; }
+        
+        .content { flex: 1; padding: 20px; overflow-y: auto; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        
+        /* KANBAN */
+        .kanban { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
+        .kanban-col { 
+            background: #e9ecef; 
+            padding: 15px; 
+            border-radius: 8px; 
+            min-height: 400px;
+        }
+        .kanban-col h3 { margin-bottom: 10px; font-size: 16px; color: #1a3a52; }
+        .kanban-col.etape-1 { border-top: 4px solid #ff6b35; }
+        .kanban-col.etape-2 { border-top: 4px solid #4ecdc4; }
+        .kanban-col.etape-3 { border-top: 4px solid #95e1d3; }
+        .kanban-col.etape-4 { border-top: 4px solid #f38181; }
+        .kanban-col.etape-5 { border-top: 4px solid #aa96da; }
+        .kanban-col.etape-6 { border-top: 4px solid #fcbad3; }
+        
+        /* CARDS */
+        .card { 
+            background: white; 
+            padding: 12px; 
+            margin: 8px 0; 
+            border-radius: 6px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: move;
+            border-left: 4px solid #ff6b35;
+        }
+        .card h4 { font-size: 14px; margin-bottom: 5px; color: #1a3a52; }
+        .card p { font-size: 12px; color: #666; margin: 3px 0; }
+        .card .date-sortie { 
+            font-weight: bold; 
+            color: #ff6b35; 
+            margin-top: 5px;
+        }
+        .card.blocked { 
+            opacity: 0.7; 
+            border-left-color: #d9534f;
+            background: #fff5f5;
+        }
+        .card .badge { 
+            display: inline-block; 
+            padding: 3px 8px; 
+            background: #ff6b35; 
+            color: white; 
+            border-radius: 12px; 
+            font-size: 11px;
+            margin-top: 5px;
+        }
+        
+        /* CALENDRIER */
+        .calendar-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 15px;
+        }
+        .week-box { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .week-box h3 { color: #1a3a52; margin-bottom: 10px; }
+        .week-box .phase { 
+            padding: 8px; 
+            margin: 5px 0; 
+            background: #f0f0f0; 
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .week-box .count { 
+            font-weight: bold; 
+            color: #ff6b35;
+        }
+        
+        /* DRAGOVER */
+        .kanban-col.dragover { background: #dfe6e9; }
     </style>
 </head>
 <body>
-<div id="loginPage" class="login-page"><div class="login-box"><h1>Bogies <span style="color:var(--accent)">v2.7</span></h1><p>Suivi de rénovation — SNCF Voyageurs</p><input type="email" id="loginEmail" placeholder="Email"><input type="password" id="loginPassword" placeholder="Mot de passe"><button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="login()">Connexion</button><p id="loginError" style="color:var(--red);margin-top:12px;font-size:.85em;display:none;"></p></div></div>
-
-<div id="app" style="display:none;width:100%;">
-    <aside class="sidebar" id="sidebar">
-        <div class="logo">Bogies <span>v2.7</span></div>
-        <div class="sidebar-chantier"><div class="sidebar-chantier-label">Chantier</div><div class="chantier-switch"><button id="btnY32" class="active" onclick="switchChantier('Y32')">Y32</button><button id="btnY25" onclick="switchChantier('Y25')">Y25</button></div></div>
-        <nav>
-            <a href="#" class="active" data-page="kanban"><span class="material-icons">view_kanban</span> Kanban</a>
-            <a href="#" data-page="planification"><span class="material-icons">calendar_today</span> Planification</a>
-            <a href="#" data-page="bilan"><span class="material-icons">bar_chart</span> Bilan</a>
-            <a href="#" data-page="recap"><span class="material-icons">summarize</span> Récap</a>
-            <a href="#" data-page="voitures" id="navVoitures"><span class="material-icons">train</span> <span id="navVoituresLabel">Voitures</span></a>
-            <a href="#" data-page="journal"><span class="material-icons">history</span> Journal</a>
-            <a href="#" data-page="admin"><span class="material-icons">admin_panel_settings</span> Admin</a>
-        </nav>
-        <div class="sidebar-bottom"><div class="user-name" id="userName">—</div><div class="user-role" id="userRole">—</div><button class="btn-logout" onclick="logout()"><span class="material-icons" style="font-size:16px;">logout</span> Déconnexion</button></div>
-    </aside>
-    <div class="main">
-        <div class="topbar"><div style="display:flex;align-items:center;gap:15px;"><button class="btn-menu-mobile" onclick="toggleSidebar()"><span class="material-icons">menu</span></button><div class="topbar-title"><span id="topbarChantierBadge" class="chantier-badge chantier-badge-y32">Y32</span><span id="topbarPageTitle">Kanban</span></div></div><div class="topbar-right"><button class="btn btn-outline" onclick="openNewBogie()"><span class="material-icons" style="font-size:18px;vertical-align:middle;">add</span> Nouveau bogie</button></div></div>
-        <div class="content">
-            <div class="page active" id="pageKanban"><div class="view-switch"><button class="active" id="btnViewKanban" onclick="switchView('kanban')"><span class="material-icons">view_kanban</span> Kanban</button><button id="btnViewListe" onclick="switchView('liste')"><span class="material-icons">list</span> Liste</button></div><div id="kanbanContainer" class="kanban"></div><div id="listeContainer" class="liste-bogies"></div></div>
-            <div class="page" id="pagePlanification"><h2 style="margin-bottom:20px;">Planification</h2><div class="gantt-container" id="ganttContainer"></div></div>
-            <div class="page" id="pageBilan"><h2 style="margin-bottom:20px;">Bilan & Statistiques</h2><div class="bilan-tabs"><button class="active" onclick="showBilanTab('tendances')">Tendances</button><button onclick="showBilanTab('heuresBogie')">Heures/Bogie/Mois</button><button onclick="showBilanTab('budgetReel')">Budget vs Réel</button><button onclick="showBilanTab('ecartEtapes')">Écart étapes</button><button onclick="showBilanTab('alertes')">⚠️ Alertes</button></div><div id="bilanLegend" class="chart-legend" style="display:none;"></div><div class="chart-container"><canvas id="bilanChart"></canvas></div><div id="bilanTableContainer" style="display:none;"></div></div>
-            <div class="page" id="pageRecap"><h2 style="margin-bottom:20px;">Récap du jour</h2><div class="recap-list" id="recapList"></div></div>
-            <div class="page" id="pageVoitures"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;"><h2 id="voituresPageTitle">Voitures</h2><button class="btn btn-primary" onclick="openNewVoiture()"><span class="material-icons" style="font-size:18px;vertical-align:middle;">add</span> <span id="btnNewVoitureLabel">Nouvelle voiture</span></button></div><div id="voituresContainer" class="voitures-grid"></div></div>
-            <div class="page" id="pageJournal"><h2 style="margin-bottom:20px;">Journal</h2><div id="journalContainer" class="recap-list"></div></div>
-            <div class="page" id="pageAdmin"><h2 style="margin-bottom:20px;">Administration</h2><div id="adminContainer"></div></div>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h2>📋 Menu</h2>
+            <button class="nav-btn active" data-section="kanban-y32">Y32 Kanban</button>
+            <button class="nav-btn" data-section="kanban-y25">Y25 Kanban</button>
+            <button class="nav-btn" data-section="calendrier">Calendrier Y32</button>
+            <button class="nav-btn" data-section="bilan">Bilan</button>
+            <hr style="margin: 15px 0; border: none; border-top: 1px solid #444;">
+            <button class="nav-btn" data-section="parametres">Paramètres</button>
+        </div>
+        
+        <!-- MAIN CONTENT -->
+        <div class="main">
+            <div class="header">
+                <h1>🚆 Suivi Bogies SNCF - v2.8</h1>
+            </div>
+            
+            <div class="content">
+                <!-- KANBAN Y32 -->
+                <div class="content-section active" id="kanban-y32">
+                    <h2>Kanban Y32</h2>
+                    <div class="kanban" id="kanban-y32-board"></div>
+                </div>
+                
+                <!-- KANBAN Y25 -->
+                <div class="content-section" id="kanban-y25">
+                    <h2>Kanban Y25</h2>
+                    <div class="kanban" id="kanban-y25-board"></div>
+                </div>
+                
+                <!-- CALENDRIER -->
+                <div class="content-section" id="calendrier">
+                    <h2>Calendrier Y32</h2>
+                    <div class="calendar-grid" id="calendar-grid"></div>
+                </div>
+                
+                <!-- BILAN -->
+                <div class="content-section" id="bilan">
+                    <h2>Bilan</h2>
+                    <p>Section Bilan en construction...</p>
+                </div>
+                
+                <!-- PARAMETRES -->
+                <div class="content-section" id="parametres">
+                    <h2>Paramètres</h2>
+                    <p>Section Paramètres en construction...</p>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-
-<div class="modal-overlay" id="modalBogie"><div class="modal"><div class="modal-header"><h2 id="modalBogieTitle">Bogie #---</h2><button class="modal-close" onclick="closeModal('modalBogie')">×</button></div><div id="modalBogieContent"></div></div></div>
-<div class="modal-overlay" id="modalNewBogie"><div class="modal" style="max-width:500px;"><div class="modal-header"><h2>➕ Nouveau bogie</h2><button class="modal-close" onclick="closeModal('modalNewBogie')">×</button></div><div id="newBogieForm"></div></div></div>
-<div class="modal-overlay" id="modalNewVoiture"><div class="modal" style="max-width:500px;"><div class="modal-header"><h2 id="modalNewVoitureTitle">🚃 Nouvelle voiture</h2><button class="modal-close" onclick="closeModal('modalNewVoiture')">×</button></div><div id="newVoitureForm"></div></div></div>
-
-<script>
-const firebaseConfig={apiKey:"AIzaSyCCDfoX-eetDi7M7bd9tPqtFyddrW6AsMg",authDomain:"base-bogie-y32.firebaseapp.com",databaseURL:"https://base-bogie-y32-default-rtdb.europe-west1.firebasedatabase.app",projectId:"base-bogie-y32",storageBucket:"base-bogie-y32.firebasestorage.app",messagingSenderId:"1044648135435",appId:"1:1044648135435:web:e19af5fd6c9b916395300e",measurementId:"G-ZPVR01MFXK"};
-firebase.initializeApp(firebaseConfig);const auth=firebase.auth();const db=firebase.database();
-
-let currentChantier='Y32';let currentUser=null;let bogiesData={};let voituresData={};let heuresData={};let usersData={};let currentView='kanban';
-
-// Helper : accepte "nom" OU "name" depuis la base
-function getUserName(u){return u.nom||u.name||'';}
-
-const ETAPES_Y32=[{id:'01',nom:'Nettoyage',colonne:'Attente démontage'},{id:'02',nom:'Manutention',colonne:'Attente démontage'},{id:'03',nom:'Démontage',colonne:'Démontage'},{id:'04',nom:'Préparation expédition PRM',colonne:'Démontage'},{id:'05',nom:'Manutentions Grenaillage',colonne:'Grenaillage'},{id:'06',nom:'Expertise châssis',colonne:'Magnétoscopie'},{id:'07',nom:'Découpe supports patins',colonne:'Magnétoscopie'},{id:'08',nom:'Réparations',colonne:'Magnétoscopie'},{id:'09',nom:'Magnéto',colonne:'Magnétoscopie'},{id:'10',nom:'Re-Réparations',colonne:'Magnétoscopie'},{id:'11',nom:'Re-Magnéto',colonne:'Magnétoscopie'},{id:'12',nom:'Manutentions Peinture',colonne:'Peinture'},{id:'13',nom:'Remontage + contrôle pièces',colonne:'Remontage'},{id:'14',nom:'Pose sur essieux',colonne:'Remontage'},{id:'15',nom:'Essai de frein',colonne:'Remontage'},{id:'16',nom:'Montage suspension + traverse',colonne:'Remontage'}];
-const ETAPES_Y25=[{id:'01',nom:'Gauche'},{id:'02',nom:'Démontage'},{id:'03',nom:'Bague'},{id:'04',nom:'Plaque'},{id:'05',nom:'Géométrie'},{id:'06',nom:'Magnétoscopie'},{id:'07',nom:'Remontage'},{id:'08',nom:'Terminer'}];
-const COLONNES_Y32=['Attente démontage','Démontage','Grenaillage','Magnétoscopie','Peinture','Remontage','Terminés'];
-const COLONNES_Y25=['Attente','Démonté','Magnéto faite','Prêt'];
-const BUDGET_STANDARD=150;
-
-function getVoituresRef(){return currentChantier==='Y32'?'voitures':'wagons';}
-
-function login(){const e=document.getElementById('loginEmail').value;const p=document.getElementById('loginPassword').value;auth.signInWithEmailAndPassword(e,p).catch(()=>{document.getElementById('loginError').textContent='Email ou mot de passe incorrect';document.getElementById('loginError').style.display='block';})}
-function logout(){auth.signOut();}
-auth.onAuthStateChanged(user=>{if(user){currentUser=user;document.getElementById('loginPage').style.display='none';document.getElementById('app').style.display='flex';loadUserInfo();loadData();}else{document.getElementById('loginPage').style.display='flex';document.getElementById('app').style.display='none';}});
-function loadUserInfo(){db.ref('utilisateurs').orderByChild('email').equalTo(currentUser.email).once('value',snap=>{const data=snap.val();if(data){const k=Object.keys(data)[0];const u=data[k];const displayName=getUserName(u);document.getElementById('userName').textContent=displayName||currentUser.email;document.getElementById('userRole').textContent=u.role||'Agent';currentUser.role=u.role;currentUser.nom=displayName;currentUser.dbKey=k;}else{document.getElementById('userName').textContent=currentUser.email;document.getElementById('userRole').textContent='Agent';}});}
-
-function loadData(){
-    db.ref(`bogies/${currentChantier}`).on('value',snap=>{bogiesData=snap.val()||{};renderKanban();renderListe();renderGantt();renderRecap();});
-    db.ref(`heures/${currentChantier}`).on('value',snap=>{heuresData=snap.val()||{};if(document.getElementById('pageBilan').classList.contains('active'))renderBilan();});
-    db.ref(getVoituresRef()).on('value',snap=>{voituresData=snap.val()||{};if(document.getElementById('pageVoitures').classList.contains('active'))renderVoitures();});
-    db.ref('utilisateurs').on('value',snap=>{usersData=snap.val()||{};if(document.getElementById('pageAdmin').classList.contains('active'))renderAdmin();});
-}
-function switchChantier(c){
-    db.ref(`bogies/${currentChantier}`).off();db.ref(`heures/${currentChantier}`).off();db.ref(getVoituresRef()).off();
-    currentChantier=c;
-    document.getElementById('btnY32').classList.toggle('active',c==='Y32');document.getElementById('btnY25').classList.toggle('active',c==='Y25');
-    document.body.classList.toggle('y25-mode',c==='Y25');
-    const badge=document.getElementById('topbarChantierBadge');badge.textContent=c;badge.className='chantier-badge '+(c==='Y32'?'chantier-badge-y32':'chantier-badge-y25');
-    const vLabel=c==='Y25'?'Wagons':'Voitures';
-    document.getElementById('navVoituresLabel').textContent=vLabel;document.getElementById('voituresPageTitle').textContent=vLabel;
-    document.getElementById('btnNewVoitureLabel').textContent=c==='Y25'?'Nouveau wagon':'Nouvelle voiture';
-    document.getElementById('modalNewVoitureTitle').textContent=c==='Y25'?'🚂 Nouveau wagon':'🚃 Nouvelle voiture';
-    loadData();
-}
-function switchView(v){currentView=v;document.getElementById('btnViewKanban').classList.toggle('active',v==='kanban');document.getElementById('btnViewListe').classList.toggle('active',v==='liste');document.getElementById('kanbanContainer').style.display=v==='kanban'?'flex':'none';document.getElementById('listeContainer').classList.toggle('active',v==='liste');}
-
-document.querySelectorAll('.sidebar nav a').forEach(link=>{link.addEventListener('click',e=>{e.preventDefault();const page=link.dataset.page;document.querySelectorAll('.sidebar nav a').forEach(a=>a.classList.remove('active'));link.classList.add('active');document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page'+page.charAt(0).toUpperCase()+page.slice(1)).classList.add('active');const titles={kanban:'Kanban',planification:'Planification',bilan:'Bilan',recap:'Récap',voitures:currentChantier==='Y25'?'Wagons':'Voitures',journal:'Journal',admin:'Admin'};document.getElementById('topbarPageTitle').textContent=titles[page]||page;if(page==='bilan')renderBilan();if(page==='recap')renderRecap();if(page==='journal')renderJournal();if(page==='voitures')renderVoitures();if(page==='admin')renderAdmin();document.getElementById('sidebar').classList.remove('open');});});
-function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
-
-// KANBAN
-function renderKanban(){const container=document.getElementById('kanbanContainer');const colonnes=currentChantier==='Y32'?COLONNES_Y32:COLONNES_Y25;let html='';colonnes.forEach(col=>{const bogies=getBogiesForColonne(col);html+=`<div class="kanban-col"><div class="kanban-col-header">${col}<span class="count">${bogies.length}</span></div>${bogies.map(b=>renderKanbanCard(b)).join('')}</div>`;});container.innerHTML=html;}
-function getBogiesForColonne(colonne){const result=[];Object.entries(bogiesData).forEach(([id,bogie])=>{if(bogie.archive)return;if(getColonneForBogie(bogie)===colonne)result.push({id,...bogie});});return result;}
-function getColonneForBogie(bogie){return currentChantier==='Y32'?getColonneY32(bogie):getColonneY25(bogie);}
-function getColonneY32(bogie){const etapes=bogie.etapes||{};if(ETAPES_Y32.every(e=>etapes[e.id]==='vert'))return'Terminés';let last='Attente démontage';for(let i=ETAPES_Y32.length-1;i>=0;i--){const s=etapes[ETAPES_Y32[i].id];if(s==='orange'||s==='vert'){last=ETAPES_Y32[i].colonne;break;}}return last;}
-function getColonneY25(bogie){const etapes=bogie.etapes||{};if(ETAPES_Y25.every(e=>etapes[e.id]==='vert'))return'Prêt';if(etapes['06']==='vert')return'Magnéto faite';if(etapes['02']==='vert')return'Démonté';return'Attente';}
-function renderKanbanCard(bogie){const progress=getProgress(bogie);const classes=['kanban-card',bogie.bloque?'blocked':'',bogie.urgent?'urgent':''].filter(Boolean).join(' ');const badges=[bogie.bloque?'<span class="badge badge-blocked">Bloqué</span>':'',bogie.urgent?'<span class="badge badge-urgent">Urgent</span>':''].filter(Boolean).join(' ');const subInfo=currentChantier==='Y32'?(bogie.voitureSortie?'→ Voit. '+bogie.voitureSortie:''):(bogie.typologie||'');return`<div class="${classes}" onclick="openFicheBogie('${bogie.id}')"><div class="card-title">Bogie ${bogie.numero||bogie.id}</div><div class="card-sub">${subInfo} ${badges}</div><div class="card-progress"><div class="card-progress-bar" style="width:${progress}%"></div></div></div>`;}
-function getProgress(bogie){const etapes=currentChantier==='Y32'?ETAPES_Y32:ETAPES_Y25;const be=bogie.etapes||{};let done=0;etapes.forEach(e=>{if(be[e.id]==='vert')done++;});return Math.round((done/etapes.length)*100);}
-
-// LISTE
-function renderListe(){const container=document.getElementById('listeContainer');const list=Object.entries(bogiesData).filter(([id,b])=>!b.archive).sort((a,b)=>(a[1].dateSortieEstimee||'9999').localeCompare(b[1].dateSortieEstimee||'9999'));const col3Label=currentChantier==='Y32'?'Voit. sortie':'Typologie';let html=`<table class="liste-table"><thead><tr><th>Statut</th><th>N° Bogie</th><th>${col3Label}</th><th>Phase</th><th>Avancement</th><th>Sortie</th><th>Heures</th></tr></thead><tbody>`;list.forEach(([id,bogie])=>{const progress=getProgress(bogie);const colonne=getColonneForBogie(bogie);const heures=getTotalHeuresBogie(id);const sc=bogie.bloque?'blocked':bogie.urgent?'urgent':'normal';const col3=currentChantier==='Y32'?(bogie.voitureSortie||'—'):(bogie.typologie||'—');html+=`<tr onclick="openFicheBogie('${id}')"><td><span class="status-dot ${sc}"></span>${bogie.bloque?'Bloqué':bogie.urgent?'Urgent':'OK'}</td><td><strong>${bogie.numero||id}</strong></td><td>${col3}</td><td>${colonne}</td><td><div style="display:flex;align-items:center;gap:8px;"><div class="progress-bar-mini" style="flex:1;"><div class="progress-bar-mini-fill" style="width:${progress}%"></div></div><span style="font-size:.8em;color:var(--text-light);">${progress}%</span></div></td><td>${bogie.dateSortieEstimee||'—'}</td><td>${heures}h</td></tr>`;});html+='</tbody></table>';container.innerHTML=html;}
-
-// FICHE BOGIE
-function getHeuresEtape(bogieId,etapeId){let t=0;Object.values(heuresData).forEach(e=>{if(e.bogie===bogieId&&e.etape===etapeId)t+=(e.heures||0);});return Math.round(t*10)/10;}
-function openFicheBogie(bogieId){
-    const bogie=bogiesData[bogieId];if(!bogie)return;
-    const etapes=currentChantier==='Y32'?ETAPES_Y32:ETAPES_Y25;
-    document.getElementById('modalBogieTitle').textContent=`Bogie ${bogie.numero||bogieId}`;
-    let html=`<div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">${bogie.bloque?`<button class="btn btn-primary" onclick="debloquerBogie('${bogieId}')">🔓 Débloquer</button>`:`<button class="btn btn-danger" onclick="bloquerBogie('${bogieId}')">🔒 Bloquer</button>`}${bogie.urgent?`<button class="btn btn-outline" onclick="toggleUrgent('${bogieId}',false)">Retirer urgent</button>`:`<button class="btn btn-outline" onclick="toggleUrgent('${bogieId}',true)">⚠️ Urgent</button>`}</div>`;
-    if(currentChantier==='Y32'){
-        html+=`<div style="margin-bottom:20px;font-size:.9em;color:var(--text-light);">${bogie.voitureArrivee?`Voiture arrivée: <strong>${bogie.voitureArrivee}</strong> | `:''}${bogie.voitureSortie?`Voiture sortie: <strong>${bogie.voitureSortie}</strong> | `:''}${bogie.dateSortieEstimee?`Sortie estimée: <strong>${bogie.dateSortieEstimee}</strong>`:''}</div>`;
-    }else{
-        html+=`<div style="margin-bottom:20px;font-size:.9em;color:var(--text-light);">${bogie.typologie?`Type: <strong>${bogie.typologie}</strong> | `:''}${bogie.construction?`Construction: <strong>${bogie.construction}</strong> | `:''}${bogie.wagonSortie?`Wagon: <strong>${bogie.wagonSortie}</strong>`:''}</div>`;
-    }
-    const heuresBogie=getTotalHeuresBogie(bogieId);const pctBudget=Math.round((heuresBogie/BUDGET_STANDARD)*100);
-    html+=`<div style="margin-bottom:20px;"><div style="font-size:.85em;color:var(--text-light);margin-bottom:4px;">Heures: <strong>${heuresBogie}h</strong> / ${BUDGET_STANDARD}h (${pctBudget}%)</div><div class="card-progress" style="height:8px;"><div class="card-progress-bar" style="width:${Math.min(pctBudget,100)}%;background:${pctBudget>100?'var(--red)':'var(--green)'}"></div></div></div>`;
-    html+=`<h3 style="margin-bottom:12px;font-size:1em;">Étapes & Heures</h3><div class="etapes-grid">`;
-    etapes.forEach(e=>{const status=(bogie.etapes&&bogie.etapes[e.id])||'rouge';const hEtape=getHeuresEtape(bogieId,e.id);const btnClass=hEtape>0?'etape-heures-btn has-hours':'etape-heures-btn';html+=`<div class="etape-label">${e.id}. ${e.nom}</div><div class="voyant ${status}" onclick="cycleVoyant('${bogieId}','${e.id}')" title="Cliquer pour changer"></div><button class="${btnClass}" onclick="toggleSaisieInline('${bogieId}','${e.id}')">${hEtape>0?hEtape+'h':'+ h'}</button>`;});
-    html+=`</div><div class="saisie-inline" id="saisieInline"><div><label style="font-size:.75em;color:var(--text-light);">Heures</label><input type="number" id="inlineHeures" step="0.5" min="0.5" max="12" placeholder="2.5"></div><div><label style="font-size:.75em;color:var(--text-light);">Date</label><input type="date" id="inlineDate" value="${new Date().toISOString().split('T')[0]}"></div><button onclick="enregistrerHeuresInline()">✓</button></div>`;
-    if(currentChantier==='Y32'){
-        html+=`<div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px;"><div><label style="font-size:.85em;font-weight:500;color:var(--text-light);">Voiture d'arrivée</label><input type="text" value="${bogie.voitureArrivee||''}" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:8px;margin-top:4px;" onblur="updateBogieField('${bogieId}','voitureArrivee',this.value)"></div><div><label style="font-size:.85em;font-weight:500;color:var(--text-light);">Voiture de sortie</label><input type="text" value="${bogie.voitureSortie||''}" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:8px;margin-top:4px;" onblur="updateBogieVoitureSortie('${bogieId}',this.value)"></div></div>`;
-    }else{
-        html+=`<div style="margin-top:20px;"><label style="font-size:.85em;font-weight:500;color:var(--text-light);">Wagon de sortie</label><input type="text" value="${bogie.wagonSortie||''}" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:8px;margin-top:4px;" onblur="updateBogieWagonSortie('${bogieId}',this.value)"></div>`;
-    }
-    html+=`<div style="margin-top:16px;"><label style="font-size:.85em;font-weight:500;color:var(--text-light);">Observations</label><textarea style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;margin-top:4px;min-height:60px;resize:vertical;" onblur="saveObservation('${bogieId}',this.value)">${bogie.observations||''}</textarea></div>`;
-    document.getElementById('modalBogieContent').innerHTML=html;document.getElementById('modalBogie').classList.add('open');
-}
-
-let currentSaisieBogieId=null;let currentSaisieEtapeId=null;
-function toggleSaisieInline(bogieId,etapeId){currentSaisieBogieId=bogieId;currentSaisieEtapeId=etapeId;const zone=document.getElementById('saisieInline');zone.classList.add('open');document.getElementById('inlineHeures').value='';document.getElementById('inlineDate').value=new Date().toISOString().split('T')[0];document.getElementById('inlineHeures').focus();}
-function enregistrerHeuresInline(){const heures=parseFloat(document.getElementById('inlineHeures').value);const date=document.getElementById('inlineDate').value;if(!heures||!date){alert('Remplir heures et date');return;}db.ref(`heures/${currentChantier}`).push({agent:currentUser.nom||currentUser.email,bogie:currentSaisieBogieId,etape:currentSaisieEtapeId,heures,date,timestamp:new Date().toISOString()});logAction(currentSaisieBogieId,`Saisie ${heures}h sur étape ${currentSaisieEtapeId}`);setTimeout(()=>openFicheBogie(currentSaisieBogieId),300);}
-
-function updateBogieField(bogieId,champ,valeur){db.ref(`bogies/${currentChantier}/${bogieId}/${champ}`).set(valeur.trim());}
-function updateBogieVoitureSortie(bogieId,valeur){
-    valeur=valeur.trim();db.ref(`bogies/${currentChantier}/${bogieId}/voitureSortie`).set(valeur);if(!valeur)return;
-    const bogieNumero=bogiesData[bogieId].numero||bogieId;let found=null;
-    Object.entries(voituresData).forEach(([key,v])=>{if(v.numero===valeur)found=key;});
-    if(found){const voiture=voituresData[found];if(!voiture.b1num||voiture.b1num===bogieNumero)db.ref(`${getVoituresRef()}/${found}/b1num`).set(bogieNumero);else if(!voiture.b2num||voiture.b2num===bogieNumero)db.ref(`${getVoituresRef()}/${found}/b2num`).set(bogieNumero);}
-    else{db.ref(getVoituresRef()).push({numero:valeur,maintenance:'',type:'',b1num:bogieNumero,b1fait:false,b2num:'',b2fait:false,validated:false,createdAt:Date.now()});}
-}
-function updateBogieWagonSortie(bogieId,valeur){
-    valeur=valeur.trim();db.ref(`bogies/${currentChantier}/${bogieId}/wagonSortie`).set(valeur);if(!valeur)return;
-    const bogieNumero=bogiesData[bogieId].numero||bogieId;let found=null;
-    Object.entries(voituresData).forEach(([key,v])=>{if(v.numero===valeur)found=key;});
-    if(found){const wagon=voituresData[found];if(!wagon.b1num||wagon.b1num===bogieNumero)db.ref(`${getVoituresRef()}/${found}/b1num`).set(bogieNumero);else if(!wagon.b2num||wagon.b2num===bogieNumero)db.ref(`${getVoituresRef()}/${found}/b2num`).set(bogieNumero);}
-    else{db.ref(getVoituresRef()).push({numero:valeur,b1num:bogieNumero,b1fait:false,b2num:'',b2fait:false,validated:false,createdAt:Date.now()});}
-}
-function assignBogieToVoiture(voitureKey,slot,voitureNumero){
-    const bogieNumero=prompt(`N° du bogie à assigner sur le slot ${slot==='b1num'?'1':'2'} :`);if(!bogieNumero||!bogieNumero.trim())return;const num=bogieNumero.trim();
-    db.ref(`${getVoituresRef()}/${voitureKey}/${slot}`).set(num);
-    const fieldName=currentChantier==='Y32'?'voitureSortie':'wagonSortie';
-    const foundBogie=Object.entries(bogiesData).find(([id,b])=>b.numero===num||id===num);
-    if(foundBogie)db.ref(`bogies/${currentChantier}/${foundBogie[0]}/${fieldName}`).set(voitureNumero);
-    setTimeout(()=>renderVoitures(),400);
-}
-
-function cycleVoyant(bogieId,etapeId){const bogie=bogiesData[bogieId];const current=(bogie.etapes&&bogie.etapes[etapeId])||'rouge';const next=current==='rouge'?'orange':current==='orange'?'vert':'rouge';db.ref(`bogies/${currentChantier}/${bogieId}/etapes/${etapeId}`).set(next);if(currentChantier==='Y32'&&etapeId==='03'&&next==='orange'){const d=new Date();d.setDate(d.getDate()+42);db.ref(`bogies/${currentChantier}/${bogieId}/dateSortieEstimee`).set(d.toISOString().split('T')[0]);}if(next==='vert')checkBogieCompletion(bogieId);logAction(bogieId,`Étape ${etapeId} → ${next}`);setTimeout(()=>openFicheBogie(bogieId),200);}
-function checkBogieCompletion(bogieId){const bogie=bogiesData[bogieId];const etapes=currentChantier==='Y32'?ETAPES_Y32:ETAPES_Y25;const allVert=etapes.every(e=>(bogie.etapes&&bogie.etapes[e.id])==='vert');if(allVert){const bogieNumero=bogie.numero||bogieId;Object.entries(voituresData).forEach(([key,v])=>{if(v.b1num===bogieNumero)db.ref(`${getVoituresRef()}/${key}/b1fait`).set(true);if(v.b2num===bogieNumero)db.ref(`${getVoituresRef()}/${key}/b2fait`).set(true);if((v.b1num===bogieNumero&&v.b2fait)||(v.b2num===bogieNumero&&v.b1fait)){db.ref(`${getVoituresRef()}/${key}/validated`).set(true);db.ref(`${getVoituresRef()}/${key}/validatedAt`).set(Date.now());}});}}
-function bloquerBogie(bogieId){const motif=prompt('Motif du blocage (optionnel):')||'';db.ref(`bogies/${currentChantier}/${bogieId}/bloque`).set(true);db.ref(`bogies/${currentChantier}/${bogieId}/blocages`).push({debut:new Date().toISOString(),motif});logAction(bogieId,`Bloqué — ${motif}`);setTimeout(()=>openFicheBogie(bogieId),200);}
-function debloquerBogie(bogieId){db.ref(`bogies/${currentChantier}/${bogieId}/bloque`).set(false);db.ref(`bogies/${currentChantier}/${bogieId}/blocages`).orderByKey().limitToLast(1).once('value',snap=>{const data=snap.val();if(data){const k=Object.keys(data)[0];db.ref(`bogies/${currentChantier}/${bogieId}/blocages/${k}/fin`).set(new Date().toISOString());}});recalculerDateSortie(bogieId);logAction(bogieId,'Débloqué');setTimeout(()=>openFicheBogie(bogieId),200);}
-function recalculerDateSortie(bogieId){if(currentChantier!=='Y32')return;const bogie=bogiesData[bogieId];const progress=getProgress(bogie)/100;const sem=Math.ceil((1-progress)*6);const d=new Date();d.setDate(d.getDate()+sem*7);db.ref(`bogies/${currentChantier}/${bogieId}/dateSortieEstimee`).set(d.toISOString().split('T')[0]);}
-function toggleUrgent(bogieId,value){db.ref(`bogies/${currentChantier}/${bogieId}/urgent`).set(value);logAction(bogieId,value?'Marqué urgent':'Urgent retiré');setTimeout(()=>openFicheBogie(bogieId),200);}
-function saveObservation(bogieId,value){db.ref(`bogies/${currentChantier}/${bogieId}/observations`).set(value);}
-function getTotalHeuresBogie(bogieId){let t=0;Object.values(heuresData).forEach(e=>{if(e.bogie===bogieId)t+=(e.heures||0);});return Math.round(t*10)/10;}
-
-// NOUVEAU BOGIE
-function openNewBogie(){let html='';if(currentChantier==='Y32'){html=`<div class="saisie-form"><div><label>N° Bogie</label><input type="text" id="newBogieNumero"></div><div><label>Voiture d'arrivée</label><input type="text" id="newBogieVoitArr"></div><div><label>Voiture de sortie</label><input type="text" id="newBogieVoitSort"></div><div><label>Localisation</label><select id="newBogieLoc"><option>Chantier bogie</option><option>Stockage</option><option>Zone départ SD</option><option>Sablage</option><option>Parc essieux</option></select></div><div><label>Observations</label><input type="text" id="newBogieObs"></div><button class="btn btn-primary" onclick="creerBogie()">Créer</button></div>`;}else{html=`<div class="saisie-form"><div><label>N° Bogie</label><input type="text" id="newBogieNumero"></div><div><label>Typologie</label><select id="newBogieTypo" onchange="toggleAcierFourrure()"><option value="Fixe">Fixe</option><option value="Elastique">Élastique</option></select></div><div><label>Construction</label><select id="newBogieConstruc"><option value="Moulé">Moulé</option><option value="Mécano-soudé">Mécano-soudé</option></select></div><div id="acierFourrureDiv"><label>Type (Fixe)</label><select id="newBogieAcier"><option value="Acier/Acier">Acier/Acier</option><option value="Fourrure posée">Fourrure posée</option></select></div><div><label>Wagon de sortie</label><input type="text" id="newBogieWagon"></div><button class="btn btn-primary" onclick="creerBogie()">Créer</button></div>`;}document.getElementById('newBogieForm').innerHTML=html;document.getElementById('modalNewBogie').classList.add('open');}
-function toggleAcierFourrure(){const d=document.getElementById('acierFourrureDiv');if(d)d.style.display=document.getElementById('newBogieTypo').value==='Fixe'?'block':'none';}
-function creerBogie(){const numero=document.getElementById('newBogieNumero').value.trim();if(!numero){alert('N° bogie requis');return;}let newBogie={numero,dateCreation:new Date().toISOString(),etapes:{},archive:false,bloque:false,urgent:false};const etapes=currentChantier==='Y32'?ETAPES_Y32:ETAPES_Y25;etapes.forEach(e=>{newBogie.etapes[e.id]='rouge';});if(currentChantier==='Y32'){newBogie.voitureArrivee=document.getElementById('newBogieVoitArr').value;newBogie.voitureSortie=document.getElementById('newBogieVoitSort').value;newBogie.localisation=document.getElementById('newBogieLoc').value;newBogie.observations=document.getElementById('newBogieObs').value;if(newBogie.voitureSortie)setTimeout(()=>updateBogieVoitureSortie(numero,newBogie.voitureSortie),500);}else{newBogie.typologie=document.getElementById('newBogieTypo').value;newBogie.construction=document.getElementById('newBogieConstruc').value;if(newBogie.typologie==='Fixe')newBogie.acierFourrure=document.getElementById('newBogieAcier').value;const wagon=document.getElementById('newBogieWagon').value.trim();if(wagon){newBogie.wagonSortie=wagon;setTimeout(()=>updateBogieWagonSortie(numero,wagon),500);}}db.ref(`bogies/${currentChantier}/${numero}`).set(newBogie);logAction(numero,'Bogie créé');closeModal('modalNewBogie');}
-
-// VOITURES / WAGONS
-function renderVoitures(){
-    const container=document.getElementById('voituresContainer');const labelCap=currentChantier==='Y25'?'Wagon':'Voiture';const icon=currentChantier==='Y25'?'🚂':'🚃';
-    if(Object.keys(voituresData).length===0){container.innerHTML=`<p style="color:var(--text-light);">Aucun ${labelCap.toLowerCase()} enregistré</p>`;return;}
-    let html='';
-    Object.entries(voituresData).forEach(([key,voiture])=>{
-        const b1Done=voiture.b1fait===true||isBogieTermine(voiture.b1num);const b2Done=voiture.b2fait===true||isBogieTermine(voiture.b2num);
-        const allDone=b1Done&&b2Done&&voiture.b1num&&voiture.b2num;const isValidated=voiture.validated===true||allDone;
-        html+=`<div class="voiture-card ${isValidated?'validated':''}"><div class="voiture-header"><span class="voiture-numero">${icon} ${labelCap} ${voiture.numero||key}</span><span class="voiture-badge ${isValidated?'voiture-badge-validated':'voiture-badge-pending'}">${isValidated?'✓ Validé':'En cours'}</span></div><div class="voiture-info">${voiture.maintenance?`<div><strong>Maintenance:</strong> ${voiture.maintenance}</div>`:''}${voiture.type?`<div><strong>Caissonnage:</strong> ${voiture.type}</div>`:''}</div><div style="font-size:.8em;font-weight:600;color:var(--text-light);margin-bottom:8px;">BOGIES RATTACHÉS</div><div class="voiture-bogies">${voiture.b1num?`<div class="voiture-bogie-chip ${b1Done?'done':'pending'}" onclick="openFicheBogieByNumero('${voiture.b1num}')"><span class="chip-icon">${b1Done?'✓':'⏳'}</span> Bogie ${voiture.b1num}</div>`:`<div class="voiture-bogie-chip assign" onclick="assignBogieToVoiture('${key}','b1num','${voiture.numero||key}')"><span class="chip-icon">+</span> Assigner bogie 1</div>`}${voiture.b2num?`<div class="voiture-bogie-chip ${b2Done?'done':'pending'}" onclick="openFicheBogieByNumero('${voiture.b2num}')"><span class="chip-icon">${b2Done?'✓':'⏳'}</span> Bogie ${voiture.b2num}</div>`:`<div class="voiture-bogie-chip assign" onclick="assignBogieToVoiture('${key}','b2num','${voiture.numero||key}')"><span class="chip-icon">+</span> Assigner bogie 2</div>`}</div></div>`;
-    });container.innerHTML=html;
-}
-function isBogieTermine(bogieNumero){if(!bogieNumero)return false;const found=Object.entries(bogiesData).find(([id,b])=>b.numero===bogieNumero||id===bogieNumero);if(!found)return false;const etapes=currentChantier==='Y32'?ETAPES_Y32:ETAPES_Y25;return etapes.every(e=>(found[1].etapes&&found[1].etapes[e.id])==='vert');}
-function openFicheBogieByNumero(numero){const found=Object.entries(bogiesData).find(([id,b])=>b.numero===numero||id===numero);if(found)openFicheBogie(found[0]);else alert(`Bogie ${numero} non trouvé`);}
-function openNewVoiture(){const label=currentChantier==='Y25'?'Wagon':'Voiture';const html=`<div class="saisie-form"><div><label>N° ${label}</label><input type="text" id="newVoitureNumero" placeholder="Ex: 062"></div><div><label>Type de maintenance</label><select id="newVoitureMaint"><option value="ATP250">ATP250</option><option value="ATP500">ATP500</option><option value="GVG">GVG</option><option value="Autre">Autre</option></select></div><div><label>Caissonnage</label><select id="newVoitureType"><option value="non caissonné">Non caissonné</option><option value="caissonné">Caissonné</option></select></div><div><label>Bogie 1 (N°)</label><input type="text" id="newVoitureB1" placeholder="Ex: 4045"></div><div><label>Bogie 2 (N°)</label><input type="text" id="newVoitureB2" placeholder="Ex: 870"></div><button class="btn btn-primary" onclick="creerVoiture()">Créer</button></div>`;document.getElementById('newVoitureForm').innerHTML=html;document.getElementById('modalNewVoiture').classList.add('open');}
-function creerVoiture(){const numero=document.getElementById('newVoitureNumero').value.trim();if(!numero){alert('N° requis');return;}const b1=document.getElementById('newVoitureB1').value.trim();const b2=document.getElementById('newVoitureB2').value.trim();db.ref(getVoituresRef()).push({numero,maintenance:document.getElementById('newVoitureMaint').value,type:document.getElementById('newVoitureType').value,b1num:b1,b1fait:false,b2num:b2,b2fait:false,validated:false,createdAt:Date.now()});const fieldName=currentChantier==='Y32'?'voitureSortie':'wagonSortie';if(b1){const f=Object.entries(bogiesData).find(([id,bg])=>bg.numero===b1||id===b1);if(f)db.ref(`bogies/${currentChantier}/${f[0]}/${fieldName}`).set(numero);}if(b2){const f=Object.entries(bogiesData).find(([id,bg])=>bg.numero===b2||id===b2);if(f)db.ref(`bogies/${currentChantier}/${f[0]}/${fieldName}`).set(numero);}closeModal('modalNewVoiture');}
-
-// PLANIFICATION
-function renderGantt(){const container=document.getElementById('ganttContainer');if(currentChantier!=='Y32'){container.innerHTML='<p style="color:var(--text-light);">Planification disponible pour Y32</p>';return;}const list=Object.entries(bogiesData).filter(([id,b])=>!b.archive).sort((a,b)=>(a[1].dateSortieEstimee||'9999').localeCompare(b[1].dateSortieEstimee||'9999'));if(list.length===0){container.innerHTML='<p style="color:var(--text-light);">Aucun bogie</p>';return;}let html=`<div class="gantt-header"><div>Bogie</div><div>Voit. sortie</div><div>Avancement</div><div>Date fin</div><div>Zone</div></div>`;list.forEach(([id,bogie])=>{const progress=getProgress(bogie);const barClass=bogie.bloque?'gantt-bar blocked':'gantt-bar';html+=`<div class="gantt-row" style="cursor:pointer;" onclick="openFicheBogie('${id}')"><div class="gantt-label">${bogie.numero||id}</div><div class="gantt-voiture">${bogie.voitureSortie||'—'}</div><div class="gantt-bar-container"><div class="${barClass}" style="width:${progress}%">${progress>15?progress+'%':''}</div></div><div class="gantt-date">${bogie.dateSortieEstimee||'—'}</div><div class="gantt-loc">${bogie.localisation||'—'}</div></div>`;});container.innerHTML=html;}
-
-// BILAN
-let bilanChart=null;let currentBilanTab='tendances';
-function showBilanTab(tab){currentBilanTab=tab;document.querySelectorAll('.bilan-tabs button').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');renderBilan();}
-function renderBilan(){if(bilanChart){bilanChart.destroy();bilanChart=null;}const ctx=document.getElementById('bilanChart').getContext('2d');const tc=document.getElementById('bilanTableContainer');tc.style.display='none';const legend=document.getElementById('bilanLegend');legend.style.display='none';document.getElementById('bilanChart').parentElement.style.display='block';switch(currentBilanTab){case'tendances':renderTendances(ctx);break;case'heuresBogie':renderHeuresParBogie(ctx,tc);break;case'budgetReel':renderBudgetVsReel(ctx);break;case'ecartEtapes':renderEcartEtapes(ctx);break;case'alertes':renderAlertes(tc);break;}}
-function renderTendances(ctx){const now=new Date();const moisLabels=[];for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);moisLabels.push(d.toLocaleDateString('fr-FR',{month:'short',year:'2-digit'}));}const etapesCles=[{id:'03',nom:'Démontage',color:'#e63946'},{id:'09',nom:'Magnéto',color:'#f77f00'},{id:'13',nom:'Remontage',color:'#2a9d8f'}];const datasets=etapesCles.map(etape=>{const data=[];for(let i=5;i>=0;i--){const mD=new Date(now.getFullYear(),now.getMonth()-i,1);const mF=new Date(now.getFullYear(),now.getMonth()-i+1,0);let t=0;Object.values(heuresData).forEach(entry=>{if(!entry.date||entry.etape!==etape.id)return;const d=new Date(entry.date);if(d>=mD&&d<=mF)t+=entry.heures||0;});data.push(Math.round(t*10)/10);}return{label:etape.nom,data,borderColor:etape.color,backgroundColor:'transparent',tension:.3,borderWidth:3,pointRadius:4};});const totalData=[];for(let i=5;i>=0;i--){const mD=new Date(now.getFullYear(),now.getMonth()-i,1);const mF=new Date(now.getFullYear(),now.getMonth()-i+1,0);let t=0;Object.values(heuresData).forEach(entry=>{if(!entry.date)return;const d=new Date(entry.date);if(d>=mD&&d<=mF)t+=entry.heures||0;});totalData.push(Math.round(t*10)/10);}datasets.unshift({label:'TOTAL',data:totalData,borderColor:'#000',backgroundColor:'rgba(0,0,0,.05)',fill:true,tension:.3,borderWidth:3,pointRadius:5});bilanChart=new Chart(ctx,{type:'line',data:{labels:moisLabels,datasets},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{title:{display:true,text:'Tendance heures — Démontage / Magnéto / Remontage'},legend:{position:'bottom'}},scales:{y:{beginAtZero:true,title:{display:true,text:'Heures'}}}}});}
-function renderHeuresParBogie(ctx,tc){document.getElementById('bilanChart').parentElement.style.display='none';tc.style.display='block';const now=new Date();const moisLabels=[];const moisRanges=[];for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);moisLabels.push(d.toLocaleDateString('fr-FR',{month:'short',year:'2-digit'}));moisRanges.push({debut:d,fin:new Date(now.getFullYear(),now.getMonth()-i+1,0)});}const bogieIds=Object.keys(bogiesData).filter(id=>!bogiesData[id].archive);let html=`<div class="chart-container" style="overflow-x:auto;"><h3 style="margin-bottom:12px;">Heures par bogie / mois</h3><table class="liste-table"><thead><tr><th>Bogie</th>`;moisLabels.forEach(m=>{html+=`<th>${m}</th>`;});html+=`<th style="background:var(--accent);">TOTAL</th></tr></thead><tbody>`;const totM=moisLabels.map(()=>0);let gT=0;bogieIds.forEach(id=>{const n=bogiesData[id].numero||id;let tB=0;html+=`<tr><td><strong>${n}</strong></td>`;moisRanges.forEach((r,mi)=>{let h=0;Object.values(heuresData).forEach(e=>{if(e.bogie!==id||!e.date)return;const d=new Date(e.date);if(d>=r.debut&&d<=r.fin)h+=e.heures||0;});h=Math.round(h*10)/10;totM[mi]+=h;tB+=h;const bg=h>0?(h>30?'#fef2f2':h>15?'#fffbeb':'#f0fdf4'):'';html+=`<td style="text-align:center;${bg?'background:'+bg:''}">${h||'—'}</td>`;});gT+=tB;html+=`<td style="text-align:center;font-weight:600;">${Math.round(tB*10)/10}h</td></tr>`;});html+=`<tr style="background:#f3f4f6;font-weight:600;"><td>TOTAL</td>`;totM.forEach(t=>{html+=`<td style="text-align:center;">${Math.round(t*10)/10}h</td>`;});html+=`<td style="text-align:center;">${Math.round(gT*10)/10}h</td></tr></tbody></table></div>`;tc.innerHTML=html;}
-function renderBudgetVsReel(ctx){const legend=document.getElementById('bilanLegend');legend.style.display='block';legend.innerHTML=`<strong>Comment lire :</strong><br>• Barre contour vert = budget 150h<br>• Barre bleue = heures réelles<br>• Rouge = dépassement`;const ids=Object.keys(bogiesData).filter(id=>!bogiesData[id].archive);const labels=ids.map(id=>bogiesData[id].numero||id);const reel=ids.map(id=>getTotalHeuresBogie(id));bilanChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Budget (150h)',data:ids.map(()=>BUDGET_STANDARD),backgroundColor:'rgba(42,157,143,.2)',borderColor:'#2a9d8f',borderWidth:2},{label:'Réel',data:reel,backgroundColor:reel.map(v=>v>BUDGET_STANDARD?'rgba(230,57,70,.7)':'rgba(0,180,216,.7)')}]},options:{responsive:true,plugins:{title:{display:true,text:'Budget 150h vs Heures réelles'},legend:{position:'bottom'}},scales:{y:{beginAtZero:true,title:{display:true,text:'Heures'}}}}});}
-function renderEcartEtapes(ctx){const legend=document.getElementById('bilanLegend');legend.style.display='block';legend.innerHTML=`<strong>Comment lire :</strong><br>• Vert <70% — Orange 70-100% — Rouge >100%`;const etapes=currentChantier==='Y32'?ETAPES_Y32:ETAPES_Y25;const labels=etapes.map(e=>e.id+'. '+e.nom.substring(0,18));const nb=Object.keys(bogiesData).filter(id=>!bogiesData[id].archive).length||1;const hpe={};etapes.forEach(e=>{hpe[e.id]=0;});Object.values(heuresData).forEach(e=>{if(hpe[e.etape]!==undefined)hpe[e.etape]+=e.heures||0;});const gamme=BUDGET_STANDARD/etapes.length;const data=etapes.map(e=>Math.round((hpe[e.id]/(gamme*nb))*100)||0);bilanChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'% consommé',data,backgroundColor:data.map(v=>v>100?'#e63946':v>70?'#f77f00':'#2a9d8f')}]},options:{responsive:true,indexAxis:'y',plugins:{title:{display:true,text:'% Écart par étape vs gamme'},legend:{display:false}},scales:{x:{beginAtZero:true,title:{display:true,text:'%'}}}}});}
-function renderAlertes(tc){document.getElementById('bilanChart').parentElement.style.display='none';tc.style.display='block';const now=new Date();const alertes=[];Object.entries(bogiesData).forEach(([id,bogie])=>{if(bogie.archive)return;const numero=bogie.numero||id;if(bogie.bloque&&bogie.blocages){const blocages=Object.values(bogie.blocages);const lb=blocages[blocages.length-1];if(lb&&lb.debut&&!lb.fin){const jours=Math.floor((now-new Date(lb.debut))/(1e3*60*60*24));if(jours>=3)alertes.push({type:'critical',icon:'red',iconName:'block',title:`Bogie ${numero} — Bloqué ${jours}j`,desc:lb.motif||'',bogieId:id});}}const h=getTotalHeuresBogie(id);if(h>BUDGET_STANDARD)alertes.push({type:'',icon:'orange',iconName:'trending_up',title:`Bogie ${numero} — Budget dépassé`,desc:`${h}h / ${BUDGET_STANDARD}h`,bogieId:id});if(bogie.dateSortieEstimee&&getProgress(bogie)<100){const ecart=Math.floor((now-new Date(bogie.dateSortieEstimee))/(1e3*60*60*24));if(ecart>0)alertes.push({type:'critical',icon:'red',iconName:'event_busy',title:`Bogie ${numero} — Retard ${ecart}j`,desc:`Sortie prévue ${bogie.dateSortieEstimee}`,bogieId:id});}});alertes.sort((a,b)=>{const o={critical:0,'':1,info:2};return(o[a.type]||1)-(o[b.type]||1);});let html=`<div class="chart-container"><h3 style="margin-bottom:16px;">⚠️ Alertes (${alertes.length})</h3>`;if(!alertes.length)html+='<p style="color:var(--text-light);text-align:center;padding:40px;">✅ Aucune alerte</p>';else alertes.forEach(a=>{html+=`<div class="alerte-card ${a.type}" onclick="openFicheBogie('${a.bogieId}')"><div class="alerte-icon ${a.icon}"><span class="material-icons">${a.iconName}</span></div><div class="alerte-content"><div class="alerte-title">${a.title}</div><div class="alerte-desc">${a.desc}</div></div><span class="material-icons" style="color:var(--text-light);">chevron_right</span></div>`;});html+='</div>';tc.innerHTML=html;}
-
-// RECAP & JOURNAL
-function renderRecap(){const container=document.getElementById('recapList');const today=new Date().toISOString().split('T')[0];db.ref(`journal/${currentChantier}`).orderByChild('date').equalTo(today).once('value',snap=>{const entries=snap.val()||{};const lastByBogie={};Object.values(entries).forEach(e=>{if(!lastByBogie[e.bogie]||e.timestamp>lastByBogie[e.bogie].timestamp)lastByBogie[e.bogie]=e;});let html='';Object.values(lastByBogie).sort((a,b)=>(b.timestamp||'').localeCompare(a.timestamp||'')).forEach(e=>{const ic=e.action.includes('Bloqué')?'blocked':e.action.includes('Urgent')?'warning':'up';const icon=ic==='blocked'?'block':ic==='warning'?'warning':'check_circle';html+=`<div class="recap-item"><div class="recap-icon ${ic}"><span class="material-icons">${icon}</span></div><div><strong>Bogie ${e.bogie}</strong> — ${e.action}<div style="font-size:.8em;color:var(--text-light);">${e.heure||''} — ${e.agent||''}</div></div></div>`;});container.innerHTML=html||'<p style="color:var(--text-light);">Aucun mouvement aujourd\'hui</p>';});}
-function renderJournal(){const container=document.getElementById('journalContainer');db.ref(`journal/${currentChantier}`).orderByKey().limitToLast(50).once('value',snap=>{const entries=snap.val()||{};let html='';Object.values(entries).reverse().forEach(e=>{html+=`<div class="recap-item"><div><strong>Bogie ${e.bogie}</strong> — ${e.action}<div style="font-size:.8em;color:var(--text-light);">${e.date} ${e.heure||''} — ${e.agent||''}</div></div></div>`;});container.innerHTML=html||'<p style="color:var(--text-light);">Aucune entrée</p>';});}
-function logAction(bogieId,action){const now=new Date();db.ref(`journal/${currentChantier}`).push({bogie:bogieId,action,agent:currentUser.nom||currentUser.email,date:now.toISOString().split('T')[0],heure:now.toTimeString().split(' ')[0].substring(0,5),timestamp:now.toISOString()});}
-
-// ADMIN
-function renderAdmin(){const container=document.getElementById('adminContainer');const isAdmin=currentUser.role==='admin'||currentUser.role==='Responsable';if(!isAdmin){container.innerHTML=`<div class="admin-section"><p style="color:var(--text-light);text-align:center;padding:40px;">🔒 Accès réservé aux admins/responsables.</p></div>`;return;}const usersList=Object.entries(usersData);let html=`<div class="admin-stats"><div class="admin-stat-card"><div class="stat-num">${usersList.length}</div><div class="stat-label">Utilisateurs</div></div><div class="admin-stat-card"><div class="stat-num">${usersList.filter(([k,u])=>u.role==='admin').length}</div><div class="stat-label">Admins</div></div><div class="admin-stat-card"><div class="stat-num">${usersList.filter(([k,u])=>u.role==='Responsable').length}</div><div class="stat-label">Responsables</div></div><div class="admin-stat-card"><div class="stat-num">${usersList.filter(([k,u])=>u.role==='Opérateur'||u.role==='operateur').length}</div><div class="stat-label">Opérateurs</div></div></div>`;
-html+=`<div class="admin-section"><h3><span class="material-icons">person_add</span> Créer un utilisateur</h3><div class="admin-create-form"><div><label>Email</label><input type="email" id="adminNewEmail" placeholder="agent@email.fr"></div><div><label>Mot de passe</label><input type="text" id="adminNewPassword" value="Bogie2026!"></div><div><label>Nom</label><input type="text" id="adminNewNom" placeholder="NOM Prénom"></div><div><label>Rôle</label><select id="adminNewRole"><option value="Opérateur">Opérateur</option><option value="Responsable">Responsable</option><option value="admin">Admin</option></select></div><div><label>&nbsp;</label><button class="btn btn-primary" onclick="adminCreateUser()"><span class="material-icons" style="font-size:16px;vertical-align:middle;">add</span> Créer</button></div></div><div style="margin-top:12px;"><label style="font-size:.8em;color:var(--text-light);">Accès :</label><label style="font-size:.85em;margin-left:12px;"><input type="checkbox" id="adminNewY32" checked> Y32</label><label style="font-size:.85em;margin-left:12px;"><input type="checkbox" id="adminNewY25" checked> Y25</label></div><div id="adminCreateMsg" class="admin-msg"></div></div>`;
-html+=`<div class="admin-section"><h3><span class="material-icons">group</span> Utilisateurs (${usersList.length})</h3><div style="border-bottom:2px solid #e5e7eb;padding-bottom:8px;margin-bottom:8px;display:grid;grid-template-columns:1fr 1fr 120px 100px 60px;gap:12px;font-size:.75em;font-weight:600;text-transform:uppercase;color:var(--text-light);"><div>Nom</div><div>Email</div><div>Rôle</div><div>Accès</div><div></div></div>`;
-usersList.forEach(([key,user])=>{const a32=user.accessY32!==false;const a25=user.accessY25!==false;const displayName=getUserName(user);html+=`<div class="admin-user-row"><div class="user-nom">${displayName||'—'}</div><div class="user-email">${user.email||'—'}</div><select onchange="adminChangeRole('${key}',this.value)" ${user.email===currentUser.email?'disabled':''}><option value="Opérateur" ${user.role==='Opérateur'||user.role==='operateur'?'selected':''}>Opérateur</option><option value="Responsable" ${user.role==='Responsable'?'selected':''}>Responsable</option><option value="admin" ${user.role==='admin'?'selected':''}>Admin</option></select><div class="access-badges"><span class="access-badge access-badge-y32" style="cursor:pointer;opacity:${a32?'1':'.3'}" onclick="adminToggleAccess('${key}','accessY32',${!a32})">Y32</span><span class="access-badge access-badge-y25" style="cursor:pointer;opacity:${a25?'1':'.3'}" onclick="adminToggleAccess('${key}','accessY25',${!a25})">Y25</span></div><div>${user.email!==currentUser.email?`<button class="btn btn-danger" style="padding:4px 8px;font-size:.7em;" onclick="adminDeleteUser('${key}','${user.email}')"><span class="material-icons" style="font-size:14px;">delete</span></button>`:''}</div></div>`;});html+=`</div>`;container.innerHTML=html;}
-function adminCreateUser(){const email=document.getElementById('adminNewEmail').value.trim();const password=document.getElementById('adminNewPassword').value;const nom=document.getElementById('adminNewNom').value.trim();const role=document.getElementById('adminNewRole').value;const a32=document.getElementById('adminNewY32').checked;const a25=document.getElementById('adminNewY25').checked;const msgEl=document.getElementById('adminCreateMsg');if(!email||!password||password.length<6){msgEl.className='admin-msg error';msgEl.textContent='❌ Email + mdp min. 6 car.';return;}if(!nom){msgEl.className='admin-msg error';msgEl.textContent='❌ Nom requis';return;}msgEl.className='admin-msg';msgEl.style.display='block';msgEl.style.background='#f3f4f6';msgEl.style.color='var(--text-light)';msgEl.textContent='⏳ Création...';const secondaryApp=firebase.apps.find(a=>a.name==='Secondary')||firebase.initializeApp(firebaseConfig,'Secondary');const secondaryAuth=secondaryApp.auth();secondaryAuth.createUserWithEmailAndPassword(email,password).then(()=>{db.ref('utilisateurs').push({email,nom,role,accessY32:a32,accessY25:a25,createdAt:new Date().toISOString(),createdBy:currentUser.nom||currentUser.email});secondaryAuth.signOut();msgEl.className='admin-msg success';msgEl.textContent=`✅ ${nom} (${email}) — ${role}`;document.getElementById('adminNewEmail').value='';document.getElementById('adminNewNom').value='';document.getElementById('adminNewPassword').value='Bogie2026!';setTimeout(()=>renderAdmin(),1000);}).catch(err=>{msgEl.className='admin-msg error';msgEl.textContent=err.code==='auth/email-already-in-use'?'❌ Email déjà utilisé':`❌ ${err.message}`;});}
-function adminChangeRole(k,v){db.ref(`utilisateurs/${k}/role`).set(v);}
-function adminToggleAccess(k,f,v){db.ref(`utilisateurs/${k}/${f}`).set(v);setTimeout(()=>renderAdmin(),300);}
-function adminDeleteUser(k,e){if(!confirm(`Supprimer ${e} ?`))return;db.ref(`utilisateurs/${k}`).remove();setTimeout(()=>renderAdmin(),300);}
-
-function closeModal(id){document.getElementById(id).classList.remove('open');}
-document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});});
-</script>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        
+        // ⚠️ REMPLACE CES VALEURS PAR TES IDENTIFIANTS FIREBASE
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // ========================
+        // DONNÉES
+        // ========================
+        
+        let allBogies = [];
+        
+        const etapesY32 = [
+            { id: 1, nom: "Démontage", phases: ["Démontage"] },
+            { id: 2, nom: "Grenaillage", phases: ["Grenaillage"] },
+            { id: 3, nom: "Magnéto", phases: ["Magnéto"] },
+            { id: 4, nom: "Peinture", phases: ["Peinture"] },
+            { id: 5, nom: "Remontage", phases: ["Remontage"] },
+            { id: 6, nom: "Terminé", phases: ["Terminé"] }
+        ];
+        
+        const etapesY25 = [
+            { id: 1, nom: "Etape 1", phases: ["Phase 1"] },
+            { id: 2, nom: "Etape 2", phases: ["Phase 2"] },
+            { id: 3, nom: "Etape 3", phases: ["Phase 3"] }
+        ];
+        
+        // ========================
+        // FONCTIONS UTILITAIRES
+        // ========================
+        
+        function calculerDateSortie(bogie) {
+            const createdAt = new Date(bogie.createdAt);
+            let dateSortie = new Date(createdAt);
+            dateSortie.setDate(dateSortie.getDate() + 42); // +6 semaines
+            
+            // Si blocage actif, ajouter la durée
+            if (bogie.blocked && bogie.blockedDate && bogie.unblockDate) {
+                const blockedDuration = Math.ceil((new Date(bogie.unblockDate) - new Date(bogie.blockedDate)) / (1000 * 60 * 60 * 24));
+                dateSortie.setDate(dateSortie.getDate() + blockedDuration);
+            }
+            
+            return dateSortie;
+        }
+        
+        function getNumeroSemaine(date) {
+            const today = new Date();
+            const diff = date - today;
+            const weeks = Math.ceil(diff / (1000 * 60 * 60 * 24 * 7));
+            return Math.max(0, weeks);
+        }
+        
+        function formatDate(date) {
+            return new Date(date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+        
+        // ========================
+        // AFFICHAGE KANBAN
+        // ========================
+        
+        function afficherKanban(type = 'Y32') {
+            const boardId = type === 'Y32' ? 'kanban-y32-board' : 'kanban-y25-board';
+            const board = document.getElementById(boardId);
+            const etapes = type === 'Y32' ? etapesY32 : etapesY25;
+            
+            board.innerHTML = '';
+            
+            etapes.forEach((etape, idx) => {
+                const col = document.createElement('div');
+                col.className = `kanban-col etape-${idx + 1}`;
+                col.id = `col-${type}-${etape.id}`;
+                col.draggable = false;
+                
+                col.innerHTML = `
+                    <h3>${etape.nom}</h3>
+                    <div class="cards-container" style="min-height: 350px;"></div>
+                `;
+                
+                // Drag over
+                col.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    col.classList.add('dragover');
+                });
+                
+                col.addEventListener('dragleave', () => {
+                    col.classList.remove('dragover');
+                });
+                
+                // Drop
+                col.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    col.classList.remove('dragover');
+                    
+                    const cardId = e.dataTransfer.getData('text/plain');
+                    const card = document.getElementById(cardId);
+                    if (card) {
+                        col.querySelector('.cards-container').appendChild(card);
+                        console.log(`Bogie ${cardId} déplacé vers ${etape.nom}`);
+                    }
+                });
+                
+                board.appendChild(col);
+            });
+            
+            // Remplir les cartes
+            allBogies.forEach(bogie => {
+                const etapeIndex = Math.min(bogie.currentEtape || 1, etapes.length) - 1;
+                const col = document.querySelector(`#col-${type}-${etapes[etapeIndex].id} .cards-container`);
+                
+                if (col) {
+                    const card = document.createElement('div');
+                    const dateSortie = calculerDateSortie(bogie);
+                    const isBlocked = bogie.blocked;
+                    
+                    card.className = `card ${isBlocked ? 'blocked' : ''}`;
+                    card.id = `card-${bogie.id}`;
+                    card.draggable = true;
+                    
+                    card.innerHTML = `
+                        <h4>${bogie.numero}</h4>
+                        <p>📍 ${bogie.localisation}</p>
+                        <div class="date-sortie">📅 ${formatDate(dateSortie)}</div>
+                        ${isBlocked ? `<span class="badge">🔒 BLOQUÉ</span>` : ''}
+                    `;
+                    
+                    card.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.effectAllowed = 'move';
+                        e.dataTransfer.setData('text/plain', card.id);
+                    });
+                    
+                    col.appendChild(card);
+                }
+            });
+        }
+        
+        // ========================
+        // AFFICHAGE CALENDRIER
+        // ========================
+        
+        function afficherCalendrier() {
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+            
+            for (let week = 0; week <= 7; week++) {
+                const box = document.createElement('div');
+                box.className = 'week-box';
+                
+                const bogiesWeek = allBogies.filter(bogie => {
+                    const semaine = getNumeroSemaine(calculerDateSortie(bogie));
+                    return semaine === week;
+                });
+                
+                const phases = ['Démontage', 'Grenaillage', 'Magnéto', 'Peinture', 'Remontage', 'Terminé'];
+                
+                let phasesSummary = phases.map(phase => {
+                    const count = bogiesWeek.length; // Simplifié
+                    return `<div class="phase">${phase}: <span class="count">${count}</span></div>`;
+                }).join('');
+                
+                box.innerHTML = `
+                    <h3>Semaine ${week}</h3>
+                    <p><strong>${bogiesWeek.length}</strong> bogies</p>
+                    ${phasesSummary}
+                `;
+                
+                grid.appendChild(box);
+            }
+        }
+        
+        // ========================
+        // NAVIGATION
+        // ========================
+        
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                
+                btn.classList.add('active');
+                const section = document.getElementById(btn.dataset.section);
+                if (section) section.classList.add('active');
+                
+                // Refresh affichage
+                if (btn.dataset.section === 'kanban-y32') afficherKanban('Y32');
+                if (btn.dataset.section === 'kanban-y25') afficherKanban('Y25');
+                if (btn.dataset.section === 'calendrier') afficherCalendrier();
+            });
+        });
+        
+        // ========================
+        // CHARGEMENT FIREBASE
+        // ========================
+        
+        async function chargerBogies() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "bogies"));
+                allBogies = [];
+                
+                querySnapshot.forEach(doc => {
+                    allBogies.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                console.log(`✅ ${allBogies.length} bogies chargés`);
+                afficherKanban('Y32');
+                
+            } catch (error) {
+                console.error("❌ Erreur chargement Firebase:", error);
+            }
+        }
+        
+        // Lancer l'app
+        chargerBogies();
+    </script>
 </body>
 </html>
 ```
+
+---
+
+## 🎯 À FAIRE MAINTENANT
+
+1. **Configure Firebase**
+   - Remplace `YOUR_API_KEY`, etc. par tes identifiants Firebase
+   - Tu les trouves dans Firebase Console → Projet → Paramètres
+
+2. **Teste en local**
+   - Crée un fichier `index.html`
+   - Copie tout le code au-dessus dedans
+   - Ouvre dans le navigateur : `file:///chemin/vers/index.html`
+
+3. **Vérifie que ça marche**
+   - ✅ Le calendrier affiche les 8 semaines
+   - ✅ Les bogies s'affichent dans les colonnes Kanban
+   - ✅ Drag & Drop marche
+   - ✅ Date sortie s'affiche
+
+4. **Si ça marche → mets-le sur GitHub branche `dev`**
+
+5. **Dis-moi ce qui marche/marche pas** → On affine ensemble
