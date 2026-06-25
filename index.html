@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suivi Bogies v2.7</title>
+    <title>JANUS — Suivi bogies</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -45,11 +45,12 @@
     </style>
 </head>
 <body>
-<div id="loginPage" class="login-page"><div class="login-box"><h1>Bogies <span style="color:var(--accent)">v2.7</span></h1><p>Suivi de rénovation — SNCF Voyageurs</p><input type="email" id="loginEmail" placeholder="Email"><input type="password" id="loginPassword" placeholder="Mot de passe"><button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="login()">Connexion</button><p id="loginError" style="color:var(--red);margin-top:12px;font-size:.85em;display:none;"></p></div></div>
+<div id="loginPage" class="login-page"><div class="login-box"><img src="JANUS_LOGO.png" alt="JANUS" style="width:130px;margin-bottom:12px;"><h1 style="font-size:2.2em;letter-spacing:3px;margin-bottom:4px;">JANUS</h1><p>Suivi bogies — SNCF Voyageurs</p>
+<input type="email" id="loginEmail" placeholder="Email"><input type="password" id="loginPassword" placeholder="Mot de passe"><button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="login()">Connexion</button><p id="loginError" style="color:var(--red);margin-top:12px;font-size:.85em;display:none;"></p></div></div>
 
 <div id="app" style="display:none;width:100%;">
     <aside class="sidebar" id="sidebar">
-        <div class="logo">Bogies <span>v2.7</span></div>
+        <div class="logo"><img src="JANUS_LOGO.png" alt="J" style="width:26px;filter:invert(1);vertical-align:middle;margin-right:8px;">JANUS</div>
         <div class="sidebar-chantier"><div class="sidebar-chantier-label">Chantier</div><div class="chantier-switch"><button id="btnY32" class="active" onclick="switchChantier('Y32')">Y32</button><button id="btnY25" onclick="switchChantier('Y25')">Y25</button></div></div>
         <nav>
             <a href="#" class="active" data-page="kanban"><span class="material-icons">view_kanban</span> Planification</a>
