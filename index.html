@@ -93,71 +93,6 @@ body.drag-encours .kanban-card{cursor:grabbing}
 .badge-card-date{font-size:.7em;color:var(--accent);margin-top:6px;font-weight:600}
 .kanban-col{background:#e3e8ed;border:1px solid var(--border);border-top:3px solid var(--primary)}.kanban-col-header{letter-spacing:.6px;color:var(--primary);padding-bottom:8px;border-bottom:1px solid var(--border)}.kanban-card{box-shadow:none;border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);border-radius:6px}.kanban-card:hover{box-shadow:0 2px 8px rgba(16,32,48,.14)}.btn{border-radius:6px;letter-spacing:.2px}.topbar{box-shadow:none;border-bottom:1px solid var(--border)}.modal{border-radius:10px}.voiture-card{border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border)}.cal-week{border:1px solid var(--border)}.liste-table th{letter-spacing:.4px;text-transform:uppercase;font-size:.78em}@media(max-width:768px){.kanban-board{flex-direction:column}.kanban-board .kanban-col{min-width:100%}.content{padding:14px}.topbar{padding:12px 14px}.modal{width:94%;padding:18px;max-height:90vh;border-radius:14px}.modal-header h2{font-size:1.05em}.stats,.admin-stats{flex-wrap:wrap}.recap-bar{gap:6px}.recap-bar button{font-size:.8em;padding:6px 10px}.recap-bar-filtres input,.recap-bar-filtres select{font-size:.8em;padding:5px 8px;max-width:47%}.saisies-table{font-size:.78em}.saisies-table th,.saisies-table td{padding:5px 6px}.jauge-eq{padding:12px 14px}.jauge-eq-counts{gap:6px}.jauge-eq-count{padding:8px 10px;gap:8px}.jauge-eq-num{font-size:1.25em}.jauge-eq-msg{font-size:.8em;align-items:flex-start}.cal-week{padding:12px}.cal-week-header{flex-wrap:wrap;gap:4px}.cal-bogies-list{gap:6px}.cal-bogie-chip{font-size:.82em;flex-wrap:wrap}.chip-actions button{width:26px;height:26px}.cal-pool{padding:12px}.goulot-banner{padding:10px 12px;align-items:flex-start}.goulot-msg{font-size:.8em}.roues-milieu{overflow-x:auto}.roues-plan{min-width:420px;gap:8px}.roues-bogie{padding:6px}.roue-case{padding:5px}.roue-case input{font-size:.75em;padding:3px 5px}.roues-repere{font-size:.65em}.card-head{flex-wrap:wrap}.bilan-table-zebre{font-size:.8em}.voiture-card{padding-top:44px}}@media(max-width:768px){.badges-stats{grid-template-columns:repeat(2,1fr)}.badges-grid{grid-template-columns:repeat(2,1fr)}}.kanban-col-header{cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;min-height:38px;gap:8px;touch-action:manipulation}.kanban-col-header .col-nom{flex:1;display:flex;align-items:center;gap:5px;min-width:0}.kanban-col-header .col-nom>span.material-icons{text-transform:none}.kanban-col-header .col-chevron{font-size:19px;color:var(--text-light);flex:0 0 auto;text-transform:none;letter-spacing:normal;font-weight:400}.kanban-col-header:hover .col-chevron{color:var(--primary)}.kanban-col-header:active{opacity:.65}.kanban-col.replie{background:#dbe2e9;padding-bottom:10px}.kanban-col.replie .kanban-col-header{margin-bottom:0;padding-bottom:0;border-bottom:none}.kanban-col.replie .count{opacity:.85}.kanban-deplier-bar{margin-bottom:12px}@media(max-width:768px){.kanban-col-header{min-height:46px;font-size:.9em}.kanban-col-header .col-chevron{font-size:22px}.kanban-col.replie{padding-top:8px;padding-bottom:8px}}
 
-/* ══ SONDAGE JANUS ══ */
-.sq-overlay{display:none;position:fixed;inset:0;background:rgba(16,32,48,.55);z-index:6000;align-items:center;justify-content:center;padding:20px;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.sq-overlay.open{display:flex}
-.sq-box{background:var(--card);border-radius:16px;width:100%;max-width:560px;box-shadow:0 24px 70px rgba(16,32,48,.4);overflow:hidden;max-height:92vh;max-height:92dvh;margin:auto;display:flex;flex-direction:column}
-.sq-top{height:5px;background:var(--accent);flex-shrink:0}
-#sqInner{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
-.sq-intro{padding:30px 30px 26px;text-align:center;overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch}
-.sq-emblem{width:58px;height:58px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px}
-.sq-intro h2{font-size:1.4em;margin-bottom:8px}
-.sq-intro p{color:var(--text-light);font-size:.95em;line-height:1.6;margin-bottom:8px}
-.sq-conf{background:#eef3f7;border-radius:10px;padding:12px 16px;font-size:.83em;color:#3a5372;line-height:1.5;margin:14px 0 22px;text-align:left}
-.sq-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.sq-mini{font-size:.72em;color:var(--text-light);margin-top:16px}
-.sq-head{padding:20px 26px 6px;flex-shrink:0;background:var(--card);position:sticky;top:0;z-index:2}
-.sq-prow{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.sq-axe{display:inline-flex;align-items:center;gap:7px;font-size:.72em;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--accent);background:rgba(28,114,147,.10);padding:4px 11px;border-radius:20px}
-.sq-count{font-size:.78em;color:var(--text-light);font-weight:600}
-.sq-bar{height:6px;background:#e8edf1;border-radius:3px;overflow:hidden}
-.sq-bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
-.sq-body{padding:16px 26px 8px;overflow-y:auto;flex:1;min-height:0;-webkit-overflow-scrolling:touch}
-.sq-question{font-size:1.18em;font-weight:600;line-height:1.4;margin-bottom:18px}
-.sq-question .fac,.sq-obs .fac{font-size:.62em;font-weight:500;color:var(--text-light)}
-.sq-echelle{display:flex;gap:8px}
-.sq-ech-btn{flex:1;border:2px solid var(--border);background:#fff;border-radius:12px;padding:14px 4px 10px;cursor:pointer;text-align:center;font-family:inherit}
-.sq-ech-btn.sel{border-color:var(--accent);background:rgba(28,114,147,.08)}
-.sq-ech-num{font-size:1.5em;font-weight:700;line-height:1}
-.sq-ech-btn.sel .sq-ech-num{color:var(--accent)}
-.sq-ech-lab{font-size:.66em;color:var(--text-light);margin-top:7px;line-height:1.25;display:block}
-.sq-choix{display:flex;flex-direction:column;gap:9px}
-.sq-opt{border:2px solid var(--border);background:#fff;border-radius:12px;padding:14px 16px;cursor:pointer;font-size:.95em;font-weight:500;display:flex;align-items:center;gap:12px;font-family:inherit;text-align:left;color:var(--text)}
-.sq-opt.sel{border-color:var(--accent);background:rgba(28,114,147,.08)}
-.sq-opt-txt{flex:1}
-.sq-opt .tick{width:22px;height:22px;border-radius:6px;border:2px solid #cbd5e0;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px}
-.sq-opt.radio .tick{border-radius:50%}
-.sq-opt.sel .tick{background:var(--accent);border-color:var(--accent)}
-.sq-opt .tick span{opacity:0}
-.sq-opt.sel .tick span{opacity:1}
-.sq-stars{display:flex;gap:10px;justify-content:center;padding:6px 0 4px}
-.sq-star{font-size:2.6em;color:#d7dee4;cursor:pointer;line-height:1}
-.sq-star.on{color:#f0a825}
-.sq-stars-lab{text-align:center;font-size:.82em;color:var(--text-light);height:18px;margin-top:6px}
-.sq-obs{margin-top:16px}
-.sq-obs label{display:block;font-size:.82em;color:var(--text-light);margin-bottom:6px;font-weight:500}
-.sq-obs textarea{width:100%;min-height:88px;border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;font-family:inherit;font-size:.92em;resize:vertical;color:var(--text)}
-.sq-foot{display:flex;align-items:center;justify-content:space-between;padding:14px 26px 22px;border-top:1px solid #eef1f4;flex-shrink:0;background:var(--card);position:sticky;bottom:0;z-index:2}
-.sq-btn{padding:11px 20px;border:none;border-radius:9px;cursor:pointer;font-weight:600;font-size:.9em;font-family:inherit;background:var(--accent);color:#fff}
-.sq-btn:disabled{opacity:.4;cursor:not-allowed}
-.sq-btn-ghost{background:#fff;color:var(--accent);border:1px solid #cfdbe3}
-.sq-plain{background:none;border:none;color:var(--text-light);cursor:pointer;font-family:inherit;font-size:.9em;font-weight:600;padding:8px 4px}
-.sq-plain:disabled{opacity:.3;cursor:not-allowed}
-.sq-bilan{padding:30px 30px 26px;overflow-y:auto;min-height:0;flex:1;-webkit-overflow-scrolling:touch}
-.sq-check{width:62px;height:62px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:32px}
-.sq-merci-t{text-align:center;font-size:1.3em;font-weight:700;line-height:1.4;max-width:420px;margin:0 auto 8px}
-.sq-merci-s{text-align:center;color:var(--text-light);font-size:.95em;line-height:1.6;max-width:430px;margin:0 auto 22px}
-.bdg-final{border:1.5px solid #d8c48a;border-radius:14px;background:linear-gradient(160deg,#fdf9ef 0%,#f7f1e2 100%);padding:20px 22px 18px;margin:0 auto 22px;max-width:470px;text-align:center}
-.bdg-unlock{font-size:.68em;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:#a8892f;margin-bottom:9px}
-.bdg-medal{width:70px;height:70px;border-radius:50%;background:linear-gradient(150deg,#f0d894,#d9b34e);display:flex;align-items:center;justify-content:center;margin:0 auto 11px;font-size:34px}
-.bdg-nom{font-size:1.32em;font-weight:700;color:#6b5410}
-.bdg-sous{font-size:.78em;color:#9a8434;font-weight:600;margin-top:2px}
-.bdg-txt{font-size:.9em;color:#6b5b28;line-height:1.55;margin-top:11px}
-.bdg-fin{margin-top:13px;padding-top:11px;border-top:1px solid rgba(168,137,47,.28);font-size:.83em;color:#8a7530;line-height:1.5}
-.sq-bloc{border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:14px}
-.sq-bloc h3{font-size:.76em;text-transform:uppercase;letter-spacing:.7px;color:var(--text-light);margin-bottom:12px}
-.sq-li{display:flex;align-items:flex-start;gap:10px;font-size:.9em;line-height:1.4;margin-bottom:9px}
-@media(max-width:768px){.sq-echelle{flex-wrap:wrap}.sq-ech-btn{min-width:52px}}
 
 /* ══════ SORTIES PRESTATAIRE (grenaillage / peinture) — Y32 ══════ */
 .sortie-bloc{background:#f4f7fa;border:1px solid #d7e0ea;border-radius:12px;padding:14px 16px;margin-top:18px}
@@ -332,7 +267,8 @@ body.drag-modals .modal-header button,body.drag-modals .modal-header input,body.
 <div class="modal-overlay" id="modalTransport"><div class="modal" style="max-width:560px;"><div class="modal-header"><h2>🚚 Camion SD Sablage</h2><button class="modal-close" onclick="closeModal('modalTransport')">×</button></div><div id="transportContent"></div></div></div>
 <div class="modal-overlay" id="modalPalettes"><div class="modal" style="max-width:460px;"><div class="modal-header"><h2>🧺 Palettes — SD Sablage</h2><button class="modal-close" onclick="closeModal('modalPalettes')">×</button></div><div id="palettesContent"></div></div></div>
 <div class="modal-overlay" id="modalNewBogie"><div class="modal" style="max-width:500px;"><div class="modal-header"><h2>➕ Nouveau bogie</h2><button class="modal-close" onclick="closeModal('modalNewBogie')">×</button></div><div id="newBogieForm"></div></div></div>
-<div class="modal-overlay" id="modalNewVoiture"><div class="modal" style="max-width:500px;"><div class="modal-header"><h2 id="modalNewVoitureTitle">🚃 Nouvelle voiture</h2><button class="modal-close" onclick="closeModal('modalNewVoiture')">×</button></div><div id="newVoitureForm"></div></div></div><div class="modal-overlay" id="modalParc"><div class="modal" style="max-width:500px;"><div class="modal-header"><h2 id="modalParcTitle">📦 Bogie de parc</h2><button class="modal-close" onclick="closeModal('modalParc')">×</button></div><div id="parcForm"></div></div></div><div class="modal-overlay" id="modalObj"><div class="modal" style="max-width:450px;"><div class="modal-header"><h2 id="modalObjTitle">🎯 Objectif</h2><button class="modal-close" onclick="closeModal('modalObj')">×</button></div><div id="objForm"></div></div></div><div class="modal-overlay" id="modalCloture"><div class="modal" style="max-width:520px;"><div class="modal-header"><h2 id="modalClotureTitle">📋 Bilan de semaine</h2><button class="modal-close" onclick="closeModal('modalCloture')">×</button></div><div id="modalClotureContent"></div></div></div><div class="modal-overlay" id="modalEtatProd"><div class="modal" style="max-width:580px;"><div class="modal-header"><h2 id="modalEtatProdTitle">📋 État de la prod</h2><button class="modal-close" onclick="closeModal('modalEtatProd')">×</button></div><div id="modalEtatProdContent"></div></div></div>
+<div class="modal-overlay" id="modalNewVoiture"><div class="modal" style="max-width:500px;"><div class="modal-header"><h2 id="modalNewVoitureTitle">🚃 Nouvelle voiture</h2><button class="modal-close" onclick="closeModal('modalNewVoiture')">×</button></div><div id="newVoitureForm"></div></div></div><div class="modal-overlay" id="modalParc"><div class="modal" style="max-width:500px;"><div class="modal-header"><h2 id="modalParcTitle">📦 Bogie de parc</h2><button class="modal-close" onclick="closeModal('modalParc')">×</button></div><div id="parcForm"></div></div></div><div class="modal-overlay" id="modalObj"><div class="modal" style="max-width:450px;"><div class="modal-header"><h2 id="modalObjTitle">🎯 Objectif</h2><button class="modal-close" onclick="closeModal('modalObj')">×</button></div><div id="objForm"></div></div></div><div class="modal-overlay" id="modalCloture"><div class="modal" style="max-width:520px;"><div class="modal-header"><h2 id="modalClotureTitle">📋 Bilan de semaine</h2><button class="modal-close" onclick="closeModal('modalCloture')">×</button></div><div id="modalClotureContent"></div></div></div><div class="modal-overlay" id="modalRetourSondage"><div class="modal" style="max-width:600px;display:flex;flex-direction:column;max-height:88vh;overflow:hidden;"><div class="modal-header"><h2>⏱️ 1 min pour vous parler du retour du sondage</h2><button class="modal-close" onclick="closeModal('modalRetourSondage')">×</button></div><div id="modalRetourSondageContent" style="overflow-y:auto;flex:1;min-height:0;font-size:.95em;line-height:1.5;"></div><div style="text-align:center;padding-top:14px;flex-shrink:0;"><button class="btn btn-primary" style="min-width:160px;padding:12px 20px;" onclick="closeModal('modalRetourSondage')">J'ai lu, merci</button></div></div></div>
+<div class="modal-overlay" id="modalEtatProd"><div class="modal" style="max-width:580px;"><div class="modal-header"><h2 id="modalEtatProdTitle">📋 État de la prod</h2><button class="modal-close" onclick="closeModal('modalEtatProd')">×</button></div><div id="modalEtatProdContent"></div></div></div>
 <div class="modal-overlay" id="modalRoues"><div class="modal" style="max-width:660px;"><div class="modal-header"><h2 id="modalRouesTitle">Roues</h2><button class="modal-close" onclick="closeModal('modalRoues')">×</button></div><div id="rouesContent"></div></div></div>
 <div class="jn-overlay" id="jnOverlay"><div class="jn-box" id="jnBox"><div class="jn-top"></div><div class="jn-body"><div class="jn-ic" id="jnIc"><span class="material-icons" id="jnIcon">info</span></div><div class="jn-txt"><div class="jn-titre" id="jnTitre">Information</div><div class="jn-msg" id="jnMsg"></div></div></div><div class="jn-actions" id="jnActions"></div></div></div>
 <div class="modal-overlay" id="modalEditVoiture"><div class="modal" style="max-width:500px;"><div class="modal-header"><h2 id="modalEditVoitureTitle">✏️ Modifier voiture</h2><button class="modal-close" onclick="closeModal('modalEditVoiture')">×</button></div><div id="editVoitureForm"></div></div></div>
@@ -426,7 +362,7 @@ function formatActionLabel(action){if(!action)return'';const allEtapes=[...ETAPE
 function login(){const e=document.getElementById('loginEmail').value,p=document.getElementById('loginPassword').value;if(document.getElementById('rememberMe').checked)localStorage.setItem('janus_email',e);else localStorage.removeItem('janus_email');auth.signInWithEmailAndPassword(e,p).catch(()=>{document.getElementById('loginError').textContent='Identifiant ou mot de passe incorrect';document.getElementById('loginError').style.display='block';});}
 function logout(){auth.signOut();}
 auth.onAuthStateChanged(user=>{if(user){currentUser=user;chargerPrefs();chargerColsRepliees();document.getElementById('loginPage').style.display='none';document.getElementById('app').style.display='flex';loadUserInfo();const _r=_routeParse();_routeInit=_r;if(_r&&_r.chantier&&(_r.chantier==='Y32'||_r.chantier==='Y25')&&_r.chantier!==currentChantier){switchChantier(_r.chantier);}else{loadData();}}else{_routeDataOk=false;_routeUserOk=false;_routeInit=undefined;document.getElementById('loginPage').style.display='flex';document.getElementById('app').style.display='none';}});
-function loadUserInfo(){db.ref('users').orderByChild('email').equalTo(currentUser.email).once('value',snap=>{const data=snap.val();if(data){const k=Object.keys(data)[0],u=data[k],dn=getUserName(u);document.getElementById('userName').textContent=dn||currentUser.email;document.getElementById('userRole').textContent=u.role||'Agent';currentUser.role=u.role;currentUser.nom=dn;currentUser.dbKey=k;currentUser.cp=u.cp||'';currentUser.accessY32=u.accessY32!==false;currentUser.accessY25=u.accessY25!==false;appliquerAccesChantiers();appliquerAccesPages();sqVerifierAuDemarrage();_routeUserOk=true;_routePeutAppliquer();}else{document.getElementById('userName').textContent=currentUser.email;document.getElementById('userRole').textContent='Agent';_routeUserOk=true;_routePeutAppliquer();}});}
+function loadUserInfo(){db.ref('users').orderByChild('email').equalTo(currentUser.email).once('value',snap=>{const data=snap.val();if(data){const k=Object.keys(data)[0],u=data[k],dn=getUserName(u);document.getElementById('userName').textContent=dn||currentUser.email;document.getElementById('userRole').textContent=u.role||'Agent';currentUser.role=u.role;currentUser.nom=dn;currentUser.dbKey=k;currentUser.cp=u.cp||'';currentUser.accessY32=u.accessY32!==false;currentUser.accessY25=u.accessY25!==false;appliquerAccesChantiers();appliquerAccesPages();retourSondageAuDemarrage();_routeUserOk=true;_routePeutAppliquer();}else{document.getElementById('userName').textContent=currentUser.email;document.getElementById('userRole').textContent='Agent';_routeUserOk=true;_routePeutAppliquer();}});}
 function loadData(){db.ref(`bogies/${currentChantier}`).on('value',s=>{bogiesData=s.val()||{};renderKanban();renderListe();renderRecap();renderVoitBogies();renderParcBogies();if(currentView==='calendrier'&&document.getElementById('pageKanban').classList.contains('active'))renderCalendrier();_routeDataOk=true;_routePeutAppliquer();});db.ref(`heures/${currentChantier}`).on('value',s=>{heuresData=s.val()||{};if(document.getElementById('pageBilan').classList.contains('active'))renderBilan();});db.ref(getVoituresRef()).on('value',s=>{voituresData=s.val()||{};if(document.getElementById('pageVoitures').classList.contains('active'))renderVoitures();});db.ref('users').on('value',s=>{usersData=s.val()||{};if(document.getElementById('pageAdmin').classList.contains('active'))renderAdmin();});db.ref('qualite').on('value',s=>{qualiteData=s.val()||{};});db.ref('palettes/'+currentChantier).on('value',s=>{palettesData=s.val()||{};const _m=document.getElementById('modalPalettes');if(_m&&_m.classList.contains('open'))renderPalettes();if(document.getElementById('pageKanban').classList.contains('active'))renderKanban();});if(currentChantier==='Y25'){db.ref('objectifs/Y25').on('value',s=>{objectifsData=s.val()||{};if(!_clotureY25Faite){_clotureY25Faite=true;clotureSemainesEcouleesY25();}if(document.getElementById('pageObjectifs').classList.contains('active'))renderObjectifs();});db.ref('parc/Y25').on('value',s=>{parcData=s.val()||{};if(document.getElementById('pageParc').classList.contains('active'))renderParc();});}}
 function appliquerAccesPages(){const isResp=currentUser&&(currentUser.role==='admin'||currentUser.role==='Responsable');const nj=document.getElementById('navJournal');if(nj)nj.style.display=isResp?'flex':'none';const nb=document.getElementById('navBilan');if(nb)nb.style.display=(isResp&&currentChantier==='Y32')?'flex':'none';}
 function appliquerAccesChantiers(){const isAdmin=currentUser.role==='admin';const canY32=isAdmin||currentUser.accessY32!==false;const canY25=isAdmin||currentUser.accessY25!==false;const bY32=document.getElementById('btnY32'),bY25=document.getElementById('btnY25');if(bY32)bY32.style.display=canY32?'':'none';if(bY25)bY25.style.display=canY25?'':'none';if(currentChantier==='Y32'&&!canY32&&canY25){switchChantier('Y25');}else if(currentChantier==='Y25'&&!canY25&&canY32){switchChantier('Y32');}}
@@ -1104,9 +1040,9 @@ function renderAide(container){const sections=[
 {id:'aide8',t:'📦 Parc bogie (Y25)',c:'<p>La page <strong>Parc bogie</strong> (Y25) inventorie les bogies stockés.</p><ul><li>Ajoutez un bogie avec ses caractéristiques, son état et sa zone de stockage.</li><li>Côté marchandise, les caractéristiques se lisent <strong>Lisoirs</strong> (Fixe ou Élastique) et, pour les lisoirs fixes, <strong>Type de crapaudine</strong> : Acier/Acier, Fourrure posée ou <strong>Fourrure encastrée</strong>. Ce dernier type est nouveau ; les bogies saisis avant son ajout gardent leur valeur d\'origine, pensez à les corriger si besoin.</li><li>À la <strong>création d\'un bogie Y25</strong>, le champ <strong>Note initiale</strong> remplace le wagon de sortie : ce que vous y écrivez est reporté directement en observation sur la fiche. Le wagon se renseigne depuis la fiche du bogie ou la page Wagons.</li><li>Si vous créez un bogie dont le numéro est déjà <strong>au parc</strong>, l\'appli propose de l\'<strong>envoyer en production</strong> plutôt que de créer une fiche vierge (évite les doublons).</li><li>Bouton <strong>« → Prod »</strong> : envoie un bogie du parc vers la production.</li><li>Depuis la fiche d\'un bogie en production, vous pouvez aussi le <strong>renvoyer au parc</strong>.</li></ul>'},
 {id:'aide9',t:'✅ Contrôle libératoire (Y32)',c:'<p>Quand les 16 étapes d\'un bogie Y32 sont terminées, une section <strong>Contrôle libératoire</strong> apparaît sur sa fiche (réservée aux responsables).</p><ul><li>Consultez les REX et rappels de bonnes pratiques.</li><li>Cochez tous les points de la checklist qualité.</li><li>Validez pour <strong>libérer le bogie</strong> : il est alors bon pour sortir du chantier. Votre nom et la date sont enregistrés.</li></ul>'},
 {id:'aide10',t:'📊 Bilan et Récap',c:'<p><strong>Récap</strong> : en haut, un <strong>sélecteur de vues</strong> — <em>Activité · Saisie des heures · Alertes</em> (Y32) ou <em>Activité · Moyenne h/étape · Alertes</em> (Y25). Juste en dessous, une <strong>barre unique pour filtrer et trier</strong> : période (Aujourd\'hui / Semaine / Mois), recherche par N° de bogie, agent, et ordre de tri. La <strong>liste d\'activité</strong> est au premier plan. (La saisie des heures reste réservée aux responsables.)</p><p><strong>Bilan</strong> (Y32) : graphiques et tableaux — <strong>tendance du temps moyen par phase</strong> (colonnes Kanban : démontage, magnéto, remontage ; au survol d\'un point, la moyenne <em>et</em> le total du mois, et un clic sur une phase dans la légende l\'isole), <strong>budget vs réel</strong> (un seul trait de budget à 150h, les barres = réel ; <strong>cliquez une barre</strong> pour le détail d\'un bogie : heures par étape, agents et alertes), moyenne d\'heures par étape, heures par voiture. Toutes les durées sont en <strong>heures + minutes</strong>.</p><p><strong>Calendrier</strong> (Y32) : projection des sorties semaine par semaine. En haut, une <strong>jauge d\'équilibre</strong> ① Impair / ② Pair indique s\'il faut faire avancer des bogies d\'une parité pour former des paires. Le calendrier ne projette que ce qui tient dans la <strong>capacité réelle de l\'atelier</strong> : un bogie par semaine. Les bogies sont placés automatiquement, du plus avancé au moins avancé, sans jamais sortir avant le délai que leur phase impose (remontage 1 semaine, magnétoscopie 3, grenaillage 4, etc.). Le placement <strong>alterne autant que possible impairs et pairs</strong>, pour que les sorties permettent de former des voitures complètes. Les bogies qui ne tiennent pas dans l\'horizon sont regroupés dans un <strong>bandeau « non planifiés »</strong> en bas du calendrier, avec le compte d\'impairs et de pairs disponibles : un clic sur l\'un d\'eux le place en dernière semaine, ce qui permet d\'arbitrer ce que l\'on envoie au démontage. Les <strong>flèches ◀ ▶</strong> sur chaque bogie permettent d\'avancer ou de retarder une sortie à la main ; l\'icône 📌 signale un placement manuel et <strong>↺</strong> revient à l\'automatique. Les bogies bloqués sont exclus.</p>'},
-{id:'aide11',t:'👤 Profil',c:'<p>La page à votre nom regroupe deux barres d\'onglets : <strong>Moi</strong> (Réglages) et, pour les responsables et admins, <strong>Atelier</strong> (Utilisateurs, Qualité, Sondage). En bas de page, <strong>Aide</strong>, <strong>Pourquoi JANUS</strong> et <strong>Déconnexion</strong> : on y va ponctuellement, ce ne sont pas des onglets de travail.</p><p>Votre <strong>profil</strong> (nom en bas à gauche) regroupe :</p><ul><li><strong>Réglages</strong> : vos préférences d\'affichage (voir ci-dessous).</li><li><strong>Aide</strong> : ce guide.</li><li><strong>Déconnexion</strong> (isolée à droite).</li></ul><p>Les onglets sont regroupés en deux familles : <strong>Moi</strong> (réglages, aide) et, pour les responsables, <strong>Atelier</strong> (gestion des utilisateurs, qualité).</p><p><strong>Réglages personnels</strong> : ils ne concernent que <em>votre</em> affichage, sur <em>cet</em> appareil — ils ne changent rien pour vos collègues. Vous pouvez y masquer certaines alertes et indicateurs (magnétoscopie, objectif en retard, bogie sans activité, jauge pair/impair) et couper les animations de félicitations ou l\'onglet des badges. Tout est activé par défaut, et un bouton « Tout réactiver » remet l\'affichage d\'origine. Les contrôles de sécurité (position pair/impair, blocage d\'archivage, droits d\'accès) restent toujours actifs.</p>'},
+{id:'aide11',t:'👤 Profil',c:'<p>La page à votre nom regroupe deux barres d\'onglets : <strong>Moi</strong> (Réglages) et, pour les responsables et admins, <strong>Atelier</strong> (Utilisateurs, Qualité). En bas de page, <strong>Aide</strong>, <strong>Pourquoi JANUS</strong> et <strong>Déconnexion</strong> : on y va ponctuellement, ce ne sont pas des onglets de travail.</p><p>Votre <strong>profil</strong> (nom en bas à gauche) regroupe :</p><ul><li><strong>Réglages</strong> : vos préférences d\'affichage (voir ci-dessous).</li><li><strong>Aide</strong> : ce guide.</li><li><strong>Déconnexion</strong> (isolée à droite).</li></ul><p>Les onglets sont regroupés en deux familles : <strong>Moi</strong> (réglages, aide) et, pour les responsables, <strong>Atelier</strong> (gestion des utilisateurs, qualité).</p><p><strong>Réglages personnels</strong> : ils ne concernent que <em>votre</em> affichage, sur <em>cet</em> appareil — ils ne changent rien pour vos collègues. Vous pouvez y masquer certaines alertes et indicateurs (magnétoscopie, objectif en retard, bogie sans activité, jauge pair/impair) et couper les animations de félicitations ou l\'onglet des badges. Tout est activé par défaut, et un bouton « Tout réactiver » remet l\'affichage d\'origine. Les contrôles de sécurité (position pair/impair, blocage d\'archivage, droits d\'accès) restent toujours actifs.</p>'},
+{id:'aideRetourSondage',t:'📊 Retour du sondage',c:'<p>Le message de retour du sondage s\'affiche une seule fois à l\'ouverture de JANUS. <a href="#" onclick="ouvrirRetourSondage();return false;">Le relire</a>.</p>'},
 {id:'aide12',t:'👥 Gérer les utilisateurs (admin)',c:'<p>Dans le profil, onglet <strong>Gestion utilisateurs</strong> (responsables/admins) :</p><ul><li>Créez un compte (email, mot de passe, nom, rôle).</li><li>Définissez les <strong>droits d\'accès</strong> par chantier (Y32 / Y25) : cliquez sur les badges pour activer/désactiver.</li><li>Un utilisateur ne voit que le(s) chantier(s) autorisé(s).</li><li><strong>Accès par rôle aux pages</strong> : le <strong>Journal</strong> et le <strong>Bilan</strong> ne sont visibles que par les responsables et les admins. Les opérateurs gardent la Planification, le Récap, les Voitures ou Wagons, et pour le Y25 les Objectifs et le Parc. Le Récap reste accessible à tous (point production de fin de journée), mais sa sous-vue « Saisie des heures » reste réservée aux responsables.</li></ul>'},
-{id:'aideSondage',t:'📊 Le sondage',c:'<p>À l\'ouverture de JANUS, un court questionnaire vous est proposé (12 questions, environ 2 minutes).</p><p><strong>Vos réponses sont anonymes.</strong> Elles sont enregistrées sans aucun lien avec votre nom ou votre compte. JANUS retient seulement <em>que</em> vous avez répondu, pour ne plus vous solliciter — jamais <em>ce que</em> vous avez répondu.</p><ul><li>Vous pouvez choisir « Plus tard » : le questionnaire reviendra à la prochaine ouverture, tant que vous n\'y avez pas répondu.</li><li>Les questions marquées « facultatif » peuvent être laissées vides.</li><li>Vous pouvez revenir en arrière avec « Précédent » pour corriger une réponse.</li></ul><p>L\'analyse des réponses est réservée à l\'administrateur.</p>'},
 ];
 let html='<p style="color:var(--text-light);margin-bottom:16px;">Guide d\'utilisation de JANUS. Cliquez sur une rubrique pour la déplier.</p>';
 sections.forEach(s=>{html+='<div style="margin-bottom:8px;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;"><div class="aide-titre" data-cible="'+s.id+'" onclick="toggleAide(\''+s.id+'\')" style="padding:12px 16px;background:#f9fafb;cursor:pointer;font-weight:600;display:flex;justify-content:space-between;align-items:center;">'+s.t+'<span style="color:var(--accent);">▸</span></div><div class="aide-corps" id="'+s.id+'" style="display:none;padding:12px 16px;font-size:.9em;line-height:1.6;">'+s.c+'</div></div>';});
@@ -1333,279 +1269,10 @@ if(currentUser.role==='admin'||currentUser.role==='Responsable'){const _nbObs=Ob
 h+='<div style="margin-top:16px;padding:10px 12px;background:#eef2ff;border-radius:8px;font-size:.8em;color:var(--text-light);">Les contrôles de sécurité (position pair/impair, blocage d\'archivage, droits d\'accès) restent actifs en permanence et ne sont pas désactivables.</div>';
 container.innerHTML=h;}
 
-/* ════════════════════════════════════════════════════════════
-   CHAPITRE 22 · SONDAGE UTILISATEURS (anonyme, one-shot)
-   Firebase : /sondages (reponses anonymes)  +  /sondages_faits/{dbKey} (a repondu)
-   Les deux branches sont volontairement disjointes : aucun lien
-   ne permet de relier une reponse a un utilisateur.
-   ════════════════════════════════════════════════════════════ */
-const SQ_AXES={ergo:'Prise en main & ergonomie',fiab:'Fiabilité & confiance',util:'Utilité métier',manq:'Manques & irritants',satis:'Satisfaction & suite'};
-const SQ_FONCTIONS=['Kanban / Planification','Saisie des étapes','Récap','Règles d\u2019appairage et de planification (Y32)','Contrôle qualité avant sortie','Vivier / Parc','Calendrier des sorties'];
-const SQ_QUESTIONS=[
-{axe:'ergo',type:'echelle',q:"À l'usage, JANUS est globalement…",labels:['Très difficile','Difficile','Correct','Facile','Très facile']},
-{axe:'ergo',type:'echelle',q:"La lisibilité sur ta tablette / ton mobile est…",labels:['Très mauvaise','Mauvaise','Correcte','Bonne','Très bonne']},
-{axe:'ergo',type:'echelle',q:"Saisir une étape (heures, voyant) est…",labels:['Très lent','Lent','Correct','Rapide','Très rapide']},
-{axe:'fiab',type:'echelle',q:"Tu fais confiance aux infos affichées (récap, tendances, alertes) :",labels:['Pas du tout','Peu','Moyennement','Plutôt','Tout à fait']},
-{axe:'fiab',type:'choix',q:"As-tu déjà rencontré un blocage, ou une info qui te paraissait fausse ?",options:['Souvent','Parfois','Rarement','Jamais'],obs:"Si oui, précise (étape, bogie, écran concerné) :"},
-{axe:'util',type:'echelle',q:"Au quotidien, JANUS t'aide dans ton travail :",labels:['Pas du tout','Un peu','Moyennement','Beaucoup','Énormément']},
-{axe:'util',type:'multi',q:"Les fonctions que tu utilises le plus :",options:SQ_FONCTIONS},
-{axe:'util',type:'multi',q:"Les fonctions que tu n'utilises jamais :",options:SQ_FONCTIONS},
-{axe:'manq',type:'obs',q:"Qu'est-ce qui te manque le plus dans JANUS ?",placeholder:"Une fonction, un écran, une info qui te manque…",optional:true},
-{axe:'manq',type:'obs',q:"Ton principal point d'agacement ?",placeholder:"Ce qui te fait perdre du temps ou t'énerve à l'usage…",optional:true},
-{axe:'satis',type:'etoiles',q:"Ta note globale pour JANUS :"},
-{axe:'satis',type:'obs',q:"Une idée, une suggestion pour la suite ?",placeholder:"Ce que tu aimerais voir arriver dans JANUS…",optional:true}];
-
-let sqStep=0,sqRep={},sqObs={},sqPhase='intro',sqEnvoiEnCours=false;
-
-function sqVerifierAuDemarrage(){
-  if(!currentUser||!currentUser.dbKey)return;
-  db.ref('sondages_faits/'+currentUser.dbKey).once('value').then(sn=>{
-    if(sn.exists())return;                 // deja repondu : plus jamais propose
-    setTimeout(()=>sqOuvrir(),1200);       // laisse l'appli s'afficher d'abord
-  }).catch(()=>{});
-}
-function sqOuvrir(){
-  if(document.getElementById('sqOverlay').classList.contains('open'))return;
-  sqPhase='intro';sqStep=0;sqRender();
-  document.getElementById('sqOverlay').classList.add('open');
-}
-function sqFermer(){document.getElementById('sqOverlay').classList.remove('open');}
-function sqPlusTard(){sqPhase='later';sqRender();}
-function sqDemarrer(){sqPhase='quiz';sqStep=0;sqRender();}
-
-function sqRender(){
-  const el=document.getElementById('sqInner');
-  if(sqPhase==='intro')el.innerHTML=sqTplIntro();
-  else if(sqPhase==='later')el.innerHTML=sqTplLater();
-  else if(sqPhase==='quiz')el.innerHTML=sqTplQuiz();
-  else if(sqPhase==='bilan')el.innerHTML=sqTplBilan();
-}
-function sqTplIntro(){
-  return '<div class="sq-intro"><div class="sq-emblem"><span class="material-icons">forum</span></div>'+
-  '<h2>Votre avis compte</h2>'+
-  '<p>Un court questionnaire pour améliorer JANUS et faire remonter les problèmes que vous avez pu rencontrer.</p>'+
-  '<div class="sq-conf"><strong>Anonyme.</strong> Vos réponses ne sont reliées à aucun nom. Elles servent uniquement à faire évoluer l\'outil. Environ 2 minutes, 12 questions.</div>'+
-  '<div class="sq-actions"><button class="sq-btn" onclick="sqDemarrer()">Répondre maintenant</button>'+
-  '<button class="sq-btn sq-btn-ghost" onclick="sqPlusTard()">Plus tard</button></div>'+
-  '<div class="sq-mini">Vous pourrez passer les questions facultatives.</div></div>';
-}
-function sqTplLater(){
-  return '<div class="sq-intro"><div class="sq-emblem" style="background:#94a3b8"><span class="material-icons">schedule</span></div>'+
-  '<h2>Pas de souci</h2><p>Le questionnaire vous sera reproposé à la prochaine ouverture de JANUS, tant que vous n\'y avez pas répondu.</p>'+
-  '<div class="sq-actions" style="margin-top:18px"><button class="sq-btn" onclick="sqDemarrer()">Finalement, répondre</button>'+
-  '<button class="sq-btn sq-btn-ghost" onclick="sqFermer()">Fermer</button></div></div>';
-}
-function sqObsVisible(){
-  const Q=SQ_QUESTIONS[sqStep];
-  if(!Q||!Q.obs)return false;
-  if(sqRep[sqStep]===undefined)return false;
-  return sqRep[sqStep]!=='Jamais';
-}
-function sqRepondu(){
-  const Q=SQ_QUESTIONS[sqStep];
-  if(Q.optional||Q.type==='multi')return true;
-  return sqRep[sqStep]!==undefined&&sqRep[sqStep]!==''&&sqRep[sqStep]!==0;
-}
-function sqTplQuiz(){
-  const Q=SQ_QUESTIONS[sqStep],pct=Math.round(((sqStep+1)/SQ_QUESTIONS.length)*100);
-  let body='';
-  if(Q.type==='echelle'){
-    body='<div class="sq-echelle">'+Q.labels.map((lab,i)=>'<button class="sq-ech-btn '+(sqRep[sqStep]===i+1?'sel':'')+'" onclick="sqPick('+(i+1)+')"><span class="sq-ech-num">'+(i+1)+'</span><span class="sq-ech-lab">'+lab+'</span></button>').join('')+'</div>';
-  }else if(Q.type==='choix'){
-    body='<div class="sq-choix">'+Q.options.map((o,i)=>'<button class="sq-opt radio '+(sqRep[sqStep]===o?'sel':'')+'" data-i="'+i+'" onclick="sqPickOpt('+i+')"><span class="tick"><span class="material-icons" style="font-size:14px">check</span></span><span class="sq-opt-txt">'+o+'</span></button>').join('')+'</div>'+
-    '<div class="sq-obs" id="sqObsBloc" style="display:'+(sqObsVisible()?'block':'none')+'"><label>'+Q.obs+' <span class="fac">(facultatif)</span></label><textarea placeholder="Tu peux laisser vide…" oninput="sqObs['+sqStep+']=this.value">'+(sqObs[sqStep]||'')+'</textarea></div>';
-  }else if(Q.type==='multi'){
-    const cur=sqRep[sqStep]||[];
-    body='<div class="sq-choix">'+Q.options.map((o,i)=>'<button class="sq-opt '+(cur.indexOf(o)>=0?'sel':'')+'" data-i="'+i+'" onclick="sqToggle('+i+')"><span class="tick"><span class="material-icons" style="font-size:14px">check</span></span><span class="sq-opt-txt">'+o+'</span></button>').join('')+'</div>';
-  }else if(Q.type==='etoiles'){
-    const n=sqRep[sqStep]||0,labs=['','Insuffisant','Passable','Correct','Bien','Excellent'];
-    body='<div class="sq-stars">'+[1,2,3,4,5].map(i=>'<span class="sq-star '+(i<=n?'on':'')+'" onclick="sqPick('+i+')">★</span>').join('')+'</div><div class="sq-stars-lab">'+(labs[n]||'')+'</div>';
-  }else{
-    body='<div class="sq-obs"><textarea placeholder="'+Q.placeholder+'" oninput="sqObs['+sqStep+']=this.value">'+(sqObs[sqStep]||'')+'</textarea></div>';
-  }
-  const last=sqStep===SQ_QUESTIONS.length-1;
-  return '<div class="sq-head"><div class="sq-prow"><span class="sq-axe">'+SQ_AXES[Q.axe]+'</span><span class="sq-count">'+(sqStep+1)+' / '+SQ_QUESTIONS.length+'</span></div>'+
-  '<div class="sq-bar"><div class="sq-bar-fill" style="width:'+pct+'%"></div></div></div>'+
-  '<div class="sq-body"><div class="sq-question">'+Q.q+(Q.optional?' <span class="fac">(facultatif)</span>':'')+'</div>'+body+'</div>'+
-  '<div class="sq-foot"><button class="sq-plain" onclick="sqPrev()" '+(sqStep===0?'disabled':'')+'>← Précédent</button>'+
-  '<button class="sq-btn" id="sqNext" onclick="sqNext()" '+(sqRepondu()?'':'disabled')+'>'+(last?'Envoyer':'Suivant →')+'</button></div>';
-}
-function sqMajNext(){const b=document.getElementById('sqNext');if(b)b.disabled=!sqRepondu();}
-function sqPick(v){
-  sqRep[sqStep]=v;const Q=SQ_QUESTIONS[sqStep];
-  if(Q.type==='echelle')document.querySelectorAll('#sqInner .sq-ech-btn').forEach((b,i)=>b.classList.toggle('sel',i+1===v));
-  else if(Q.type==='etoiles'){
-    document.querySelectorAll('#sqInner .sq-star').forEach((b,i)=>b.classList.toggle('on',i+1<=v));
-    const labs=['','Insuffisant','Passable','Correct','Bien','Excellent'],l=document.querySelector('#sqInner .sq-stars-lab');
-    if(l)l.textContent=labs[v]||'';
-  }
-  sqMajNext();
-}
-/* selection par index : le texte du bouton contient la ligature de l'icone */
-function sqPickOpt(i){
-  const Q=SQ_QUESTIONS[sqStep];sqRep[sqStep]=Q.options[i];
-  document.querySelectorAll('#sqInner .sq-opt').forEach(b=>b.classList.toggle('sel',Number(b.dataset.i)===i));
-  const o=document.getElementById('sqObsBloc');
-  if(o){const show=sqObsVisible();o.style.display=show?'block':'none';
-    if(show&&o.scrollIntoView)setTimeout(()=>{try{o.scrollIntoView({block:'nearest',behavior:'smooth'});}catch(e){}},50);}
-  sqMajNext();
-}
-function sqToggle(i){
-  const Q=SQ_QUESTIONS[sqStep],v=Q.options[i],cur=sqRep[sqStep]||[],k=cur.indexOf(v);
-  if(k>=0)cur.splice(k,1);else cur.push(v);
-  sqRep[sqStep]=cur;
-  document.querySelectorAll('#sqInner .sq-opt').forEach(b=>b.classList.toggle('sel',cur.indexOf(Q.options[Number(b.dataset.i)])>=0));
-  sqMajNext();
-}
-function sqPrev(){if(sqStep>0){sqStep--;sqRender();}}
-function sqNext(){
-  if(!sqRepondu())return;
-  if(sqStep<SQ_QUESTIONS.length-1){sqStep++;sqRender();}
-  else sqEnvoyer();
-}
-async function sqEnvoyer(){
-  if(sqEnvoiEnCours)return;sqEnvoiEnCours=true;
-  const btn=document.getElementById('sqNext');if(btn){btn.disabled=true;btn.textContent='Envoi…';}
-  const rep={};
-  SQ_QUESTIONS.forEach((Q,i)=>{
-    const o={axe:Q.axe,type:Q.type,q:Q.q};
-    if(Q.type==='obs')o.texte=(sqObs[i]||'').trim();
-    else{o.valeur=(sqRep[i]!==undefined?sqRep[i]:null);if(Q.obs)o.texte=(sqObs[i]||'').trim();}
-    rep['q'+(i+1)]=o;
-  });
-  try{
-    /* 1. reponse anonyme : aucun identifiant */
-    await db.ref('sondages').push({date:Date.now(),chantier:currentChantier,reponses:rep});
-    /* A partir d'ici la reponse est enregistree : plus rien ne doit pouvoir
-       faire croire a un echec, sinon l'agent recommence et on compte double. */
-    try{
-      /* 2. marquage separe : sert uniquement a ne plus reproposer */
-      if(currentUser&&currentUser.dbKey)await db.ref('sondages_faits/'+currentUser.dbKey).set(Date.now());
-    }catch(e2){}
-    sqPhase='bilan';sqRender();
-  }catch(e){
-    sqEnvoiEnCours=false;
-    if(btn){btn.disabled=false;btn.textContent='Envoyer';}
-    jnAlert('Envoi impossible pour le moment. Vérifie ta connexion et réessaie.');
-  }
-}
-function sqTplBilan(){
-  const faits=['Un outil unique pour piloter les deux chantiers, Y32 et Y25',
-  "La production visible en temps réel, de l'entrée à la sortie du bogie",
-  'L\u2019archivage des bogies terminés, consultables à tout moment',
-  "Un suivi partagé et toujours à jour pour toute l'équipe",
-  'Un accès direct sur le terrain, tablette comme mobile',
-  'La fin du suivi éparpillé — tout centralisé au même endroit',
-  'Le vivier / parc bogie — un état des lieux sur le terrain permettra de le compléter'];
-  const suite=['Une traçabilité numérique complète, du terrain au dossier',
-  'Une version officielle et téléchargeable du suivi de production',
-  'Un cadre renforcé : hébergement officiel et sécurité des données',
-  'Un outil pérenne, au service durable des deux chantiers'];
-  return '<div class="sq-bilan"><div class="sq-check"><span class="material-icons" style="font-size:32px">check</span></div>'+
-  '<div class="sq-merci-t">JANUS n\'existerait pas sans ceux qui le remplissent tous les jours.</div>'+
-  '<div class="sq-merci-s">Merci d\'avoir pris le temps de répondre — vos retours orientent directement les prochaines évolutions de l\'outil.</div>'+
-  '<div class="bdg-final"><div class="bdg-unlock">Dernier badge débloqué</div><div class="bdg-medal">🕊️</div>'+
-  '<div class="bdg-nom">Envol</div><div class="bdg-sous">JANUS vole de ses propres ailes</div>'+
-  '<div class="bdg-txt">Vous l\'avez nourri, saisie après saisie. Il tourne maintenant grâce à vous.</div>'+
-  '<div class="bdg-fin">La phase de lancement se termine : c\'est le dernier badge de JANUS. Les célébrations s\'arrêtent ici — vos badges obtenus, eux, restent dans votre profil.</div></div>'+
-  '<div class="sq-bloc"><h3>Ce qu\'on a construit ensemble</h3>'+faits.map(f=>'<div class="sq-li">✅ '+f+'</div>').join('')+'</div>'+
-  '<div class="sq-bloc"><h3>Ce qui pourrait arriver ensuite</h3>'+suite.map(f=>'<div class="sq-li">➡️ '+f+'</div>').join('')+'</div>'+
-  '<div style="text-align:center"><button class="sq-btn" onclick="sqFermer()">Terminer</button></div></div>';
-}
-
-
-/* ── Analyse du sondage — reserve au compte admin ── */
-function renderSondageAdmin(container){
-  if(currentUser.role!=='admin'){
-    container.innerHTML='<div class="admin-section"><p style="color:var(--text-light);text-align:center;padding:40px;">🔒 Accès réservé à l\'administrateur.</p></div>';
-    return;
-  }
-  container.innerHTML='<div class="admin-section"><p style="text-align:center;padding:30px;color:var(--text-light)">Chargement…</p></div>';
-  Promise.all([db.ref('sondages').once('value'),db.ref('badges').once('value'),db.ref('sondages_faits').once('value')])
-  .then(function(r){sqRenderAnalyse(container,r[0].val()||{},r[1].val()||{},r[2].val()||{});})
-  .catch(function(){container.innerHTML='<div class="admin-section"><p style="text-align:center;padding:30px;color:var(--red)">Lecture impossible.</p></div>';});
-}
-function sqRenderAnalyse(container,data,tousBadges,faits){
-  faits=faits||{};
-  const nMarques=Object.keys(faits).length;
-  const reps=Object.values(data);
-  const n=reps.length;
-  if(!n){container.innerHTML='<div class="admin-section"><h3>📊 Sondage</h3><p style="color:var(--text-light);padding:20px 0">Aucune réponse pour le moment.</p></div>';return;}
-
-  /* denominateurs : actifs = au moins une saisie sur 3 mois */
-  const tousComptes=Object.keys(usersData||{}).length;
-  const limite=Date.now()-90*86400000;
-  let actifs=0;
-  Object.keys(usersData||{}).forEach(function(k){
-    const b=tousBadges[k];
-    if(b&&b.derniereSaisie&&new Date(b.derniereSaisie).getTime()>=limite)actifs++;
-  });
-  if(!actifs)actifs=tousComptes;
-  const pAct=actifs?Math.round(n/actifs*100):0, pTot=tousComptes?Math.round(n/tousComptes*100):0;
-
-  /* moyennes par axe (echelles + etoiles) */
-  const somme={},cpt={},notes=[0,0,0,0,0];
-  reps.forEach(function(r){
-    const R=r.reponses||{};
-    Object.keys(R).forEach(function(k){
-      const q=R[k];
-      if((q.type==='echelle'||q.type==='etoiles')&&typeof q.valeur==='number'){
-        somme[q.axe]=(somme[q.axe]||0)+q.valeur;cpt[q.axe]=(cpt[q.axe]||0)+1;
-        if(q.type==='etoiles'&&q.valeur>=1&&q.valeur<=5)notes[q.valeur-1]++;
-      }
-    });
-  });
-  const axes=Object.keys(somme).map(function(a){return{nom:SQ_AXES[a]||a,note:somme[a]/cpt[a]};}).sort(function(x,y){return y.note-x.note;});
-  const totalNotes=notes.reduce(function(s,c){return s+c;},0);
-  const noteMoy=totalNotes?(notes.reduce(function(s,c,i){return s+c*(i+1);},0)/totalNotes).toFixed(1):'—';
-  const pire=axes.length?axes[axes.length-1]:null;
-
-  /* fonctions les plus citees (question 7) */
-  const fonc={};
-  reps.forEach(function(r){
-    const q=(r.reponses||{}).q7;
-    if(q&&Array.isArray(q.valeur))q.valeur.forEach(function(f){fonc[f]=(fonc[f]||0)+1;});
-  });
-  const foncArr=Object.keys(fonc).map(function(k){return[k,fonc[k]];}).sort(function(a,b){return b[1]-a[1];});
-  const maxF=foncArr.length?foncArr[0][1]:1;
-
-  /* observations */
-  const groupes=[['q5','Fiabilité — blocages / infos douteuses'],['q9','Ce qui manque'],['q10',"Points d'agacement"],['q12','Suggestions pour la suite']];
-  let obsHtml='';
-  groupes.forEach(function(g){
-    const items=[];
-    reps.forEach(function(r){
-      const q=(r.reponses||{})[g[0]];
-      if(q&&q.texte&&q.texte.trim())items.push({t:q.texte.trim(),c:r.chantier||''});
-    });
-    if(!items.length)return;
-    obsHtml+='<div style="margin-bottom:18px"><div style="font-size:.85em;font-weight:700;margin-bottom:8px">'+g[1]+' <span style="color:var(--text-light);font-weight:500">('+items.length+')</span></div>'+
-    items.map(function(it){return '<div style="background:#f7f9fb;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:9px 13px;font-size:.88em;line-height:1.45;margin-bottom:7px">'+sqEchapper(it.t)+(it.c?'<span style="display:block;font-size:.75em;color:var(--text-light);margin-top:3px">chantier '+it.c+'</span>':'')+'</div>';}).join('')+'</div>';
-  });
-  if(!obsHtml)obsHtml='<p style="color:var(--text-light);font-size:.9em">Aucune observation écrite.</p>';
-
-  const carte=function(lbl,val,sub){return '<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;flex:1;min-width:180px"><div style="font-size:.72em;text-transform:uppercase;letter-spacing:.6px;color:var(--text-light);font-weight:700;margin-bottom:6px">'+lbl+'</div><div style="font-size:2em;font-weight:700;line-height:1">'+val+'</div>'+(sub?'<div style="font-size:.8em;color:var(--text-light);margin-top:8px">'+sub+'</div>':'')+'</div>';};
-
-  container.innerHTML='<div class="admin-section"><h3>📊 Sondage utilisateurs</h3>'+
-  '<div style="background:#eef3f7;border-radius:10px;padding:11px 15px;font-size:.85em;color:#3a5372;line-height:1.5;margin:12px 0 18px">Réponses anonymes. Le taux est rapporté aux utilisateurs actifs (au moins une saisie sur 3 mois) ; le chiffre sur tous les comptes est donné à titre indicatif.</div>'+
-  '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">'+
-  carte('Réponses',n,'Actifs : '+pAct+'% ('+n+'/'+actifs+')<br>Tous comptes : '+pTot+'% ('+n+'/'+tousComptes+')'+
-    (nMarques!==n?'<br><span style="color:'+(nMarques>n?'var(--orange)':'var(--text-light)')+'">'+nMarques+' agent'+(nMarques>1?'s ont':' a')+' répondu selon le marquage'+(nMarques>n?' — '+(nMarques-n)+' réponse'+(nMarques-n>1?'s':'')+' manquante'+(nMarques-n>1?'s':''):' (doublons probables)')+'</span>':'<br>'+nMarques+' marquage'+(nMarques>1?'s':'')+' — cohérent'))+
-  carte('Note globale',noteMoy+'<span style="font-size:.45em;color:var(--text-light)"> / 5</span>',totalNotes+' note'+(totalNotes>1?'s':''))+
-  (pire?carte('Axe prioritaire','<span style="font-size:.55em;line-height:1.3;display:block">'+pire.nom+'</span>','Note la plus basse : '+pire.note.toFixed(1)+'/5'):'')+
-  '</div>'+
-  '<h4 style="margin:20px 0 10px;font-size:.95em">Notes par axe</h4>'+
-  axes.map(function(a){return '<div style="display:flex;align-items:center;gap:12px;margin-bottom:9px"><div style="width:190px;font-size:.85em">'+a.nom+'</div><div style="flex:1;height:20px;background:#eef1f4;border-radius:5px;overflow:hidden"><div style="height:100%;width:'+(a.note/5*100)+'%;background:'+(pire&&a.nom===pire.nom?'var(--orange)':'var(--accent)')+';border-radius:5px"></div></div><div style="width:42px;text-align:right;font-weight:700;font-size:.9em">'+a.note.toFixed(1)+'</div></div>';}).join('')+
-  '<h4 style="margin:22px 0 10px;font-size:.95em">Fonctions les plus utilisées</h4>'+
-  (foncArr.length?foncArr.map(function(f){return '<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><div style="width:190px;font-size:.82em">'+f[0]+'</div><div style="flex:1;height:18px;background:#eef1f4;border-radius:5px;overflow:hidden"><div style="height:100%;width:'+(f[1]/maxF*100)+'%;background:var(--accent);border-radius:5px"></div></div><div style="width:42px;text-align:right;font-size:.8em;color:var(--text-light)">'+f[1]+'/'+n+'</div></div>';}).join(''):'<p style="color:var(--text-light);font-size:.9em">—</p>')+
-  '<h4 style="margin:22px 0 10px;font-size:.95em">Observations remontées</h4>'+obsHtml+
-  '</div>';
-}
-function sqEchapper(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML;}
 
 function renderProfil(){chargerPrefs();const isResp=currentUser.role==='admin'||currentUser.role==='Responsable';document.getElementById('profilTitre').textContent=currentUser.nom||currentUser.email||'Mon profil';const tabs=document.getElementById('profilTabs');const ic=n=>`<span class="material-icons">${n}</span>`;
 const moi=[['reglages','tune','Réglages']];
-const atelier=isResp?[['users','group','Utilisateurs'],['qualite','verified','Qualité']]:[];if(currentUser.role==='admin')atelier.push(['sondage','poll','Sondage']);
+const atelier=isResp?[['users','group','Utilisateurs'],['qualite','verified','Qualité']]:[];
 const mk=b=>`<button onclick="showAdminTab('${b[0]}',this)">${ic(b[1])}${b[2]}</button>`;
 let h=`<div class="seg-row"><span class="seg-lbl">Moi</span><div class="seg-tabs">${moi.map(mk).join('')}</div></div>`;
 if(atelier.length)h+=`<div class="seg-row"><span class="seg-lbl">Atelier</span><div class="seg-tabs">${atelier.map(mk).join('')}</div></div>`;
@@ -1616,7 +1283,7 @@ showAdminTab('reglages',tabs.querySelector('button'));}
 /* ════════════════════════════════════════════════════════════
    CHAPITRE 20 · ADMINISTRATION
    ════════════════════════════════════════════════════════════ */
-async function showAdminTab(tab,el){if(tab==='deco'){if(await jnConfirm('Se déconnecter ?'))logout();return;}document.querySelectorAll('#profilTabs button,#profilActions button').forEach(b=>b.classList.remove('active'));if(el)el.classList.add('active');if(tab==='users')renderAdmin();else if(tab==='qualite')renderQualiteAdmin(document.getElementById('adminContainer'));else if(tab==='aide')renderAide(document.getElementById('adminContainer'));else if(tab==='reglages')renderReglages(document.getElementById('adminContainer'));else if(tab==='pourquoi')renderPourquoi(document.getElementById('adminContainer'));else if(tab==='sondage')renderSondageAdmin(document.getElementById('adminContainer'));else renderReglages(document.getElementById('adminContainer'));}
+async function showAdminTab(tab,el){if(tab==='deco'){if(await jnConfirm('Se déconnecter ?'))logout();return;}document.querySelectorAll('#profilTabs button,#profilActions button').forEach(b=>b.classList.remove('active'));if(el)el.classList.add('active');if(tab==='users')renderAdmin();else if(tab==='qualite')renderQualiteAdmin(document.getElementById('adminContainer'));else if(tab==='aide')renderAide(document.getElementById('adminContainer'));else if(tab==='reglages')renderReglages(document.getElementById('adminContainer'));else if(tab==='pourquoi')renderPourquoi(document.getElementById('adminContainer'));else renderReglages(document.getElementById('adminContainer'));}
 function renderAdmin(){const container=document.getElementById('adminContainer');const isAdmin=currentUser.role==='admin'||currentUser.role==='Responsable';if(!isAdmin){container.innerHTML=`<div class="admin-section"><p style="color:var(--text-light);text-align:center;padding:40px;">🔒 Accès réservé aux admins/responsables.</p></div>`;return;}const uL=Object.entries(usersData);let html=`<div class="admin-stats"><div class="admin-stat-card"><div class="stat-num">${uL.length}</div><div class="stat-label">Utilisateurs</div></div><div class="admin-stat-card"><div class="stat-num">${uL.filter(([,u])=>u.role==='admin').length}</div><div class="stat-label">Admins</div></div><div class="admin-stat-card"><div class="stat-num">${uL.filter(([,u])=>u.role==='Responsable').length}</div><div class="stat-label">Responsables</div></div><div class="admin-stat-card"><div class="stat-num">${uL.filter(([,u])=>u.role==='Opérateur'||u.role==='operateur').length}</div><div class="stat-label">Opérateurs</div></div></div>`;html+=`<div class="admin-section"><h3><span class="material-icons">person_add</span> Créer un utilisateur</h3><div class="admin-create-form"><div><label>Email</label><input type="email" id="adminNewEmail" placeholder="agent@email.fr"></div><div><label>Mot de passe</label><input type="text" id="adminNewPassword" value="Bogie2026!"></div><div><label>Nom</label><input type="text" id="adminNewNom" placeholder="NOM Prénom"></div><div><label>Rôle</label><select id="adminNewRole"><option value="Opérateur">Opérateur</option><option value="Responsable">Responsable</option><option value="admin">Admin</option></select></div><div><label>&nbsp;</label><button class="btn btn-primary" onclick="adminCreateUser()"><span class="material-icons" style="font-size:16px;vertical-align:middle;">add</span> Créer</button></div></div><div style="margin-top:12px;"><label style="font-size:.8em;color:var(--text-light);">Accès :</label><label style="font-size:.85em;margin-left:12px;"><input type="checkbox" id="adminNewY32" checked> Y32</label><label style="font-size:.85em;margin-left:12px;"><input type="checkbox" id="adminNewY25" checked> Y25</label></div><div id="adminCreateMsg" class="admin-msg"></div></div>`;html+=`<div class="admin-section"><h3><span class="material-icons">group</span> Utilisateurs (${uL.length})</h3>`;uL.forEach(([key,user])=>{const a32=user.accessY32!==false,a25=user.accessY25!==false,dn=getUserName(user);html+=`<div class="admin-user-row"><div class="user-nom">${dn||'—'}</div><div class="user-email">${user.email||'—'}</div><select onchange="adminChangeRole('${key}',this.value)" ${user.email===currentUser.email?'disabled':''}><option value="Opérateur" ${user.role==='Opérateur'||user.role==='operateur'?'selected':''}>Opérateur</option><option value="Responsable" ${user.role==='Responsable'?'selected':''}>Responsable</option><option value="admin" ${user.role==='admin'?'selected':''}>Admin</option></select><div class="access-badges"><span class="access-badge access-badge-y32" style="cursor:pointer;opacity:${a32?'1':'.3'}" onclick="adminToggleAccess('${key}','accessY32',${!a32})">Y32</span><span class="access-badge access-badge-y25" style="cursor:pointer;opacity:${a25?'1':'.3'}" onclick="adminToggleAccess('${key}','accessY25',${!a25})">Y25</span></div><div>${user.email!==currentUser.email?`<button class="btn btn-danger" style="padding:4px 8px;font-size:.7em;" onclick="adminDeleteUser('${key}','${user.email}')"><span class="material-icons" style="font-size:14px;">delete</span></button>`:''}</div></div>`;});html+=`</div>`;container.innerHTML=html;}
 function adminCreateUser(){const email=document.getElementById('adminNewEmail').value.trim(),password=document.getElementById('adminNewPassword').value,nom=document.getElementById('adminNewNom').value.trim(),role=document.getElementById('adminNewRole').value,a32=document.getElementById('adminNewY32').checked,a25=document.getElementById('adminNewY25').checked;const msg=document.getElementById('adminCreateMsg');if(!email||!password||password.length<6){msg.className='admin-msg error';msg.textContent='❌ Email + mdp min. 6 car.';return;}if(!nom){msg.className='admin-msg error';msg.textContent='❌ Nom requis';return;}msg.className='admin-msg';msg.style.display='block';msg.style.background='#f3f4f6';msg.style.color='var(--text-light)';msg.textContent='⏳ Création...';const sec=firebase.apps.find(a=>a.name==='Secondary')||firebase.initializeApp(firebaseConfig,'Secondary');sec.auth().createUserWithEmailAndPassword(email,password).then(()=>{db.ref('users').push({email,nom,role,accessY32:a32,accessY25:a25,createdAt:new Date().toISOString(),createdBy:currentUser.nom||currentUser.email});sec.auth().signOut();msg.className='admin-msg success';msg.textContent=`✅ ${nom} (${email}) — ${role}`;document.getElementById('adminNewEmail').value='';document.getElementById('adminNewNom').value='';document.getElementById('adminNewPassword').value='Bogie2026!';setTimeout(()=>renderAdmin(),1000);}).catch(err=>{msg.className='admin-msg error';msg.textContent=err.code==='auth/email-already-in-use'?'❌ Email déjà utilisé':'❌ '+err.message;});}
 function adminChangeRole(k,v){db.ref(`users/${k}/role`).set(v);}
@@ -1657,10 +1324,15 @@ function initModalDrag(){
   m.style.transform='';if(ov&&ov.id)delete _modalPos[ov.id];
  });
 }
+
+/* ── Retour du sondage : message affiché une seule fois par utilisateur et par appareil (localStorage, aucune donnée Firebase) ── */
+const RETOUR_SONDAGE_HTML='<p>Merci à tous ceux qui ont pris le temps de répondre au sondage. Vos retours ont été lus un par un. Ils servent directement à décider ce qui change dans JANUS.</p><h4 style="margin:16px 0 6px">Ce que vous nous avez dit</h4><p>Dans l\'ensemble, JANUS est jugé facile à prendre en main et lisible sur tablette. Vous avez aussi relevé des manques et quelques infos qui ne vous paraissaient pas justes. C\'est exactement ce qu\'on voulait savoir.</p><h4 style="margin:16px 0 6px">Ce qui a déjà changé</h4><ul style="padding-left:20px;line-height:1.55"><li><strong>Étapes oubliées</strong> : déplacer un bogie dans le Kanban ouvre maintenant sa fiche pour valider l\'étape. Un bogie ne peut plus avancer sans que l\'étape soit renseignée.</li><li><strong>Bogies par paire et par voiture</strong> : les voitures et leurs bogies, en cours et archivés, se consultent au même endroit.</li></ul><h4 style="margin:16px 0 6px">Ce qui est en cours</h4><ul style="padding-left:20px;line-height:1.55"><li><strong>Case sablage</strong> : l\'échange avec SD Sablage est en train d\'être revu pour qu\'il fonctionne correctement.</li><li><strong>Infos plus fiables</strong> : les dates de sortie estimées vont disparaître. Seule la date programmée sera affichée. Un bogie non programmé sera indiqué comme tel, plutôt qu\'avec une date approximative.</li><li><strong>Moins d\'onglets</strong> : l\'organisation des onglets va être simplifiée.</li></ul><h4 style="margin:16px 0 6px">Ce qui est prévu</h4><ul style="padding-left:20px;line-height:1.55"><li>Un compteur du nombre de bogies traités dans l\'année (démontage, remontage), visible d\'un coup d\'œil.</li></ul><h4 style="margin:16px 0 6px">À propos des badges</h4><p>Ils ont été retirés volontairement pour alléger l\'appli. Votre progression n\'est pas perdue, elle est conservée.</p><h4 style="margin:16px 0 6px">Un mot sur le rythme</h4><p>Ces évolutions prennent du temps. Nous ne sommes que deux à travailler sur JANUS, en plus de nos tâches respectives. Les changements arrivent donc par étapes, mais ils arrivent. Si quelque chose vous paraît faux ou bloquant, signalez-le : c\'est comme ça que l\'outil s\'améliore.</p><p style="margin-top:14px">Merci encore. JANUS avance parce que vous le remplissez tous les jours.</p><p style="font-weight:600">Marius</p>';
+function _rsCle(){return 'janus_retourSondage_'+((currentUser&&(currentUser.uid||currentUser.email))||'anon');}
+function retourSondageAuDemarrage(){try{if(localStorage.getItem(_rsCle()))return;localStorage.setItem(_rsCle(),String(Date.now()));}catch(e){return;}setTimeout(ouvrirRetourSondage,1200);}
+function ouvrirRetourSondage(){document.getElementById('modalRetourSondageContent').innerHTML=RETOUR_SONDAGE_HTML;document.getElementById('modalRetourSondage').classList.add('open');}
 window.addEventListener('DOMContentLoaded',initModalDrag);
 function closeModal(id){if(id==='modalBogie'){_ficheLastId=null;const _me=document.getElementById('modalEtape');if(_me)_me.classList.remove('open');if((location.hash||'').indexOf('/fiche/')>=0)_routeSync();}document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});});
 </script>
-<div class="sq-overlay" id="sqOverlay"><div class="sq-box"><div class="sq-top"></div><div id="sqInner"></div></div></div>
 </body>
 </html>
