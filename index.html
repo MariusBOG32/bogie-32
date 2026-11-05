@@ -461,7 +461,7 @@ function renderCalendrier(){const c=document.getElementById('calendarContainer')
 const{lundis,slots}=planifierSemaines();
 const semaineDe={};slots.forEach((s,w)=>s.forEach(o=>semaineDe[o.id]=w));
 const lignes=[];Object.entries(bogiesData).forEach(([id,b])=>{if(b.archive||b.dateSortie)return;const col=getColonneY32(b),complete=isBogieComplete(b);lignes.push({id,b,col,complete,w:complete?0:semaineDe[id],min:PHASE_SEMAINES[col]});});
-lignes.sort((x,y)=>((x.w===undefined?99:x.w)-(y.w===undefined?99:y.w))||((x.min===undefined?99:x.min)-(y.min===undefined?99:y.min))||String(x.b.numero||x.id).localeCompare(String(y.b.numero||y.id)));
+const _rg=o=>o.b.bloque?2:(o.b.enAttente?1:0);lignes.sort((x,y)=>(_rg(x)-_rg(y))||((x.w===undefined?99:x.w)-(y.w===undefined?99:y.w))||((x.min===undefined?99:x.min)-(y.min===undefined?99:y.min))||String(x.b.numero||x.id).localeCompare(String(y.b.numero||y.id)));
 const parSem=lundis.map(()=>0);lignes.forEach(o=>{if(o.w!==undefined&&o.w<HORIZON_SEMAINES)parSem[o.w]++;});
 let html=renderJaugeEquilibre()||'';
 html+=`<div class="cal-info">Une ligne par bogie, une colonne par semaine. Seules les sorties <strong>programmées à la main</strong> sont affichées : rien n'est estimé automatiquement. Un bogie sans semaine choisie est marqué <strong>« Non programmé »</strong> ; touchez le <strong>+</strong> d'une semaine pour le programmer. Les flèches ◀ ▶ — ou le glisser-déposer d'une case « Sortie » vers une autre semaine — déplacent une sortie, le ↺ la déprogramme. Capacité de l'atelier : ${CAPACITE_SEMAINE} bogie par semaine (un chiffre rouge en pied de tableau signale un dépassement). L'interrupteur retire le bogie du calendrier (hors programmation).</div>`;
